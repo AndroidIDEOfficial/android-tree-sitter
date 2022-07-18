@@ -173,7 +173,7 @@ done
 
 
 so="${out_dir_base}/${soname}.so"
-cmd="$CXX -shared -fPIC -o $so $objects ./tree-sitter/libtree-sitter.a"
+cmd="$CXX -shared -fPIC -static-libstdc++ -o $so $objects ./tree-sitter/libtree-sitter.a"
 echo $cmd
 $cmd
 
