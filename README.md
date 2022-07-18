@@ -1,26 +1,58 @@
-# java-tree-sitter
+# android-tree-sitter
+Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitter/).
 
-Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitter/).
+`android-tree-sitter` is adapted from [jakobkhansen/java-tree-sitter](https://github.com/jakobkhansen/java-tree-sitter) which is a fork of [serenadeai/java-tree-sitter](https://github.com/serenadeai/java-tree-sitter).
 
 ## Building
 
-Before you can start using java-tree-sitter, you need to build a shared library that Java can load. The included `build.py` script can facilitate building the library. The first argument is the output file, followed by all of the tree-sitter repositories that you want to be included:
+- `git clone` this repo.
+- Init/update submodules with `git submodule update --init`
+- Use the `build.sh` script to build the shared library.
 
-    ./build.py libjava-tree-sitter tree-sitter-css tree-sitter-python ...
+```
+usage: ./build.sh [-h] [-a {aarch64,arm,x86,x86_64}] [-o OUTPUT] [-v] -n NDK [-m MIN_SDK] grammars [grammars ...]
+
+Build a tree-sitter library
+
+positional arguments:
+  grammars          tree-sitter grammar repository names to include in
+                    build.
+
+options:
+  -h,              Show this help message and exit
+  -a               Architecture to build for {aarch64,arm,x86,x86_64}.
+  -o OUTPUT        Output file name (OUTPUT.so)
+  -n NDK           Path to the Android NDK.
+  -m               Min SDK version for the generated shared library
+```
+
+For example, the following command builds the shared library for `arm64-v8a` Android 8 and above with  `tree-sitter-java` and `tree-sitter-python` grammars :
+
+```
+./build.sh -a aarch64 -m 26 -n <path_to_ndk> java python
+```
+
+## Adding more grammars
+
+You could either add the submodule for the grammar with `git submodule add [..]` or manually clone the grammar repositories in the `grammars` folder.
+
+The name of the grammar repositories must be in the format `tree-sitter-LANG` where `LANG` is the name of the language.
 
 ## Examples
 
 First, load the shared object somewhere in your application:
 
+```java
     public class App {
       static {
-        // or on a Mac, libjava-tree-sitter.dylib
-        System.load("./path/to/libjava-tree-sitter.so");
+        System.load("<soname>"); // <soname> will be 'ts' for 'libts.so'
       }
     }
+```
 
 Then, you can create a `Parser`, set the language, and parse a string:
 
+```java 
     try (Parser parser = new Parser()) {
       parser.setLanguage(Languages.python());
       try (Tree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
@@ -35,9 +67,11 @@ Then, you can create a `Parser`, set the language, and parse a string:
         assertEquals(5, function.getChildCount());
       }
     }
+```
 
 For debugging, it can be helpful to see a string of the tree:
 
+```java
     try (Parser parser = new Parser()) {
       parser.setLanguage(Languages.python());
       try (Tree tree = parser.parseString("print(\"hi\")")) {
@@ -47,9 +81,11 @@ For debugging, it can be helpful to see a string of the tree:
         );
       }
     }
+```
 
 If you're going to be traversing a tree, then you can use the `walk` method, which is much more efficient than the above getters:
 
+```java
     try (Parser parser = new Parser()) {
       parser.setLanguage(Languages.python());
       try (Tree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
@@ -63,5 +99,6 @@ If you're going to be traversing a tree, then you can use the `walk` method, whi
           cursor.gotoParent();
         }
       }
+```
 
-For more examples, see the tests in `src/test/java/ai/serenade/treesitter`.
+For more examples, see the tests in `src/test/java/com/itsaky/androidide/treesitter`.

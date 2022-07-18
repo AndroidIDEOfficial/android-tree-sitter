@@ -4,7 +4,7 @@ set -eu
 
 print_help() {
   echo """
-usage: ./build.sh [-h] [-a {aarch64,arm,x86,x86_64}] [-o OUTPUT] [-v] -n NDK [-m MIN_SDK] repositories [grammars ...]
+usage: ./build.sh [-h] [-a {aarch64,arm,x86,x86_64}] [-o OUTPUT] [-v] -n NDK [-m MIN_SDK] grammars [grammars ...]
 
 Build a tree-sitter library
 
@@ -14,9 +14,9 @@ positional arguments:
 options:
   -h,              Show this help message and exit
   -a               Architecture to build for {aarch64,arm,x86,x86_64}.
-  -o OUTPU         Output file name (OUTPUT.so)
+  -o OUTPUT        Output file name (OUTPUT.so)
   -n NDK           Path to the Android NDK.
-  -m               Min SDK version for the generated shared librar
+  -m               Min SDK version for the generated shared library
     """
 }
 
