@@ -69,11 +69,13 @@ if [ "$arch" == *"64"* ]; then
 fi
 
 clang_qualifier="${cc_prefix}-linux-android${cc_suffix}${min_sdk}"
+strp="${ndk_bin}/llvm-strip"
 export CC="${ndk_bin}/${clang_qualifier}-clang"
 export CXX="${CC}++"
 
 if [ ! -z "${for_host+x}" ]; then
   clang_qualifier="host"
+  strp="strip"
   export CC="gcc"
   export CXX="g++"
   echo "Building for host..."
@@ -158,13 +160,28 @@ for source in "${SOURCES[@]}"; do
 
   cmd="$CC $flags $includes $macros -o "$obj" $source"
   echo $cmd
-  echo ""
   $cmd
+  echo "Stripping debug symbols from: $obj"
+
+  if [ ! -z "${for_host+x}" ]; then
+    strip -g $obj
+  else
+    $strp -g $obj
+  fi
+  echo ""
 done
 
-cmd="$CXX -shared -fPIC -o ${out_dir_base}/${soname}.so $objects ./tree-sitter/libtree-sitter.a"
+
+so="${out_dir_base}/${soname}.so"
+cmd="$CXX -shared -fPIC -o $so $objects ./tree-sitter/libtree-sitter.a"
 echo $cmd
 $cmd
+
+if [ ! -z "${for_host+x}" ]; then
+  strip -g $so
+else
+  $strp -g $so
+fi
 
 echo ""
 echo "-------------- Build finished ----------------"
