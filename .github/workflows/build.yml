@@ -30,7 +30,6 @@ jobs:
           add-to-path: false
 
       - name: Setup NDK env
-        run: ./build.sh
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
