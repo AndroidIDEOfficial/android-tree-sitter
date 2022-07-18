@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build for aarch64
+    name: Build shared libraries
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous runs
