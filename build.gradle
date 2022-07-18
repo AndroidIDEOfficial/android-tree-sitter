@@ -17,20 +17,17 @@ task buildSharedObject {
     inputs.file "lib/com_itsaky_androidide_treesitter_Languages.h"
     inputs.file "lib/ts.cc"
     inputs.file "lib/com_itsaky_androidide_treesitter_TreeSitter.h"
-    outputs.file "libts.so"
+    outputs.file "output/host/libts.so"
 
     doLast {
         exec {
-            commandLine 'git', 'submodule', 'update', '--init', '--recursive'
-        }
-        exec {
-            commandLine "./build.py", "-o", "libts", "grammars/tree-sitter-python", "grammars/tree-sitter-java", "-v"
+            commandLine "./build.sh", "-s", "python", "java"
         }
     }
 }
 
 clean {
-    delete "libts.so"
+    delete "output"
 }
 
 compileJava {
@@ -59,5 +56,5 @@ test {
         events "passed", "skipped", "failed"
     }
 
-    environment "JAVA_TREE_SITTER", "${project.projectDir.toString()}/libts.so"
+    environment "JAVA_TREE_SITTER", "${project.projectDir.toString()}/output/host/libts.so"
 }

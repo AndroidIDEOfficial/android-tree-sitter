@@ -140,7 +140,7 @@ rm -rvf $out_dir_base
 
 IFS=' ' read -ra SOURCES <<< "$sources"
 for source in "${SOURCES[@]}"; do
-  flags="-fPIC -L./tree-sitter -ltree-sitter -shared"
+  flags="-fPIC -c"
   if [ "$source" == *".c" ]; then
     flags+="-std=c99"
   fi
@@ -156,13 +156,13 @@ for source in "${SOURCES[@]}"; do
   obj="${out_dir}/${obj_name}"
   objects+=" $obj"
 
-  cmd="$CC $flags $includes -o "$obj" $source"
+  cmd="$CC $flags $includes $macros -o "$obj" $source"
   echo $cmd
   echo ""
   $cmd
 done
 
-cmd="$CXX -shared -fPIC -o "${out_dir_base}/${soname}.so" $objects"
+cmd="$CXX -shared -fPIC -o ${out_dir_base}/${soname}.so $objects ./tree-sitter/libtree-sitter.a"
 echo $cmd
 $cmd
 
