@@ -1,0 +1,41 @@
+
+name: Build shared libraries
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: Build for aarch64
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.10.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Clone repo
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup NDk
+        uses: actions/checkout@v2
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+        ndk-version: r21e
+        add-to-path: false
+
+      - name: Setup NDK env
+        run: ./build.sh
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+      - name: Build libraries
+        shell: bash
+        run: |
+          ./build.sh -a aarch64 -m 21 -n $ANDROID_NDK_HOME java python
