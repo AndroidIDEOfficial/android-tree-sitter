@@ -29,9 +29,41 @@ jobs:
           ndk-version: r21e
           add-to-path: false
 
-      - name: Build libraries
+      - name: Build for aarch64
         shell: bash
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           ./build.sh -a aarch64 -m 21 -n $ANDROID_NDK_HOME java python
+
+      - name: Build for arm
+        shell: bash
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          ./build.sh -a arm -m 21 -n $ANDROID_NDK_HOME java python
+
+      - name: Build for x86_64
+        shell: bash
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          ./build.sh -a x86_64 -m 21 -n $ANDROID_NDK_HOME java python
+
+      - name: Build for x86
+        shell: bash
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          ./build.sh -a x86 -m 21 -n $ANDROID_NDK_HOME java python
+
+      - name: Upload shared libraries
+        uses: actions/upload-artifact@v3
+        if: ${{ !github.head_ref }}
+        with:
+          name: apk-debug
+          path: |
+            output/aarch64-linux-android21/libts.so
+            output/armv7a-linux-android21/libts.so
+            output/x86_64-linux-android21/libts.so
+            output/i686-linux-android21/libts.so
