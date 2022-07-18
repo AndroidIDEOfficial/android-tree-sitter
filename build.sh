@@ -17,6 +17,7 @@ options:
   -o OUTPUT        Output file name (OUTPUT.so)
   -n NDK           Path to the Android NDK.
   -m               Min SDK version for the generated shared library
+  -s               Build for the host OS. If this option is set, all other options are not used.
     """
 }
 
@@ -26,7 +27,7 @@ min_sdk="24"
 ndk_dir=""
 
 OPTIND=1
-while getopts "h?a:o:m:n:" opt; do
+while getopts "h?sa:o:m:n:" opt; do
   case "$opt" in
     h|\?)
       print_help
@@ -39,6 +40,8 @@ while getopts "h?a:o:m:n:" opt; do
     m) min_sdk=$OPTARG
       ;;
     n) ndk_dir=$OPTARG
+      ;;
+    s) for_host="true"
       ;;
   esac
 done
@@ -69,12 +72,23 @@ clang_qualifier="${cc_prefix}-linux-android${cc_suffix}${min_sdk}"
 export CC="${ndk_bin}/${clang_qualifier}-clang"
 export CXX="${CC}++"
 
-echo "ARCH      : $arch"
-echo "OUTPUT    : $soname"
-echo "MIN SDK   : $min_sdk"
-echo "NDK DIR   : $ndk_dir"
-echo "Grammars  : $*"
-echo ""
+if [ ! -z "${for_host+x}" ]; then
+  clang_qualifier="host"
+  export CC="gcc"
+  export CXX="g++"
+  echo "Building for host..."
+  echo ""
+else
+  echo "ARCH      : $arch"
+  echo "OUTPUT    : $soname"
+  echo "MIN SDK   : $min_sdk"
+  echo "NDK DIR   : $ndk_dir"
+  echo "Grammars  : $*"  
+  echo ""
+  echo "Building for Android..."
+  echo ""
+fi
+
 echo "Building tree-sitter..."
 
 make -C "./tree-sitter" clean
@@ -118,6 +132,10 @@ objects=""
 includes="-I./tree-sitter/lib/include -I./tree-sitter/lib/src"
 out_dir_base="./output/${clang_qualifier}"
 
+if [ ! -z "${for_host+x}" ]; then
+  includes+=" -I$JAVA_HOME/include -I$JAVA_HOME/include/${system}"
+fi
+
 rm -rvf $out_dir_base
 
 IFS=' ' read -ra SOURCES <<< "$sources"
@@ -138,14 +156,16 @@ for source in "${SOURCES[@]}"; do
   obj="${out_dir}/${obj_name}"
   objects+=" $obj"
 
-  echo "Compiling $source -> $obj"
-
-  $CC $flags $includes -o "$obj" $source
+  cmd="$CC $flags $includes -o "$obj" $source"
+  echo $cmd
+  echo ""
+  $cmd
 done
 
-echo "Building shared library -> $soname.so"
-$CXX -shared -fPIC -o "${out_dir_base}/${soname}.so" $objects
+cmd="$CXX -shared -fPIC -o "${out_dir_base}/${soname}.so" $objects"
+echo $cmd
+$cmd
 
-echo "----------------------------------------------"
+echo ""
 echo "-------------- Build finished ----------------"
-echo "----------------------------------------------"
+echo ""
