@@ -137,7 +137,15 @@ for source in "${SOURCES[@]}"; do
   
   obj="${out_dir}/${obj_name}"
   objects+=" $obj"
+
+  echo "Compiling $source -> $obj"
+
   $CC $flags $includes -o "$obj" $source
 done
 
+echo "Building shared library -> $soname.so"
 $CXX -shared -fPIC -o "${out_dir_base}/${soname}.so" $objects
+
+echo "----------------------------------------------"
+echo "-------------- Build finished ----------------"
+echo "----------------------------------------------"
