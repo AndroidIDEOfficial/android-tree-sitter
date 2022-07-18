@@ -26,7 +26,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r21e
+          ndk-version: r25
           add-to-path: false
 
       - name: Build for aarch64
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
-          name: apk-debug
+          name: shared-libraries
           path: |
             output/aarch64-linux-android21/libts.so
             output/armv7a-linux-android21/libts.so
