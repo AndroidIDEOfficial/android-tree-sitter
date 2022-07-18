@@ -15,8 +15,7 @@ usage: ./build.sh [-h] [-a {aarch64,arm,x86,x86_64}] [-o OUTPUT] [-v] -n NDK [-m
 Build a tree-sitter library
 
 positional arguments:
-  grammars          tree-sitter grammar repository names to include in
-                    build.
+  grammars          tree-sitter repositories to include in build
 
 options:
   -h,              Show this help message and exit
@@ -24,6 +23,7 @@ options:
   -o OUTPUT        Output file name (OUTPUT.so)
   -n NDK           Path to the Android NDK.
   -m               Min SDK version for the generated shared library
+  -s               Build for the host OS. If this option is set, all other options are not used.
 ```
 
 For example, the following command builds the shared library for `arm64-v8a` Android 8 and above with  `tree-sitter-java` and `tree-sitter-python` grammars :
