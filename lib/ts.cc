@@ -11,7 +11,7 @@ struct TreeCursorNode {
   uint32_t endByte;
 };
 
-static jint JNI_VERSION = JNI_VERSION_10;
+static jint JNI_VERSION = JNI_VERSION_1_6; // For Android
 
 static jclass _nodeClass;
 static jfieldID _nodeContext0Field;

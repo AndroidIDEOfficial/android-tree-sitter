@@ -26,7 +26,7 @@ public class ParserTest extends TestBase {
     final long start = System.currentTimeMillis();
     try (Parser parser = new Parser()) {
       parser.setLanguage(Languages.java());
-      try (var tree = parser.parseString(Files.readString(Paths.get("./CodeEditor.java")))) {
+      try (var tree = parser.parseString(Files.readString(Paths.get("./src/test/resources/CodeEditor.java")))) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println("\nParsed CodeEditor.java in: " + (System.currentTimeMillis() - start) + "ms");
       }
@@ -38,7 +38,7 @@ public class ParserTest extends TestBase {
     final long start = System.currentTimeMillis();
     try (Parser parser = new Parser()) {
       parser.setLanguage(Languages.java());
-      try (var tree = parser.parseString(Files.readString(Paths.get("./View.java")))) {
+      try (var tree = parser.parseString(Files.readString(Paths.get("./src/test/resources/View.java")))) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println("\nParsed View.java in: " + (System.currentTimeMillis() - start) + "ms");
       }
