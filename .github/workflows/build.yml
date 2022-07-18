@@ -23,7 +23,6 @@ jobs:
           submodules: true
 
       - name: Setup NDk
-        uses: actions/checkout@v2
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
