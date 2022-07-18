@@ -22,12 +22,12 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup NDk
+      - name: Setup NDK
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-        ndk-version: r21e
-        add-to-path: false
+          ndk-version: r21e
+          add-to-path: false
 
       - name: Setup NDK env
         run: ./build.sh
