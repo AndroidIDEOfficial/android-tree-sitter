@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeChild
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;I)Lcom/itsaky/androidide/treesitter/Node;
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;I)Lcom/itsaky/androidide/treesitter/TSNode;
  */
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChild
   (JNIEnv *, jclass, jobject, jint);
@@ -18,7 +18,7 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeC
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeChildCount
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)I
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)I
  */
 JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChildCount
   (JNIEnv *, jclass, jobject);
@@ -26,7 +26,7 @@ JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChil
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeEndByte
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)I
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)I
  */
 JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndByte
   (JNIEnv *, jclass, jobject);
@@ -34,7 +34,7 @@ JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndB
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeStartByte
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)I
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)I
  */
 JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartByte
   (JNIEnv *, jclass, jobject);
@@ -42,7 +42,7 @@ JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStar
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeStartPoint
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)Lcom/itsaky/androidide/treesitter/TSPoint;
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Lcom/itsaky/androidide/treesitter/TSPoint;
  */
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartPoint
   (JNIEnv *, jclass, jobject);
@@ -50,7 +50,7 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeS
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeEndPoint
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)Lcom/itsaky/androidide/treesitter/TSPoint;
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Lcom/itsaky/androidide/treesitter/TSPoint;
  */
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndPoint
   (JNIEnv *, jclass, jobject);
@@ -58,7 +58,7 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeE
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeString
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)Ljava/lang/String;
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeString
   (JNIEnv *, jclass, jobject);
@@ -66,7 +66,7 @@ JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeS
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeType
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)Ljava/lang/String;
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeType
   (JNIEnv *, jclass, jobject);
@@ -98,18 +98,18 @@ JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserSe
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    parserParseBytes
- * Signature: (J[BI)J
+ * Signature: (J[BII)J
  */
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserParseBytes
-  (JNIEnv *, jclass, jlong, jbyteArray, jint);
+  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint);
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    parserIncrementalParseBytes
- * Signature: (JJ[BI)J
+ * Signature: (JJ[BII)J
  */
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserIncrementalParseBytes
-  (JNIEnv *, jclass, jlong, jlong, jbyteArray, jint);
+  (JNIEnv *, jclass, jlong, jlong, jbyteArray, jint, jint);
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
@@ -122,7 +122,7 @@ JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeEdit
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    treeCursorNew
- * Signature: (Lcom/itsaky/androidide/treesitter/Node;)J
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)J
  */
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeCursorNew
   (JNIEnv *, jclass, jobject);
@@ -130,7 +130,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeCur
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    treeCursorCurrentTreeCursorNode
- * Signature: (J)Lcom/itsaky/androidide/treesitter/TreeCursorNode;
+ * Signature: (J)Lcom/itsaky/androidide/treesitter/TSTreeCursorNode;
  */
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeCursorCurrentTreeCursorNode
   (JNIEnv *, jclass, jlong);
@@ -146,7 +146,7 @@ JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeC
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    treeCursorCurrentNode
- * Signature: (J)Lcom/itsaky/androidide/treesitter/Node;
+ * Signature: (J)Lcom/itsaky/androidide/treesitter/TSNode;
  */
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeCursorCurrentNode
   (JNIEnv *, jclass, jlong);
@@ -194,7 +194,7 @@ JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeDele
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    treeRootNode
- * Signature: (J)Lcom/itsaky/androidide/treesitter/Node;
+ * Signature: (J)Lcom/itsaky/androidide/treesitter/TSNode;
  */
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeRootNode
   (JNIEnv *, jclass, jlong);

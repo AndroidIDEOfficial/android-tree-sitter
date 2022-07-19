@@ -1,7 +1,6 @@
 package com.itsaky.androidide.treesitter;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 public class TSParser implements AutoCloseable {
   private long pointer;
@@ -19,13 +18,21 @@ public class TSParser implements AutoCloseable {
   }
 
   public TSTree parseString(String source) throws UnsupportedEncodingException {
-    byte[] bytes = source.getBytes(StandardCharsets.UTF_16LE);
-    return new TSTree(TreeSitter.parserParseBytes(pointer, bytes, bytes.length));
+    return parseString(source, TSInputEncoding.TSInputEncodingUTF8);
+  }
+
+  public TSTree parseString(String source, TSInputEncoding encoding) throws UnsupportedEncodingException {
+    byte[] bytes = source.getBytes(encoding.getCharset());
+    return new TSTree(TreeSitter.parserParseBytes(pointer, bytes, bytes.length, encoding.getFlag()));
   }
 
   public TSTree parseString(TSTree oldTree, String source) throws UnsupportedEncodingException {
-    byte[] bytes = source.getBytes(StandardCharsets.UTF_16LE);
-    return new TSTree(TreeSitter.parserIncrementalParseBytes(pointer, oldTree.getPointer(), bytes, bytes.length));
+    return parseString(oldTree, source, TSInputEncoding.TSInputEncodingUTF8);
+  }
+
+  public TSTree parseString(TSTree oldTree, String source, TSInputEncoding encoding) throws UnsupportedEncodingException {
+    byte[] bytes = source.getBytes(encoding.getCharset());
+    return new TSTree(TreeSitter.parserIncrementalParseBytes(pointer, oldTree.getPointer(), bytes, bytes.length, encoding.getFlag()));
   }
 
 

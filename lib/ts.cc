@@ -66,7 +66,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   }
 
   // Node
-  _loadClass(_nodeClass, "com/itsaky/androidide/treesitter/Node");
+  _loadClass(_nodeClass, "com/itsaky/androidide/treesitter/TSNode");
   _loadField(_nodeContext0Field, _nodeClass, "context0", "I");
   _loadField(_nodeContext1Field, _nodeClass, "context1", "I");
   _loadField(_nodeContext2Field, _nodeClass, "context2", "I");
@@ -75,7 +75,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   _loadField(_nodeTreeField, _nodeClass, "tree", "J");
 
   // TreeCursorNode
-  _loadClass(_treeCursorNodeClass, "com/itsaky/androidide/treesitter/TreeCursorNode");
+  _loadClass(_treeCursorNodeClass, "com/itsaky/androidide/treesitter/TSTreeCursorNode");
   _loadField(_treeCursorNodeTypeField, _treeCursorNodeClass, "type",
              "Ljava/lang/String;");
   _loadField(_treeCursorNodeNameField, _treeCursorNodeClass, "name",
@@ -241,17 +241,19 @@ JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserSe
 
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserParseBytes(
   JNIEnv* env, jclass self, jlong parser, jbyteArray source_bytes,
-  jint length) {
+  jint length, jint encodingFlag) {
+  TSInputEncoding encoding = encodingFlag == 0 ? TSInputEncodingUTF8 : TSInputEncodingUTF16;
   jbyte* source = env->GetByteArrayElements(source_bytes, NULL);
   jlong result = (jlong)ts_parser_parse_string_encoding(
-                   (TSParser*)parser, NULL, reinterpret_cast<const char*>(source), length, TSInputEncodingUTF16);
+                   (TSParser*)parser, NULL, reinterpret_cast<const char*>(source), length, encoding);
   env->ReleaseByteArrayElements(source_bytes, source, JNI_ABORT);
   return result;
 }
 
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserIncrementalParseBytes(
   JNIEnv* env, jclass self, jlong parser, jlong old_tree, jbyteArray source_bytes,
-  jint length) {
+  jint length, jint encodingFlag) {
+  TSInputEncoding encoding = encodingFlag == 0 ? TSInputEncodingUTF8 : TSInputEncodingUTF16;
   jbyte* source = env->GetByteArrayElements(source_bytes, NULL);
   jlong result = (jlong)ts_parser_parse_string_encoding(
                    (TSParser*)parser, (TSTree*)old_tree, reinterpret_cast<const char*>(source), length, TSInputEncodingUTF16);

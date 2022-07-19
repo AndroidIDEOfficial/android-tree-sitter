@@ -15,7 +15,7 @@ public class TSInputEditTest extends TestBase {
 
             // Parse code
             TSTree tree = parser.parseString(
-                    "class Hello {\npublic void hello() {}}");
+                    "class Hello {\npublic void hello() {}}", TSInputEncoding.TSInputEncodingUTF16);
 
             // Empty edit
             TSNode editedNode = tree.getRootNode().getChild(0).getChild(2).getChild(1).getChild(4);
@@ -32,7 +32,7 @@ public class TSInputEditTest extends TestBase {
 
             tree.edit(edit);
 
-            tree = parser.parseString(tree, "class Hello {\npublic void hello() {\nint x = 3; }}");
+            tree = parser.parseString(tree, "class Hello {\npublic void hello() {\nint x = 3; }}", TSInputEncoding.TSInputEncodingUTF16);
 
             String newSExp = tree.getRootNode().getNodeString();
             assertEquals(oldSExp, newSExp);

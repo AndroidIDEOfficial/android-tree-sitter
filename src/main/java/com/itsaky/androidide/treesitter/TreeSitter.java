@@ -23,18 +23,37 @@ public class TreeSitter {
     public static native void parserDelete(long parser);
 
     public static native void parserSetLanguage(long parser, long language);
+    
+    public static long parserParseBytes(
+        long parser,
+        byte[] source,
+        int length
+    ) {
+        return parserParseBytes(parser, source, length, TSInputEncoding.TSInputEncodingUTF8.getFlag());
+    }
+
+    public static long parserIncrementalParseBytes(
+        long parser,
+        long old_tree,
+        byte[] source,
+        int length
+    ) {
+        return parserIncrementalParseBytes(parser, old_tree, source, length, TSInputEncoding.TSInputEncodingUTF8.getFlag());
+    }
 
     public static native long parserParseBytes(
         long parser,
         byte[] source,
-        int length
+        int length,
+        int encoding
     );
 
     public static native long parserIncrementalParseBytes(
         long parser,
         long old_tree,
         byte[] source,
-        int length
+        int length,
+        int encoding
     );
 
     // TODO refactor this

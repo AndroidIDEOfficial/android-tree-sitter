@@ -12,7 +12,7 @@ public class ParserTest extends TestBase {
   void testParse() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguages.python());
-      try (TSTree tree = parser.parseString("print(\"hi\")")) {
+      try (TSTree tree = parser.parseString("print(\"hi\")", TSInputEncoding.TSInputEncodingUTF16)) {
         assertEquals(
           "(module (expression_statement (call function: (identifier) arguments: (argument_list (string)))))",
           tree.getRootNode().getNodeString()
@@ -26,7 +26,7 @@ public class ParserTest extends TestBase {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguages.java());
-      try (var tree = parser.parseString(Files.readString(Paths.get("./src/test/resources/CodeEditor.java")))) {
+      try (var tree = parser.parseString(Files.readString(Paths.get("./src/test/resources/CodeEditor.java.txt")), TSInputEncoding.TSInputEncodingUTF16)) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println("\nParsed CodeEditor.java in: " + (System.currentTimeMillis() - start) + "ms");
       }
@@ -38,7 +38,7 @@ public class ParserTest extends TestBase {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguages.java());
-      try (var tree = parser.parseString(Files.readString(Paths.get("./src/test/resources/View.java")))) {
+      try (var tree = parser.parseString(Files.readString(Paths.get("./src/test/resources/View.java.txt")), TSInputEncoding.TSInputEncodingUTF16)) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println("\nParsed View.java in: " + (System.currentTimeMillis() - start) + "ms");
       }

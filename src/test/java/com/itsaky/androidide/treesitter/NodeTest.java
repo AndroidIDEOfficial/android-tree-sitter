@@ -11,7 +11,7 @@ public class NodeTest extends TestBase {
   void testGetChildren() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguages.python());
-      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
+      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)", TSInputEncoding.TSInputEncodingUTF16)) {
         TSNode root = tree.getRootNode();
         assertEquals(1, root.getChildCount());
         assertEquals("module", root.getType());

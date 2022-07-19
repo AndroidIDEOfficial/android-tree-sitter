@@ -14,7 +14,7 @@ repositories {
 
 task buildSharedObject {
     inputs.file "lib/langs.cc"
-    inputs.file "lib/com_itsaky_androidide_treesitter_Languages.h"
+    inputs.file "lib/com_itsaky_androidide_treesitter_TSLanguages.h"
     inputs.file "lib/ts.cc"
     inputs.file "lib/com_itsaky_androidide_treesitter_TreeSitter.h"
     outputs.file "output/host/libts.so"

@@ -11,7 +11,7 @@ public class TreeCursorTest extends TestBase {
   void testWalk() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguages.python());
-      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
+      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)", TSInputEncoding.TSInputEncodingUTF16)) {
         try (TSTreeCursor cursor = tree.getRootNode().walk()) {
           assertEquals("module", cursor.getCurrentTreeCursorNode().getType());
           assertEquals("module", cursor.getCurrentNode().getType());
