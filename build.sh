@@ -2,9 +2,11 @@
 
 set -eu
 
+script_dir=$(realpath $(dirname $0))
+
 print_help() {
   echo """
-usage: ./build.sh [-h] [-a {aarch64,arm,x86,x86_64}] [-o OUTPUT] [-v] -n NDK [-m MIN_SDK] grammars [grammars ...]
+usage: ${script_dir}/build.sh [-h] [-a {aarch64,arm,x86,x86_64}] [-o OUTPUT] [-v] -n NDK [-m MIN_SDK] grammars [grammars ...]
 
 Build a tree-sitter library
 
@@ -93,24 +95,24 @@ fi
 
 echo "Building tree-sitter..."
 
-make -C "./tree-sitter" clean
-make -C "./tree-sitter"
+make -C "${script_dir}/tree-sitter" clean
+make -C "${script_dir}/tree-sitter"
 
 echo ""
 echo "Building grammars..."
 
-dest_dir="output/${clang_qualifier}"
+dest_dir="${script_dir}output/${clang_qualifier}"
 dest_so="${soname}.so"
 
 mkdir -p $dest_dir
 
 macros=""
-sources="lib/ts.cc"
-sources+=" lib/langs.cc"
+sources="${script_dir}/lib/ts.cc"
+sources+=" ${script_dir}/lib/langs.cc"
 iscpp=""
 for lang in $*
 do
-  dir="grammars/tree-sitter-$lang"
+  dir="${script_dir}/grammars/tree-sitter-$lang"
   src="$dir/src"
   sources+=" $src/parser.c"
   scanner_c="$src/scanner.c"
@@ -131,8 +133,8 @@ echo "$sources"
 echo "$macros"
 
 objects=""
-includes="-I./tree-sitter/lib/include -I./tree-sitter/lib/src"
-out_dir_base="./output/${clang_qualifier}"
+includes="-I${script_dir}/tree-sitter/lib/include -I${script_dir}/tree-sitter/lib/src"
+out_dir_base="${script_dir}/output/${clang_qualifier}"
 
 if [ ! -z "${for_host+x}" ]; then
   includes+=" -I$JAVA_HOME/include -I$JAVA_HOME/include/${system}"
@@ -148,7 +150,8 @@ for source in "${SOURCES[@]}"; do
   fi
 
   dir_name=$(dirname $source)
-  out_dir="${out_dir_base}/$dir_name"
+  dir_name=${dir_name##*$script_dir}
+  out_dir="${out_dir_base}$dir_name"
 
   mkdir -p $out_dir
 
@@ -173,7 +176,7 @@ done
 
 
 so="${out_dir_base}/${soname}.so"
-cmd="$CXX -shared -fPIC -static-libstdc++ -o $so $objects ./tree-sitter/libtree-sitter.a"
+cmd="$CXX -shared -fPIC -static-libstdc++ -o $so $objects ${script_dir}/tree-sitter/libtree-sitter.a"
 echo $cmd
 $cmd
 
@@ -181,6 +184,22 @@ if [ ! -z "${for_host+x}" ]; then
   strip -g $so
 else
   $strp -g $so
+fi
+
+if [ -z "${for_host+x}" ]; then
+  # Copy the generated libraries to appropriate jniLibs subdirectories
+  out_dir=$arch
+
+  if [ "$out_dir" == "aarch64" ]; then
+    out_dir="arm64-v8a"
+  fi
+  if [ "$out_dir" == "arm" ]; then
+    out_dir="armeabi-v7a"
+  fi
+
+  out_dir="android-tree-sitter/src/main/jniLibs/$out_dir/"
+  mkdir -p $out_dir
+  cp $so $out_dir
 fi
 
 echo ""

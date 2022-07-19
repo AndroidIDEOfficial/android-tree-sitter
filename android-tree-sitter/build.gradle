@@ -1,0 +1,105 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.itsaky.androidide.treesitter'
+    ndkVersion "24.0.8215888"
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}
+
+final def archs = ["aarch64", "arm", "x86", "x86_64"]
+def ndkDir = System.getenv("ANDROID_NDK_HOME")
+def javaHome = System.getenv("JAVA_HOME")
+
+if (ndkDir == null || javaHome == null) {
+    def props = new Properties()
+    props.load(rootProject.file("local.properties").newReader())
+    ndkDir = props.getProperty("ndk.dir")
+    javaHome = props.getProperty("java.home")
+}
+
+if (ndkDir == null || javaHome == null) {
+    throw new IllegalStateException("Please make sure that you have set 'ndk.dir' and 'java.home' dir in 'local.properties' file.")
+}
+
+for (def arch : archs) {
+    task("buildSharedObjectFor${arch.capitalize()}") { task ->
+        def classifier = classifierFor(arch)
+        buildFor(task, arch, classifier, ndkDir, javaHome)
+    }
+}
+
+def buildFor(Task task, String arch, String classifier, String ndkDir, String javaHome) {
+    task.inputs.file "${rootProject.projectDir.path}/lib/langs.cc"
+    task.inputs.file "${rootProject.projectDir.path}/lib/com_itsaky_androidide_treesitter_TSLanguages.h"
+    task.inputs.file "${rootProject.projectDir.path}/lib/ts.cc"
+    task.inputs.file "${rootProject.projectDir.path}/lib/com_itsaky_androidide_treesitter_TreeSitter.h"
+    task.outputs.file "${rootProject.projectDir.path}/output/${classifier}/libts.so"
+
+    task.doLast {
+        exec {
+            environment("JAVA_HOME", javaHome)
+            if (classifier == "host") {
+                commandLine "${rootProject.projectDir.path}/build.sh", "-s", "python", "java"
+            } else {
+                commandLine "${rootProject.projectDir.path}/build.sh",
+                        "-a", arch,
+                        "-m", android.defaultConfig.minSdk,
+                        "-n", ndkDir,
+                        "python", "java"
+            }
+        }
+    }
+}
+
+task buildSharedObjectForHost { task ->
+    buildFor(task, "", "host", ndkDir, javaHome)
+}
+
+task buildSharedObjectForAll() {
+    archs.forEach {
+        dependsOn("buildSharedObjectFor${it.capitalize()}")
+    }
+    dependsOn("buildSharedObjectForHost")
+}
+
+String classifierFor(String arch) {
+    def clangPrefix = arch
+    def clangSuffix = ""
+    if (clangPrefix == "arm") {
+        clangPrefix = "armv7a"
+        clangSuffix = "eabi"
+    }
+
+    if (clangPrefix == "x86") {
+        clangPrefix = "i686"
+    }
+
+    return "${clangPrefix}-linux-android${clangSuffix}${android.defaultConfig.minSdk}"
+}
+
+tasks.withType(JavaCompile) {
+    dependsOn("buildSharedObjectForAll")
+}

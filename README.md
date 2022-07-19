@@ -72,7 +72,7 @@ Then, you can create a `Parser`, set the language, and parse a string:
 For debugging, it can be helpful to see a string of the tree:
 
 ```java
-    try (Parser parser = new Parser()) {
+    try (TSParser parser = new TSParser()) {
       parser.setLanguage(Languages.python());
       try (Tree tree = parser.parseString("print(\"hi\")")) {
         assertEquals(

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AndroidTreeSitter</string>
+    <string-array name="languages">
+        <item>Java</item>
+        <item>Python</item>
+    </string-array>
+</resources>

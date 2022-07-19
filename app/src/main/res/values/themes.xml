@@ -1,0 +1,6 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.AndroidTreeSitter" parent="Theme.Material3.DayNight.NoActionBar"></style>
+
+    <style name="Theme.AndroidTreeSitter" parent="Base.Theme.AndroidTreeSitter" />
+</resources>

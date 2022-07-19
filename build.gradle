@@ -1,60 +1,9 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id "java-library"
-    id "maven-publish"
-    id "com.jfrog.bintray" version "1.8.5"
+    id 'com.android.application' version '7.3.0-beta05' apply false
+    id 'com.android.library' version '7.3.0-beta05' apply false
 }
 
-group = "com.itsaky.androidide"
-version = "1.0.0"
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-task buildSharedObject {
-    inputs.file "lib/langs.cc"
-    inputs.file "lib/com_itsaky_androidide_treesitter_TSLanguages.h"
-    inputs.file "lib/ts.cc"
-    inputs.file "lib/com_itsaky_androidide_treesitter_TreeSitter.h"
-    outputs.file "output/host/libts.so"
-
-    doLast {
-        exec {
-            commandLine "./build.sh", "-s", "python", "java"
-        }
-    }
-}
-
-clean {
+task clean {
     delete "output"
-}
-
-compileJava {
-    options.compilerArgs += ["-h", "${project.projectDir.toString()}/lib"]
-}
-
-compileTestJava {
-    dependsOn buildSharedObject
-}
-
-dependencies {
-    testImplementation "org.junit.jupiter:junit-jupiter:5.6.2"
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-
-    environment "JAVA_TREE_SITTER", "${project.projectDir.toString()}/output/host/libts.so"
 }
