@@ -1,6 +1,7 @@
 .gradle
 build
 output
+bin
 *.o
 *.so
 *.dylib
