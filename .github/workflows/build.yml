@@ -29,6 +29,11 @@ jobs:
           ndk-version: r25
           add-to-path: false
 
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
