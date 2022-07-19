@@ -1,6 +1,6 @@
 package com.itsaky.androidide.treesitter;
 
-public class Languages {
+public class TSLanguages {
 
   public static native long agda();
 

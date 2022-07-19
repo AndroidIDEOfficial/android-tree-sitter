@@ -11,7 +11,11 @@ struct TreeCursorNode {
   uint32_t endByte;
 };
 
+#if defined(__ANDROID__)
 static jint JNI_VERSION = JNI_VERSION_1_6;
+#else
+static jint JNI_VERSION = JNI_VERSION_10;
+#endif
 
 // Node
 static jclass _nodeClass;

@@ -1,12 +1,12 @@
 package com.itsaky.androidide.treesitter;
 
-public class TreeCursorNode {
+public class TSTreeCursorNode {
   private String type;
   private String name;
   private int startByte;
   private int endByte;
 
-  public TreeCursorNode(String type, String name, int startByte, int endByte) {
+  public TSTreeCursorNode(String type, String name, int startByte, int endByte) {
     this.type = type;
     this.name = name;
     this.startByte = startByte;

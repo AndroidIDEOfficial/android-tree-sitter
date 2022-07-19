@@ -1,6 +1,6 @@
 package com.itsaky.androidide.treesitter;
 
-public class Node {
+public class TSNode {
   private int context0;
   private int context1;
   private int context2;
@@ -8,9 +8,9 @@ public class Node {
   private long id;
   private long tree;
 
-  public Node() {}
+  public TSNode() {}
 
-  public Node getChild(int child) {
+  public TSNode getChild(int child) {
     return TreeSitter.nodeChild(this, child);
   }
 
@@ -42,7 +42,7 @@ public class Node {
     return TreeSitter.nodeType(this);
   }
 
-  public TreeCursor walk() {
-    return new TreeCursor(TreeSitter.treeCursorNew(this));
+  public TSTreeCursor walk() {
+    return new TSTreeCursor(TreeSitter.treeCursorNew(this));
   }
 }

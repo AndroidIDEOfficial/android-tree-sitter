@@ -1,11 +1,11 @@
 package com.itsaky.androidide.treesitter;
 
-public class Tree implements AutoCloseable {
+public class TSTree implements AutoCloseable {
 
     private long pointer;
 
 
-    Tree(long pointer) {
+    TSTree(long pointer) {
         this.pointer = pointer;
     }
 
@@ -14,7 +14,7 @@ public class Tree implements AutoCloseable {
         TreeSitter.treeDelete(pointer);
     }
 
-    public Node getRootNode() {
+    public TSNode getRootNode() {
         return TreeSitter.treeRootNode(pointer);
     }
 

@@ -3,14 +3,14 @@ package com.itsaky.androidide.treesitter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-public class Parser implements AutoCloseable {
+public class TSParser implements AutoCloseable {
   private long pointer;
 
-  Parser(long pointer) {
+  TSParser(long pointer) {
     this.pointer = pointer;
   }
 
-  public Parser() {
+  public TSParser() {
     this(TreeSitter.parserNew());
   }
 
@@ -18,14 +18,14 @@ public class Parser implements AutoCloseable {
     TreeSitter.parserSetLanguage(pointer, language);
   }
 
-  public Tree parseString(String source) throws UnsupportedEncodingException {
+  public TSTree parseString(String source) throws UnsupportedEncodingException {
     byte[] bytes = source.getBytes(StandardCharsets.UTF_16LE);
-    return new Tree(TreeSitter.parserParseBytes(pointer, bytes, bytes.length));
+    return new TSTree(TreeSitter.parserParseBytes(pointer, bytes, bytes.length));
   }
 
-  public Tree parseString(Tree oldTree, String source) throws UnsupportedEncodingException {
+  public TSTree parseString(TSTree oldTree, String source) throws UnsupportedEncodingException {
     byte[] bytes = source.getBytes(StandardCharsets.UTF_16LE);
-    return new Tree(TreeSitter.parserIncrementalParseBytes(pointer, oldTree.getPointer(), bytes, bytes.length));
+    return new TSTree(TreeSitter.parserIncrementalParseBytes(pointer, oldTree.getPointer(), bytes, bytes.length));
   }
 
 

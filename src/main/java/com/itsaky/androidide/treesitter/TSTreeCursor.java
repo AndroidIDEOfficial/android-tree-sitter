@@ -1,13 +1,13 @@
 package com.itsaky.androidide.treesitter;
 
-public class TreeCursor implements AutoCloseable {
+public class TSTreeCursor implements AutoCloseable {
   private long pointer;
   private int context0;
   private int context1;
   private long id;
   private long tree;
 
-  TreeCursor(long pointer) {
+  TSTreeCursor(long pointer) {
     this.pointer = pointer;
   }
 
@@ -16,7 +16,7 @@ public class TreeCursor implements AutoCloseable {
     TreeSitter.treeCursorDelete(pointer);
   }
 
-  public Node getCurrentNode() {
+  public TSNode getCurrentNode() {
     return TreeSitter.treeCursorCurrentNode(pointer);
   }
 
@@ -24,7 +24,7 @@ public class TreeCursor implements AutoCloseable {
     return TreeSitter.treeCursorCurrentFieldName(pointer);
   }
 
-  public TreeCursorNode getCurrentTreeCursorNode() {
+  public TSTreeCursorNode getCurrentTreeCursorNode() {
     return TreeSitter.treeCursorCurrentTreeCursorNode(pointer);
   }
 
