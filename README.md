@@ -7,6 +7,7 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 
 - `git clone` this repo.
 - Init/update submodules with `git submodule update --init`
+- If building from Android Studio, set the `ndk.dir` and `java.home` properties in your `local.properties` file.
 - Use the `build.sh` script to build the shared library.
 
 ```
@@ -53,16 +54,16 @@ First, load the shared object somewhere in your application:
 Then, you can create a `Parser`, set the language, and parse a string:
 
 ```java 
-    try (Parser parser = new Parser()) {
-      parser.setLanguage(Languages.python());
-      try (Tree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
-        Node root = tree.getRootNode();
+    try (TSParser parser = new TSParser()) {
+      parser.setLanguage(TSLanguages.python());
+      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)", TSInputEncoding.TSInputEncodingUTF8 /*specify encoding, default is UTF-8*/)) {
+        TSNode root = tree.getRootNode();
         assertEquals(1, root.getChildCount());
         assertEquals("module", root.getType());
         assertEquals(0, root.getStartByte());
         assertEquals(44, root.getEndByte());
 
-        Node function = root.getChild(0);
+        TSNode function = root.getChild(0);
         assertEquals("function_definition", function.getType());
         assertEquals(5, function.getChildCount());
       }
@@ -73,8 +74,8 @@ For debugging, it can be helpful to see a string of the tree:
 
 ```java
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(Languages.python());
-      try (Tree tree = parser.parseString("print(\"hi\")")) {
+      parser.setLanguage(TSLanguages.python());
+      try (TSTree tree = parser.parseString("print(\"hi\")")) {
         assertEquals(
           "(module (expression_statement (call function: (identifier) arguments: (argument_list (string)))))",
           tree.getRootNode().getNodeString()
@@ -86,10 +87,10 @@ For debugging, it can be helpful to see a string of the tree:
 If you're going to be traversing a tree, then you can use the `walk` method, which is much more efficient than the above getters:
 
 ```java
-    try (Parser parser = new Parser()) {
-      parser.setLanguage(Languages.python());
-      try (Tree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
-        try (TreeCursor cursor = tree.getRootNode().walk()) {
+    try (TSParser parser = new TSParser()) {
+      parser.setLanguage(TSLanguages.python());
+      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
+        try (TSTreeCursor cursor = tree.getRootNode().walk()) {
           assertEquals("module", cursor.getCurrentTreeCursorNode().getType());
           cursor.gotoFirstChild();
           assertEquals("function_definition", cursor.getCurrentTreeCursorNode().getType());
