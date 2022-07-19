@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build shared libraries
+    name: Build shared libraries + APK
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous runs
