@@ -29,33 +29,22 @@ jobs:
           ndk-version: r25
           add-to-path: false
 
-      - name: Build for aarch64
-        shell: bash
-        env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run: |
-          ./build.sh -a aarch64 -m 21 -n $ANDROID_NDK_HOME java python
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-      - name: Build for arm
+      - name: Build shared libraries + APK
         shell: bash
-        env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          ./build.sh -a arm -m 21 -n $ANDROID_NDK_HOME java python
+          chmod +x ./gradlew
+          ./gradlew build
 
-      - name: Build for x86_64
-        shell: bash
-        env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run: |
-          ./build.sh -a x86_64 -m 21 -n $ANDROID_NDK_HOME java python
-
-      - name: Build for x86
-        shell: bash
-        env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run: |
-          ./build.sh -a x86 -m 21 -n $ANDROID_NDK_HOME java python
+      - name: Upload sample app
+        uses: actions/upload-artifact@v3
+        if: ${{ !github.head_ref }}
+        with:
+          name: sample-app
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload shared libraries
         uses: actions/upload-artifact@v3
