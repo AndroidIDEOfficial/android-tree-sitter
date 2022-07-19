@@ -197,7 +197,7 @@ if [ -z "${for_host+x}" ]; then
     out_dir="armeabi-v7a"
   fi
 
-  out_dir="android-tree-sitter/src/main/jniLibs/$out_dir/"
+  out_dir="${script_dir}/android-tree-sitter/src/main/jniLibs/$out_dir/"
   mkdir -p $out_dir
   cp $so $out_dir
 fi
