@@ -176,53 +176,9 @@ TSInputEdit _unmarshalInputEdit(JNIEnv* env, jobject inputEdit) {
   };
 }
 
-
-JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChild(
-  JNIEnv* env, jclass self, jobject node, jint child) {
-  return _marshalNode(
-           env, ts_node_child(_unmarshalNode(env, node), (uint32_t)child));
-}
-
-JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChildCount(
-  JNIEnv* env, jclass self, jobject node) {
-  return (jint)ts_node_child_count(_unmarshalNode(env, node));
-}
-
-JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeString(
-  JNIEnv* env, jclass self, jobject node) {
-  char* nodeString = ts_node_string(_unmarshalNode(env, node));
-  jstring result = env->NewStringUTF(nodeString);
-  free(nodeString);
-  return result;
-}
-
-JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndByte(
-  JNIEnv* env, jclass self, jobject node) {
-  return (jint)ts_node_end_byte(_unmarshalNode(env, node)) / 2;
-}
-
-JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartByte(
-  JNIEnv* env, jclass self, jobject node) {
-  return (jint)ts_node_start_byte(_unmarshalNode(env, node)) / 2;
-}
-
-JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartPoint(
-  JNIEnv* env, jclass self, jobject node) {
-  return _marshalPoint(env, ts_node_start_point(_unmarshalNode(env, node)));
-}
-
-JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndPoint(
-  JNIEnv* env, jclass self, jobject node) {
-  return _marshalPoint(env, ts_node_end_point(_unmarshalNode(env, node)));
-}
-
-
-JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeType(
-  JNIEnv* env, jclass self, jobject node) {
-  const char* type = ts_node_type(_unmarshalNode(env, node));
-  jstring result = env->NewStringUTF(type);
-  return result;
-}
+// -------------------------------------------
+// ---------- Section: Parser ----------------
+// -------------------------------------------
 
 JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TreeSitter_parserNew(JNIEnv* env, jclass self) {
@@ -261,13 +217,79 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserI
   return result;
 }
 
+// -------------------------------------------
+// ---------- Section: TSNode ----------------
+// -------------------------------------------
 
-JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeEdit(
-  JNIEnv* env, jclass self, jlong tree, jobject inputEdit) {
-
-  TSInputEdit edit = _unmarshalInputEdit(env, inputEdit);
-  ts_tree_edit((TSTree*) tree, &edit);
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChildCount(
+  JNIEnv* env, jclass self, jobject node) {
+  return (jint)ts_node_child_count(_unmarshalNode(env, node));
 }
+
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChild(
+  JNIEnv* env, jclass self, jobject node, jint child) {
+  return _marshalNode(
+           env, ts_node_child(_unmarshalNode(env, node), (uint32_t)child));
+}
+
+JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeString(
+  JNIEnv* env, jclass self, jobject node) {
+  char* nodeString = ts_node_string(_unmarshalNode(env, node));
+  jstring result = env->NewStringUTF(nodeString);
+  free(nodeString);
+  return result;
+}
+
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndByte(
+  JNIEnv* env, jclass self, jobject node) {
+  return (jint)ts_node_end_byte(_unmarshalNode(env, node)) / 2;
+}
+
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartByte(
+  JNIEnv* env, jclass self, jobject node) {
+  return (jint)ts_node_start_byte(_unmarshalNode(env, node)) / 2;
+}
+
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartPoint(
+  JNIEnv* env, jclass self, jobject node) {
+  return _marshalPoint(env, ts_node_start_point(_unmarshalNode(env, node)));
+}
+
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndPoint(
+  JNIEnv* env, jclass self, jobject node) {
+  return _marshalPoint(env, ts_node_end_point(_unmarshalNode(env, node)));
+}
+
+JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeType(
+  JNIEnv* env, jclass self, jobject node) {
+  const char* type = ts_node_type(_unmarshalNode(env, node));
+  jstring result = env->NewStringUTF(type);
+  return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeIsNamed
+  (JNIEnv* env, jclass self, jobject node) {
+  return (jboolean) ts_node_is_named(_unmarshalNode(env, node));
+}
+
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeIsMissing
+  (JNIEnv* env, jclass self, jobject node) {
+  return (jboolean) ts_node_is_missing(_unmarshalNode(env, node));
+}
+
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeIsExtra
+  (JNIEnv* env, jclass self, jobject node) {
+  return (jboolean) ts_node_is_extra(_unmarshalNode(env, node));
+}
+
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeHasError
+  (JNIEnv* env, jclass self, jobject node) {
+  return (jboolean) ts_node_has_error(_unmarshalNode(env, node));
+}
+
+// -------------------------------------------
+// ---------- Section: TSTreeCursor ----------
+// -------------------------------------------
 
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeCursorNew(
   JNIEnv* env, jclass self, jobject node) {
@@ -330,9 +352,25 @@ Java_com_itsaky_androidide_treesitter_TreeSitter_treeCursorGotoParent(JNIEnv* en
   return (jboolean)ts_tree_cursor_goto_parent((TSTreeCursor*)cursor);
 }
 
+// -------------------------------------------
+// ---------- Section: TSTree ----------------
+// -------------------------------------------
+
+JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeEdit(
+  JNIEnv* env, jclass self, jlong tree, jobject inputEdit) {
+
+  TSInputEdit edit = _unmarshalInputEdit(env, inputEdit);
+  ts_tree_edit((TSTree*) tree, &edit);
+}
+
 JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeDelete(
   JNIEnv* env, jclass self, jlong tree) {
   ts_tree_delete((TSTree*)tree);
+}
+
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeCopy(
+  JNIEnv* env, jclass self, jlong tree) {
+  return (jlong) ts_tree_copy((TSTree*)tree);
 }
 
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeRootNode(
@@ -340,7 +378,10 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeR
   return _marshalNode(env, ts_tree_root_node((TSTree*)tree));
 }
 
-// Queries
+// -------------------------------------------
+// ---------- Section: TSQuery ---------------
+// -------------------------------------------
+
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_tsQueryNew(
   JNIEnv* env, jclass self, jlong language, jstring source) {
 

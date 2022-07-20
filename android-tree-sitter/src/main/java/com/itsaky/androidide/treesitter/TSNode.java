@@ -11,6 +11,11 @@ public class TSNode {
   public TSNode() {}
 
   public TSNode getChild(int child) {
+    final var count = getChildCount();
+    if (child < 0 || child >= count) {
+      throw new IndexOutOfBoundsException("count=" + count + ", index=" + child);
+    }
+
     return TreeSitter.nodeChild(this, child);
   }
 
@@ -31,18 +36,39 @@ public class TSNode {
   }
 
   public TSPoint getStartPoint() {
-      return TreeSitter.nodeStartPoint(this);
+    return TreeSitter.nodeStartPoint(this);
   }
 
   public TSPoint getEndPoint() {
-      return TreeSitter.nodeEndPoint(this);
+    return TreeSitter.nodeEndPoint(this);
   }
 
   public String getType() {
     return TreeSitter.nodeType(this);
   }
 
+  public boolean isNamed() {
+    return TreeSitter.nodeIsNamed(this);
+  }
+
+  public boolean isExtra() {
+    return TreeSitter.nodeIsExtra(this);
+  }
+
+  public boolean isMissing() {
+    return TreeSitter.nodeIsMissing(this);
+  }
+
+  public boolean hasError() {
+    return TreeSitter.nodeHasError(this);
+  }
+
   public TSTreeCursor walk() {
     return new TSTreeCursor(TreeSitter.treeCursorNew(this));
+  }
+
+  @Override
+  public String toString() {
+    return "TSNode{" + "id=" + id + ", type=" + getType() + '}';
   }
 }

@@ -4,7 +4,6 @@ public class TSTree implements AutoCloseable {
 
     private long pointer;
 
-
     TSTree(long pointer) {
         this.pointer = pointer;
     }
@@ -18,6 +17,10 @@ public class TSTree implements AutoCloseable {
         return TreeSitter.treeRootNode(pointer);
     }
 
+    public TSTree copy() {
+        return new TSTree(TreeSitter.treeCopy(pointer));
+    }
+
     public void edit(TSInputEdit edit) {
         TreeSitter.treeEdit(
             pointer,
@@ -28,5 +31,4 @@ public class TSTree implements AutoCloseable {
     public long getPointer() {
         return pointer;
     }
-
 }
