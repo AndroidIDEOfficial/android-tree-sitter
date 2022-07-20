@@ -59,12 +59,35 @@ public class TreeSitter {
    */
   public static native String nodeType(TSNode node);
 
+  /**
+   * Check if the node is *named*. Named nodes correspond to named rules in the grammar, whereas
+   * *anonymous* nodes correspond to string literals in the grammar.
+   *
+   * @param node The node to check.
+   */
   public static native boolean nodeIsNamed(TSNode node);
 
+  /**
+   * Check if the node is *missing*. Missing nodes are inserted by the parser in order to recover
+   * from certain kinds of syntax errors.
+   *
+   * @param node The node to check.
+   */
   public static native boolean nodeIsMissing(TSNode node);
 
+  /**
+   * Check if the node is *extra*. Extra nodes represent things like comments, which are not
+   * required the grammar, but can appear anywhere.
+   *
+   * @param node The node to check.
+   */
   public static native boolean nodeIsExtra(TSNode node);
 
+  /**
+   * Check if the node is a syntax error or contains any syntax errors.
+   *
+   * @param node The node to check.
+   */
   public static native boolean nodeHasError(TSNode node);
   // -------------------------------------------
   // ---------- Section: TSParser --------------
