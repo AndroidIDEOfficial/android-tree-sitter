@@ -282,6 +282,11 @@ JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_node
   return (jboolean) ts_node_is_extra(_unmarshalNode(env, node));
 }
 
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeHasChanges
+  (JNIEnv* env, jclass self, jobject node) {
+  return (jboolean) ts_node_has_changes(_unmarshalNode(env, node));
+}
+
 JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeHasError
   (JNIEnv* env, jclass self, jobject node) {
   return (jboolean) ts_node_has_error(_unmarshalNode(env, node));

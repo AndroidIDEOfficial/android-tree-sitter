@@ -97,6 +97,14 @@ JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_node
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
+ * Method:    nodeHasChanges
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeHasChanges
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeHasError
  * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Z
  */

@@ -84,6 +84,13 @@ public class TreeSitter {
   public static native boolean nodeIsExtra(TSNode node);
 
   /**
+   * Check if the given node has been edited.
+   *
+   * @param node The node the check.
+   */
+  public static native boolean nodeHasChanges(TSNode node);
+
+  /**
    * Check if the node is a syntax error or contains any syntax errors.
    *
    * @param node The node to check.
