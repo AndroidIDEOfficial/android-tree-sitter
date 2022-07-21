@@ -221,7 +221,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserI
 // ---------- Section: TSNode ----------------
 // -------------------------------------------
 
-JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeParent(
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeParent(
   JNIEnv* env, jclass self, jobject node) {
   return _marshalNode(env, ts_node_parent(_unmarshalNode(env, node)));
 }

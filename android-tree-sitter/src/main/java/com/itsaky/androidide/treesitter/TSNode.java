@@ -80,7 +80,7 @@ public class TSNode {
     return TreeSitter.nodeHasChanges(this);
   }
 
-  public boolean hasError() {
+  public boolean hasErrors() {
     return TreeSitter.nodeHasError(this);
   }
 
