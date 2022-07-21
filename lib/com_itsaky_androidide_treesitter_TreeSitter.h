@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
+ * Method:    nodeParent
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeParent
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeChildCount
  * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)I
  */

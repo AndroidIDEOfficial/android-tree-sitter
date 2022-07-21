@@ -10,6 +10,10 @@ public class TSNode {
 
   public TSNode() {}
 
+  public TSNode getParent() {
+    return TreeSitter.nodeParent(this);
+  }
+
   public TSNode getChild(int child) {
     final var count = getChildCount();
     if (child < 0 || child >= count) {
@@ -57,6 +61,10 @@ public class TSNode {
 
   public boolean isMissing() {
     return TreeSitter.nodeIsMissing(this);
+  }
+
+  public boolean hasChanges() {
+    return TreeSitter.nodeHasChanges(this);
   }
 
   public boolean hasError() {

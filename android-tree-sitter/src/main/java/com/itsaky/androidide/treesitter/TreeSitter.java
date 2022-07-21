@@ -7,6 +7,14 @@ public class TreeSitter {
   // -------------------------------------------
 
   /**
+   * Get the immediate parent node of the given node.
+   *
+   * @param node The node.
+   * @return The parent node.
+   */
+  public static native TSNode nodeParent(TSNode node);
+
+  /**
    * Get the number of children of the given node.
    *
    * @param node The node to get the children count of.
@@ -23,8 +31,20 @@ public class TreeSitter {
    */
   public static native TSNode nodeChild(TSNode node, int child);
 
+  /**
+   * Get the end byte of the given node.
+   *
+   * @param node The node.
+   * @return End byte of node.
+   */
   public static native int nodeEndByte(TSNode node);
 
+  /**
+   * Get the start byte of the given node.
+   *
+   * @param node The node.
+   * @return Start byte of node.
+   */
   public static native int nodeStartByte(TSNode node);
 
   /**
