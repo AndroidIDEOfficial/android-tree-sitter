@@ -27,6 +27,10 @@ public class TSNode {
     return TreeSitter.nodeChildCount(this);
   }
 
+  public int getNamedChildCount() {
+    return TreeSitter.nodeNamedChildCount(this);
+  }
+
   public int getEndByte() {
     return TreeSitter.nodeEndByte(this);
   }

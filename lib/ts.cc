@@ -231,6 +231,11 @@ JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChil
   return (jint)ts_node_child_count(_unmarshalNode(env, node));
 }
 
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeNamedChildCount(
+  JNIEnv* env, jclass self, jobject node) {
+  return (jint)ts_node_named_child_count(_unmarshalNode(env, node));
+}
+
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChild(
   JNIEnv* env, jclass self, jobject node, jint child) {
   return _marshalNode(

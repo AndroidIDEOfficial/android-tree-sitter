@@ -25,6 +25,14 @@ JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeChil
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
+ * Method:    nodeNamedChildCount
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)I
+ */
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeNamedChildCount
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    nodeChild
  * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;I)Lcom/itsaky/androidide/treesitter/TSNode;
  */

@@ -23,6 +23,13 @@ public class TreeSitter {
   public static native int nodeChildCount(TSNode node);
 
   /**
+   * Get the number of 'named' child nodes in the given node.
+   *
+   * @param node The node.
+   */
+  public static native int nodeNamedChildCount(TSNode node);
+
+  /**
    * Get the child of the given node at the given child index.
    *
    * @param node The node to get the child of.
