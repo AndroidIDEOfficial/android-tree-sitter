@@ -147,12 +147,12 @@ jobject _marshalTreeCursorNode(JNIEnv* env, TreeCursorNode node) {
   return javaObject;
 }
 
-// Point
-// Not sure why I need to divide by two
+// TSPoint
+// Not sure why but only the column needs to be divided by 2
 jobject _marshalPoint(JNIEnv* env, TSPoint point) {
   jobject javaObject = env->AllocObject(_pointClass);
 
-  env->SetIntField(javaObject, _pointRowField, point.row / 2);
+  env->SetIntField(javaObject, _pointRowField, point.row);
   env->SetIntField(javaObject, _pointColumnField, point.column / 2);
   return javaObject;
 }

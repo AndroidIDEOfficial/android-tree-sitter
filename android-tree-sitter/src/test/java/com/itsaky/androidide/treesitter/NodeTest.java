@@ -21,6 +21,14 @@ public class NodeTest extends TestBase {
               "def foo(bar, baz):\n  print(bar)\n  print(baz)",
               TSInputEncoding.TSInputEncodingUTF16)) {
         var root = tree.getRootNode();
+        var start = root.getStartPoint();
+        assertEquals(0, start.row);
+        assertEquals(0, start.column);
+
+        var end = root.getEndPoint();
+        assertEquals(2, end.row);
+        assertEquals(12, end.column);
+
         var type = root.getType();
         assertEquals("module", type);
 
@@ -52,6 +60,14 @@ public class NodeTest extends TestBase {
         assertFalse(hasErrors);
 
         var function = root.getChild(0);
+        start = function.getStartPoint();
+        assertEquals(0, start.row);
+        assertEquals(0, start.column);
+
+        end = function.getEndPoint();
+        assertEquals(2, end.row);
+        assertEquals(12, end.column);
+
         type = function.getType();
         assertEquals("function_definition", type);
 

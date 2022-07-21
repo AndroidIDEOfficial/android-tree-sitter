@@ -4,6 +4,10 @@
 *.ap_
 *.aab
 
+# Generated binaries
+*.a
+*.so
+
 # Files for the ART/Dalvik VM
 *.dex
 
