@@ -25,7 +25,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
   static {
-    Log.d("MainActivity", "Loading library...");
     System.loadLibrary("ts");
   }
 
@@ -35,9 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
-    Log.d("MainActivity", "pre onCreate()");
     super.onCreate(savedInstanceState);
-    Log.d("MainActivity", "onCreate()");
     binding = ActivityMainBinding.inflate(getLayoutInflater());
     content = binding.content;
 
@@ -83,9 +80,9 @@ public class MainActivity extends AppCompatActivity {
     sb.append("\n");
     repeatSpaces(sb, indentLevel * 2);
 
-    if (node.getChildCount() != 0) {
-      for (int i = 0; i < node.getChildCount(); i++) {
-        final var child = node.getChild(i);
+    if (node.getNamedChildCount() != 0) {
+      for (int i = 0; i < node.getNamedChildCount(); i++) {
+        final var child = node.getNamedChild(i);
         appendTo(sb, child.walk(), indentLevel + 1);
       }
     }
