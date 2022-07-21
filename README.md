@@ -8,7 +8,8 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 - `git clone` this repo.
 - Init/update submodules with `git submodule update --init`
 - If building from Android Studio, set the `ndk.dir` and `java.home` properties in your `local.properties` file.
-- Use the `build.sh` script to build the shared library.
+
+### Use the `build.sh` script
 
 ```
 usage: ./build.sh [-h] [-a {aarch64,arm,x86,x86_64}] [-o OUTPUT] [-v] -n NDK [-m MIN_SDK] grammars [grammars ...]
@@ -32,6 +33,17 @@ For example, the following command builds the shared library for `arm64-v8a` And
 ```
 ./build.sh -a aarch64 -m 26 -n <path_to_ndk> java python
 ```
+
+### Build with Gradle tasks
+
+You can execute the following Gradle tasks to build the shared library.
+
+- `buildSharedObjectForAarch64` - Build the shared library for `aarch64`.
+- `buildSharedObjectForArm` - Build the shared library for `arm` (or `armeabi-v7a`).
+- `buildSharedObjectForX86` - Build the shared library for `x86` (or `i686`).
+- `buildSharedObjectForX86_64` - Build the shared library for `x86_64`.
+- `buildSharedObjectForHost` - Build the shared library for the host OS. Helpful to testing.
+- `buildSharedObjectForAll` - Executes all of the above tasks.
 
 ## Adding more grammars
 
