@@ -242,6 +242,12 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeC
            env, ts_node_child(_unmarshalNode(env, node), (uint32_t)child));
 }
 
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeNamedChild(
+  JNIEnv* env, jclass self, jobject node, jint child) {
+  return _marshalNode(
+           env, ts_node_named_child(_unmarshalNode(env, node), (uint32_t)child));
+}
+
 JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeString(
   JNIEnv* env, jclass self, jobject node) {
   char* nodeString = ts_node_string(_unmarshalNode(env, node));

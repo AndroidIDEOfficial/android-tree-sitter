@@ -39,6 +39,15 @@ public class TreeSitter {
   public static native TSNode nodeChild(TSNode node, int child);
 
   /**
+   * Get the named child of the given node at the given index.
+   *
+   * @param node The node to get the child of.
+   * @param child The index of the named child.
+   * @return The named child node at the given index.
+   */
+  public static native TSNode nodeNamedChild(TSNode node, int child);
+
+  /**
    * Get the end byte of the given node.
    *
    * @param node The node.

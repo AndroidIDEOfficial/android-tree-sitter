@@ -14,13 +14,22 @@ public class TSNode {
     return TreeSitter.nodeParent(this);
   }
 
-  public TSNode getChild(int child) {
+  public TSNode getChild(int index) {
     final var count = getChildCount();
-    if (child < 0 || child >= count) {
-      throw new IndexOutOfBoundsException("count=" + count + ", index=" + child);
+    if (index < 0 || index >= count) {
+      throw new IndexOutOfBoundsException("count=" + count + ", index=" + index);
     }
 
-    return TreeSitter.nodeChild(this, child);
+    return TreeSitter.nodeChild(this, index);
+  }
+
+  public TSNode getNamedChild(int index) {
+    final var count = getNamedChildCount();
+    if (index < 0 || index >= count) {
+      throw new IndexOutOfBoundsException("count=" + count + ", index=" + index);
+    }
+
+    return TreeSitter.nodeNamedChild(this, index);
   }
 
   public int getChildCount() {
