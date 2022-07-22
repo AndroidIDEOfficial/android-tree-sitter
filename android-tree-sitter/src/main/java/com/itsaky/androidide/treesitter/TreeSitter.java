@@ -48,6 +48,17 @@ public class TreeSitter {
   public static native TSNode nodeNamedChild(TSNode node, int child);
 
   /**
+   * Find the child node of the given node by field name.
+   *
+   * @param node The node.
+   * @param fieldName The field name of the child.
+   * @param fieldNameLength The length of `fieldName`.
+   * @return The found node.
+   */
+  public static native TSNode getChildByFieldName(
+      TSNode node, byte[] fieldName, int fieldNameLength);
+
+  /**
    * Get the end byte of the given node.
    *
    * @param node The node.
@@ -139,6 +150,7 @@ public class TreeSitter {
    * @param node The node to check.
    */
   public static native boolean nodeHasError(TSNode node);
+
   // -------------------------------------------
   // ---------- Section: TSParser --------------
   // -------------------------------------------

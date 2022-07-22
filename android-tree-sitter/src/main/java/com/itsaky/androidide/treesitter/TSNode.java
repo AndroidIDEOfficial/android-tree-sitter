@@ -1,5 +1,7 @@
 package com.itsaky.androidide.treesitter;
 
+import java.nio.charset.StandardCharsets;
+
 public class TSNode {
   private int context0;
   private int context1;
@@ -30,6 +32,11 @@ public class TSNode {
     }
 
     return TreeSitter.nodeNamedChild(this, index);
+  }
+
+  public TSNode getChildByFieldName(String fieldName) {
+    final var bytes = fieldName.getBytes(StandardCharsets.UTF_8);
+    return TreeSitter.getChildByFieldName(this, bytes, bytes.length);
   }
 
   public int getChildCount() {

@@ -80,6 +80,8 @@ public class NodeTest extends TestBase {
         isNull = function.isNull();
         assertFalse(isNull);
 
+        var body = function.getChildByFieldName("body");
+
         var parent = function.getParent();
         type = parent.getType();
         assertEquals("module", type);

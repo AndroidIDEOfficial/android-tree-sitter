@@ -248,6 +248,15 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeN
            env, ts_node_named_child(_unmarshalNode(env, node), (uint32_t)child));
 }
 
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_getChildByFieldName(
+  JNIEnv* env, jclass self, jobject node, jbyteArray name, jint length) {
+  jbyte* nameStr = env->GetByteArrayElements(name, NULL);
+  jobject found = _marshalNode(
+           env, ts_node_child_by_field_name(_unmarshalNode(env, node), reinterpret_cast<const char*>(nameStr), (uint32_t) length));
+  env->ReleaseByteArrayElements(name, nameStr, JNI_ABORT);
+  return found;
+}
+
 JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeString(
   JNIEnv* env, jclass self, jobject node) {
   char* nodeString = ts_node_string(_unmarshalNode(env, node));
