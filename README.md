@@ -3,6 +3,14 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 
 `android-tree-sitter` is adapted from [jakobkhansen/java-tree-sitter](https://github.com/jakobkhansen/java-tree-sitter) which is a fork of [serenadeai/java-tree-sitter](https://github.com/serenadeai/java-tree-sitter).
 
+## Add to your project
+
+![Latest maven release](https://img.shields.io/maven-central/v/io.github.itsaky/android-tree-sitter)
+
+```gradle
+implementation 'io.github.itsaky:android-tree-sitter:<version>'
+```
+
 ## Building
 
 - `git clone` this repo.
