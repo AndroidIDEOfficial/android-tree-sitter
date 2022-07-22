@@ -64,6 +64,10 @@ public class TSNode {
     return TreeSitter.nodeType(this);
   }
 
+  public boolean isNull() {
+    return TreeSitter.nodeIsNull(this);
+  }
+
   public boolean isNamed() {
     return TreeSitter.nodeIsNamed(this);
   }

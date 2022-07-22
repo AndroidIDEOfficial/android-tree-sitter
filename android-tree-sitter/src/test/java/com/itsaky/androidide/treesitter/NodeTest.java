@@ -59,6 +59,9 @@ public class NodeTest extends TestBase {
         var hasErrors = root.hasErrors();
         assertFalse(hasErrors);
 
+        var isNull = root.isNull();
+        assertFalse(isNull);
+
         var function = root.getChild(0);
         start = function.getStartPoint();
         assertEquals(0, start.row);
@@ -74,9 +77,15 @@ public class NodeTest extends TestBase {
         children = function.getChildCount();
         assertEquals(5, children);
 
+        isNull = function.isNull();
+        assertFalse(isNull);
+
         var parent = function.getParent();
         type = parent.getType();
         assertEquals("module", type);
+
+        isNull = parent.isNull();
+        assertFalse(isNull);
       }
     }
   }

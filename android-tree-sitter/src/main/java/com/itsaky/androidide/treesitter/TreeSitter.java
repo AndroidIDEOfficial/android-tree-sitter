@@ -96,6 +96,13 @@ public class TreeSitter {
   public static native String nodeType(TSNode node);
 
   /**
+   * Check if the node is null.
+   *
+   * @param node The node to check.
+   */
+  public static native boolean nodeIsNull(TSNode node);
+
+  /**
    * Check if the node is *named*. Named nodes correspond to named rules in the grammar, whereas
    * *anonymous* nodes correspond to string literals in the grammar.
    *
