@@ -1,4 +1,5 @@
 # android-tree-sitter
+<a href="https://github.com/itsaky/AndroidIDE"><img src="https://androidide.com/github/img/androidide.php?part&for-the-badge"/></a><br><br> 
 Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitter/).
 
 `android-tree-sitter` is adapted from [jakobkhansen/java-tree-sitter](https://github.com/jakobkhansen/java-tree-sitter) which is a fork of [serenadeai/java-tree-sitter](https://github.com/serenadeai/java-tree-sitter).
