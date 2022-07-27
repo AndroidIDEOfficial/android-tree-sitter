@@ -48,10 +48,13 @@ def ndkDir = System.getenv("ANDROID_NDK_HOME")
 def javaHome = System.getenv("JAVA_HOME")
 
 if (ndkDir == null || javaHome == null) {
-    def props = new Properties()
-    props.load(rootProject.file("local.properties").newReader())
-    ndkDir = props.getProperty("ndk.dir")
-    javaHome = props.getProperty("java.home")
+    def local = rootProject.file("local.properties")
+    if (local.exists()) {
+        def props = new Properties()
+        props.load(local.newReader())
+        ndkDir = props.getProperty("ndk.dir")
+        javaHome = props.getProperty("java.home")
+    }
 }
 
 if (ndkDir == null || javaHome == null) {
