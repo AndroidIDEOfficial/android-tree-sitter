@@ -7,6 +7,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class TreeCursorTest extends TestBase {
 

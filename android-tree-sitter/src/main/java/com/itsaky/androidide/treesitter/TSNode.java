@@ -1,6 +1,9 @@
 package com.itsaky.androidide.treesitter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class TSNode {
   private int context0;
@@ -99,8 +102,59 @@ public class TSNode {
     return new TSTreeCursor(TreeSitter.treeCursorNew(this));
   }
 
+  public TSNode findNodeWithType(final String type, final boolean namedOnly) {
+    for (int i = 0; i < (namedOnly ? getNamedChildCount() : getChildCount()); i++) {
+      final var child = namedOnly ? getNamedChild(i) : getChild(i);
+      if (child.isNull()) {
+        continue;
+      }
+
+      if (type.equals(child.getType())) {
+        return child;
+      }
+    }
+
+    return null;
+  }
+
+  public List<TSNode> findChildrenWithType(final String type, final boolean reverseSearch, final boolean namedOnly) {
+    if (reverseSearch) {
+      return findChildrenWithTypeReverse(type, namedOnly);
+    }
+
+    final var result = new ArrayList<TSNode>();
+    for (int i = 0; i < (namedOnly ? getNamedChildCount() : getChildCount()); i++) {
+      final var child = namedOnly ? getNamedChild(i) : getChild(i);
+      if (child.isNull()) {
+        continue;
+      }
+
+      if (Objects.equals(type, child.getType())) {
+        result.add(child);
+      }
+    }
+
+    return result;
+  }
+
+  public List<TSNode> findChildrenWithTypeReverse(final String type, final boolean namedOnly) {
+    final var result = new ArrayList<TSNode>();
+    for (int i = (namedOnly ? getNamedChildCount() : getChildCount()) - 1; i > 0; --i) {
+      final var child = namedOnly ? getNamedChild(i) : getChild(i);
+      if (child.isNull()) {
+        continue;
+      }
+
+      if (Objects.equals(type, child.getType())) {
+        result.add(child);
+      }
+    }
+
+    return result;
+  }
+
   @Override
   public String toString() {
-    return "TSNode{" + "id=" + id + ", type=" + getType() + '}';
+    return "TSNode{" + "id=" + id + ", type=" + (isNull() ? "<null>" : getType()) + '}';
   }
 }

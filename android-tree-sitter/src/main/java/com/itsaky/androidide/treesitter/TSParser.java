@@ -26,6 +26,10 @@ public class TSParser implements AutoCloseable {
     return new TSTree(TreeSitter.parserParseBytes(pointer, bytes, bytes.length, encoding.getFlag()));
   }
 
+  public TSTree parseBytes(byte[] bytes, int bytesLength, int encodingFlag) {
+    return new TSTree(TreeSitter.parserParseBytes(pointer, bytes, bytesLength, encodingFlag));
+  }
+
   public TSTree parseString(TSTree oldTree, String source) throws UnsupportedEncodingException {
     return parseString(oldTree, source, TSInputEncoding.TSInputEncodingUTF8);
   }

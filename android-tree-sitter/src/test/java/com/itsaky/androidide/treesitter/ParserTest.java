@@ -1,5 +1,6 @@
 package com.itsaky.androidide.treesitter;
 
+import static com.itsaky.androidide.treesitter.TestUtils.readString;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -7,8 +8,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RunWith(JUnit4.class)
@@ -55,18 +54,6 @@ public class ParserTest extends TestBase {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println("\nParsed View.java in: " + (System.currentTimeMillis() - start) + "ms");
       }
-    }
-  }
-
-  private String readString(Path path) {
-    try (final var reader = Files.newBufferedReader(path)) {
-      final var sb = new StringBuilder();
-      for (var line = reader.readLine(); line != null; line = reader.readLine()) {
-        sb.append(line).append("\n");
-      }
-      return sb.toString();
-    } catch (Throwable err) {
-      throw new RuntimeException(err);
     }
   }
 }
