@@ -27,7 +27,6 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25
-          add-to-path: false
 
       - name: Setup JDK
         uses: actions/setup-java@v3
