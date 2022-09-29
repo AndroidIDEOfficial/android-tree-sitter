@@ -1,13 +1,10 @@
 package com.itsaky.androidide.treesitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 public class NodeTest extends TestBase {
 
@@ -22,72 +19,73 @@ public class NodeTest extends TestBase {
               TSInputEncoding.TSInputEncodingUTF16)) {
         var root = tree.getRootNode();
         var start = root.getStartPoint();
-        assertEquals(0, start.row);
-        assertEquals(0, start.column);
+        assertThat(0).isEqualTo(start.row);
+        assertThat(0).isEqualTo(start.column);
 
         var end = root.getEndPoint();
-        assertEquals(2, end.row);
-        assertEquals(12, end.column);
+        assertThat(2).isEqualTo(end.row);
+        assertThat(12).isEqualTo(end.column);
 
         var type = root.getType();
-        assertEquals("module", type);
+        assertThat("module").isEqualTo(type);
 
         var startByte = root.getStartByte();
-        assertEquals(0, startByte);
+        assertThat(0).isEqualTo(startByte);
 
         var endByte = root.getEndByte();
-        assertEquals(sourceToParse.getBytes(StandardCharsets.UTF_8).length, endByte);
+        assertThat(sourceToParse.getBytes(java.nio.charset.StandardCharsets.UTF_8))
+            .hasLength(endByte);
 
         var children = root.getChildCount();
-        assertEquals(1, children);
+        assertThat(1).isEqualTo(children);
 
         var namedChildren = root.getNamedChildCount();
-        assertEquals(1, namedChildren);
+        assertThat(1).isEqualTo(namedChildren);
 
         var isNamed = root.isNamed();
-        assertTrue(isNamed);
+        assertThat(isNamed).isTrue();
 
         var isMissing = root.isMissing();
-        assertFalse(isMissing);
+        assertThat(isMissing).isFalse();
 
         var isExtra = root.isExtra();
-        assertFalse(isExtra);
+        assertThat(isExtra).isFalse();
 
         var hasChanges = root.hasChanges();
-        assertFalse(hasChanges);
+        assertThat(hasChanges).isFalse();
 
         var hasErrors = root.hasErrors();
-        assertFalse(hasErrors);
+        assertThat(hasErrors).isFalse();
 
         var isNull = root.isNull();
-        assertFalse(isNull);
+        assertThat(isNull).isFalse();
 
         var function = root.getChild(0);
         start = function.getStartPoint();
-        assertEquals(0, start.row);
-        assertEquals(0, start.column);
+        assertThat(0).isEqualTo(start.row);
+        assertThat(0).isEqualTo(start.column);
 
         end = function.getEndPoint();
-        assertEquals(2, end.row);
-        assertEquals(12, end.column);
+        assertThat(2).isEqualTo(end.row);
+        assertThat(12).isEqualTo(end.column);
 
         type = function.getType();
-        assertEquals("function_definition", type);
+        assertThat("function_definition").isEqualTo(type);
 
         children = function.getChildCount();
-        assertEquals(5, children);
+        assertThat(5).isEqualTo(children);
 
         isNull = function.isNull();
-        assertFalse(isNull);
+        assertThat(isNull).isFalse();
 
         var body = function.getChildByFieldName("body");
 
         var parent = function.getParent();
         type = parent.getType();
-        assertEquals("module", type);
+        assertThat("module").isEqualTo(type);
 
         isNull = parent.isNull();
-        assertFalse(isNull);
+        assertThat(isNull).isFalse();
       }
     }
   }

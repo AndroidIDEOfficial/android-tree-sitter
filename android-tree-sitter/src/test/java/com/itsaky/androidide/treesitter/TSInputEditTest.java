@@ -1,5 +1,6 @@
 package com.itsaky.androidide.treesitter;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class TSInputEditTest extends TestBase {
               editedNode.getEndPoint(),
               newEndPoint);
 
-      String oldSExp = tree.getRootNode().getNodeString();
+      String oldExp = tree.getRootNode().getNodeString();
 
       tree.edit(edit);
 
@@ -41,8 +42,8 @@ public class TSInputEditTest extends TestBase {
               "class Hello {\npublic void hello() {\nint x = 3; }}",
               TSInputEncoding.TSInputEncodingUTF16);
 
-      String newSExp = tree.getRootNode().getNodeString();
-      assertEquals(oldSExp, newSExp);
+      String newExp = tree.getRootNode().getNodeString();
+      assertThat(oldExp).isNotEqualTo(newExp);
     }
   }
 }

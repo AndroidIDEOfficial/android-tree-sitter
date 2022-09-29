@@ -1,16 +1,10 @@
 package com.itsaky.androidide.treesitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class TreeCursorTest extends TestBase {
 
@@ -23,27 +17,27 @@ public class TreeCursorTest extends TestBase {
               "def foo(bar, baz):\n  print(bar)\n  print(baz)",
               TSInputEncoding.TSInputEncodingUTF16)) {
         try (TSTreeCursor cursor = tree.getRootNode().walk()) {
-          assertEquals("module", cursor.getCurrentTreeCursorNode().getType());
-          assertEquals("module", cursor.getCurrentNode().getType());
-          assertTrue(cursor.gotoFirstChild());
-          assertEquals("function_definition", cursor.getCurrentNode().getType());
-          assertTrue(cursor.gotoFirstChild());
+          assertThat(cursor.getCurrentTreeCursorNode().getType()).isEqualTo("module");
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo("module");
+          assertThat(cursor.gotoFirstChild()).isTrue();
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo("function_definition");
+          assertThat(cursor.gotoFirstChild()).isTrue();
 
-          assertEquals("def", cursor.getCurrentNode().getType());
-          assertTrue(cursor.gotoNextSibling());
-          assertEquals("identifier", cursor.getCurrentNode().getType());
-          assertTrue(cursor.gotoNextSibling());
-          assertEquals("parameters", cursor.getCurrentNode().getType());
-          assertTrue(cursor.gotoNextSibling());
-          assertEquals(":", cursor.getCurrentNode().getType());
-          assertTrue(cursor.gotoNextSibling());
-          assertEquals("block", cursor.getCurrentNode().getType());
-          assertEquals("body", cursor.getCurrentFieldName());
-          assertFalse(cursor.gotoNextSibling());
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo("def");
+          assertThat(cursor.gotoNextSibling()).isTrue();
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo("identifier");
+          assertThat(cursor.gotoNextSibling()).isTrue();
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo("parameters");
+          assertThat(cursor.gotoNextSibling()).isTrue();
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo(":");
+          assertThat(cursor.gotoNextSibling()).isTrue();
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo("block");
+          assertThat(cursor.getCurrentFieldName()).isEqualTo("body");
+          assertThat(cursor.gotoNextSibling()).isFalse();
 
-          assertTrue(cursor.gotoParent());
-          assertEquals("function_definition", cursor.getCurrentNode().getType());
-          assertTrue(cursor.gotoFirstChild());
+          assertThat(cursor.gotoParent()).isTrue();
+          assertThat(cursor.getCurrentNode().getType()).isEqualTo("function_definition");
+          assertThat(cursor.gotoFirstChild()).isTrue();
         }
       }
     }

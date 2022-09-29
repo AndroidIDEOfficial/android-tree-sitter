@@ -1,6 +1,6 @@
 package com.itsaky.androidide.treesitter;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 
@@ -18,7 +18,8 @@ public class TreeTest extends TestBase {
       try (final var tree =
           parser.parseString(
               "class Main { void main() {} }", TSInputEncoding.TSInputEncodingUTF8)) {
-        assertEquals(tree.getRootNode().getNodeString(), tree.copy().getRootNode().getNodeString());
+        assertThat(tree.copy().getRootNode().getNodeString())
+            .isEqualTo(tree.getRootNode().getNodeString());
       }
     }
   }

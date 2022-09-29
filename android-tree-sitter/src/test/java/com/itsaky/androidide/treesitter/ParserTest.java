@@ -1,7 +1,7 @@
 package com.itsaky.androidide.treesitter;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.itsaky.androidide.treesitter.TestUtils.readString;
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +19,9 @@ public class ParserTest extends TestBase {
       parser.setLanguage(TSLanguages.python());
       try (TSTree tree =
           parser.parseString("print(\"hi\")", TSInputEncoding.TSInputEncodingUTF16)) {
-        assertEquals(
-            "(module (expression_statement (call function: (identifier) arguments: (argument_list (string)))))",
-            tree.getRootNode().getNodeString());
+        assertThat(tree.getRootNode().getNodeString())
+            .isEqualTo(
+                "(module (expression_statement (call function: (identifier) arguments: (argument_list (string)))))");
       }
     }
   }
