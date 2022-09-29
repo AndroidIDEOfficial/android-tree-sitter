@@ -42,12 +42,12 @@ JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeS
 
 JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeEndByte(
   JNIEnv* env, jclass self, jobject node) {
-  return (jint)ts_node_end_byte(_unmarshalNode(env, node));
+  return (jint)ts_node_end_byte(_unmarshalNode(env, node)) / 2;
 }
 
 JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartByte(
   JNIEnv* env, jclass self, jobject node) {
-  return (jint)ts_node_start_byte(_unmarshalNode(env, node));
+  return (jint)ts_node_start_byte(_unmarshalNode(env, node)) / 2;
 }
 
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_nodeStartPoint(
