@@ -27,6 +27,7 @@ arch="aarch64"
 soname="libts"
 min_sdk="24"
 ndk_dir=""
+verbose_out=false
 
 OPTIND=1
 while getopts "h?sa:o:m:n:" opt; do
@@ -45,14 +46,22 @@ while getopts "h?sa:o:m:n:" opt; do
       ;;
     s) for_host="true"
       ;;
+    v) verbose_out=true
+      ;;
   esac
 done
 
 shift $((OPTIND-1))
 [ "${1:-}" = "--" ] && shift
 
+verbose() {
+  if [ "$verbose_out" = true ]; then
+    echo $@
+  fi
+}
+
 system=$(uname -s)
-system=$(echo ${system,,})
+system=$(echo "${system,,}")
 ndk_host="$system-x86_64"
 ndk_bin="$ndk_dir/toolchains/llvm/prebuilt/$ndk_host/bin"
 arch_bits="32"
@@ -101,14 +110,23 @@ make -C "${script_dir}/tree-sitter"
 echo ""
 echo "Building grammars..."
 
-dest_dir="${script_dir}output/${clang_qualifier}"
+dest_dir="${script_dir}/output/${clang_qualifier}"
 dest_so="${soname}.so"
 
 mkdir -p $dest_dir
 
 macros=""
-sources="${script_dir}/lib/ts.cc"
-sources+=" ${script_dir}/lib/langs.cc"
+sources=""
+for file in ${script_dir}/lib/*; do
+  if [[ $file == *.h ]]; then
+    verbose "Skiping $file"
+    continue
+  fi
+  sources+=${file}
+  sources+=" "
+done
+# sources="${script_dir}/lib/ts.cc"
+# sources+=" ${script_dir}/lib/langs.cc"
 iscpp=""
 for lang in $*
 do
@@ -129,8 +147,8 @@ do
   macros+=" -DTS_LANGUAGE_${g_LANG}=1"
 done
 
-echo "$sources"
-echo "$macros"
+verbose "Sources --------------------------------\n" "$sources"
+verbose "Macros --------------------------------" "$macros"
 
 objects=""
 includes="-I${script_dir}/tree-sitter/lib/include -I${script_dir}/tree-sitter/lib/src"
@@ -162,22 +180,23 @@ for source in "${SOURCES[@]}"; do
   objects+=" $obj"
 
   cmd="$CC $flags $includes $macros -o "$obj" $source"
-  echo $cmd
+  echo "Compiling $source"
+  verbose $cmd
   $cmd
-  echo "Stripping debug symbols from: $obj"
+  verbose "Stripping debug symbols from: $obj"
 
   if [ ! -z "${for_host+x}" ]; then
     strip -g $obj
   else
     $strp -g $obj
   fi
-  echo ""
+  verbose ""
 done
 
 
 so="${out_dir_base}/${soname}.so"
 cmd="$CXX -shared -fPIC -static-libstdc++ -o $so $objects ${script_dir}/tree-sitter/libtree-sitter.a"
-echo $cmd
+verbose $cmd
 $cmd
 
 if [ ! -z "${for_host+x}" ]; then
