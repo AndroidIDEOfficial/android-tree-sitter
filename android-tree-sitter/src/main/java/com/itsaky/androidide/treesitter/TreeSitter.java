@@ -11,7 +11,7 @@ public class TreeSitter {
    *
    * @return The pointer to the new parser.
    */
-  public static native long parserNew();
+  public static native long newParser();
 
   /**
    * Delete the parser.
