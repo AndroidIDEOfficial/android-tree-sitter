@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class TSLanguage {
 
-  private final long pointer;
+  final long pointer;
 
   /**
    * Create a new {@link TSLanguage} instance with the given pointer.

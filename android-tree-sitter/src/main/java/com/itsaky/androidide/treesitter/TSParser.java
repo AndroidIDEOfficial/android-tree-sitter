@@ -13,8 +13,8 @@ public class TSParser implements AutoCloseable {
     this(TreeSitter.newParser());
   }
 
-  public void setLanguage(long language) {
-    TreeSitter.parserSetLanguage(pointer, language);
+  public void setLanguage(TSLanguage language) {
+    TreeSitter.parserSetLanguage(pointer, language.pointer);
   }
 
   public TSTree parseString(String source) throws UnsupportedEncodingException {
