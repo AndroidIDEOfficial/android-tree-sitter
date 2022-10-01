@@ -39,7 +39,7 @@ public class TSNode {
   }
 
   public TSTreeCursor walk() {
-    return new TSTreeCursor(TreeSitter.treeCursorNew(this));
+    return new TSTreeCursor(this);
   }
 
   public TSNode findNodeWithType(final String type, final boolean namedOnly) {
