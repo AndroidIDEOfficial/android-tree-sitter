@@ -39,6 +39,14 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native
 JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native_rootNode
   (JNIEnv *, jclass, jlong);
 
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSTree_Native
+ * Method:    getLanguage
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native_getLanguage
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif

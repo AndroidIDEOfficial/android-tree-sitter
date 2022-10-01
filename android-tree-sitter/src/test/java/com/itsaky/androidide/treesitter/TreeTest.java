@@ -18,6 +18,7 @@ public class TreeTest extends TestBase {
       try (final var tree =
           parser.parseString(
               "class Main { void main() {} }", TSInputEncoding.TSInputEncodingUTF8)) {
+        assertThat(tree.getLanguage()).isEqualTo(TSLanguages.java());
         assertThat(tree.copy().getRootNode().getNodeString())
             .isEqualTo(tree.getRootNode().getNodeString());
       }

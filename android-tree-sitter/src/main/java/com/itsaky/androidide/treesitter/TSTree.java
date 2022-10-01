@@ -42,6 +42,15 @@ public class TSTree implements AutoCloseable {
   }
 
   /**
+   * Get the language that was used to parse the syntax tree.
+   *
+   * @return The tree sitter language.
+   */
+  public TSLanguage getLanguage() {
+    return new TSLanguage(Native.getLanguage(this.pointer));
+  }
+
+  /**
    * Get the pointer of this tree.
    *
    * @return The pointer.
@@ -52,8 +61,13 @@ public class TSTree implements AutoCloseable {
 
   private static class Native {
     public static native void edit(long tree, TSInputEdit inputEdit);
+
     public static native void delete(long tree);
+
     public static native long copy(long tree);
+
     public static native TSNode rootNode(long tree);
+
+    public static native long getLanguage(long tree);
   }
 }
