@@ -5,6 +5,7 @@ plugins {
 
 android {
     namespace 'com.itsaky.androidide.treesitter'
+    ndkVersion "24.0.8215888"
     compileSdk 33
 
     defaultConfig {
@@ -53,11 +54,15 @@ if (ndkDir == null || javaHome == null) {
         props.load(local.newReader())
         ndkDir = props.getProperty("ndk.dir")
         javaHome = props.getProperty("java.home")
+
+        if (ndkDir == null) {
+            ndkDir = props.getProperty("ts.ndk.dir")
+        }
     }
 }
 
 if (ndkDir == null || javaHome == null) {
-    throw new IllegalStateException("Please make sure that you have set 'ndk.dir' and 'java.home' dir in 'local.properties' file.\nndk.dir=$ndkDir\njava.home=$javaHome")
+    throw new IllegalStateException("Please make sure that ANDROID_NDK_HOME and JAVA_HOME environment variables are set.\nts.ndk.dir=$ndkDir\njava.home=$javaHome")
 }
 
 for (def arch : archs) {
@@ -68,10 +73,7 @@ for (def arch : archs) {
 }
 
 def buildFor(Task task, String arch, String classifier, String ndkDir, String javaHome) {
-    task.inputs.file "${rootProject.projectDir.path}/lib/langs.cc"
-    task.inputs.file "${rootProject.projectDir.path}/lib/com_itsaky_androidide_treesitter_TSLanguages.h"
-    task.inputs.file "${rootProject.projectDir.path}/lib/ts.cc"
-    task.inputs.file "${rootProject.projectDir.path}/lib/com_itsaky_androidide_treesitter_TreeSitter.h"
+    task.inputs.dir "${rootProject.projectDir.path}/lib"
     task.outputs.file "${rootProject.projectDir.path}/output/${classifier}/libts.so"
 
     task.doLast {

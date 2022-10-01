@@ -14,7 +14,7 @@ public class TSLanguageTest extends TestBase {
 
   @Test
   public void testFunctionality() {
-    final var lang = new TSLanguage(TSLanguages.java());
+    final var lang = TSLanguages.java();
     lang.getLanguageVersion();
     lang.getFieldCount();
     lang.getSymbolCount();

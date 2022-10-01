@@ -1,5 +1,3 @@
-#include "com_itsaky_androidide_treesitter_TreeSitter.h"
-
 #include <string.h>
 #include "ts_utils.h"
 

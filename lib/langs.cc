@@ -1,12 +1,13 @@
-#include "com_itsaky_androidide_treesitter_TSLanguages.h"
 #include <jni.h>
 #include <string.h>
 #include <tree_sitter/api.h>
 
+#include "com_itsaky_androidide_treesitter_TSLanguages_Native.h"
+
 #ifdef TS_LANGUAGE_AGDA
 extern "C" TSLanguage* tree_sitter_agda();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_agda(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_agda(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_agda();
 }
 #endif
@@ -14,14 +15,14 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_agda(JNIEnv* env, jclass self)
 #ifdef TS_LANGUAGE_BASH
 extern "C" TSLanguage* tree_sitter_bash();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_bash(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_bash(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_bash();
 }
 #endif
 
 #ifdef TS_LANGUAGE_C
 extern "C" TSLanguage* tree_sitter_c();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_c(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_c(JNIEnv* env,
                                                                 jclass self) {
   return (jlong)tree_sitter_c();
 }
@@ -30,14 +31,14 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_c(JNIE
 #ifdef TS_LANGUAGE_C_SHARP
 extern "C" TSLanguage* tree_sitter_c_sharp();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_cSharp(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_cSharp(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_c_sharp();
 }
 #endif
 
 #ifdef TS_LANGUAGE_CPP
 extern "C" TSLanguage* tree_sitter_cpp();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_cpp(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_cpp(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_cpp();
 }
@@ -45,7 +46,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_cpp(JN
 
 #ifdef TS_LANGUAGE_CSS
 extern "C" TSLanguage* tree_sitter_css();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_css(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_css(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_css();
 }
@@ -54,14 +55,14 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_css(JN
 #ifdef TS_LANGUAGE_DART
 extern "C" TSLanguage* tree_sitter_dart();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_dart(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_dart(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_dart();
 }
 #endif
 
 #ifdef TS_LANGUAGE_ELM
 extern "C" TSLanguage* tree_sitter_elm();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_elm(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_elm(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_elm();
 }
@@ -69,7 +70,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_elm(JN
 
 #ifdef TS_LANGUAGE_EMBEDDED_TEMPLATE
 extern "C" TSLanguage* tree_sitter_embedded_template();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_embeddedTemplate(
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_embeddedTemplate(
     JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_embedded_template();
 }
@@ -77,7 +78,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_embedd
 
 #ifdef TS_LANGUAGE_ENO
 extern "C" TSLanguage* tree_sitter_eno();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_eno(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_eno(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_eno();
 }
@@ -85,7 +86,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_eno(JN
 
 #ifdef TS_LANGUAGE_GO
 extern "C" TSLanguage* tree_sitter_go();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_go(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_go(JNIEnv* env,
                                                                  jclass self) {
   return (jlong)tree_sitter_go();
 }
@@ -94,7 +95,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_go(JNI
 #ifdef TS_LANGUAGE_HASKELL
 extern "C" TSLanguage* tree_sitter_haskell();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_haskell(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_haskell(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_haskell();
 }
 #endif
@@ -102,7 +103,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_haskell(JNIEnv* env, jclass se
 #ifdef TS_LANGUAGE_HTML
 extern "C" TSLanguage* tree_sitter_html();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_html(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_html(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_html();
 }
 #endif
@@ -110,7 +111,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_html(JNIEnv* env, jclass self)
 #ifdef TS_LANGUAGE_JAVA
 extern "C" TSLanguage* tree_sitter_java();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_java(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_java(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_java();
 }
 #endif
@@ -118,7 +119,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_java(JNIEnv* env, jclass self)
 #ifdef TS_LANGUAGE_JAVASCRIPT
 extern "C" TSLanguage* tree_sitter_javascript();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_javascript(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_javascript(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_javascript();
 }
 #endif
@@ -126,7 +127,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_javascript(JNIEnv* env, jclass
 #ifdef TS_LANGUAGE_JULIA
 extern "C" TSLanguage* tree_sitter_julia();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_julia(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_julia(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_julia();
 }
 #endif
@@ -134,14 +135,14 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_julia(JNIEnv* env, jclass self
 #ifdef TS_LANGUAGE_KOTLIN
 extern "C" TSLanguage* tree_sitter_kotlin();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_kotlin(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_kotlin(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_kotlin();
 }
 #endif
 
 #ifdef TS_LANGUAGE_LUA
 extern "C" TSLanguage* tree_sitter_lua();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_lua(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_lua(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_lua();
 }
@@ -150,7 +151,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_lua(JN
 #ifdef TS_LANGUAGE_MARKDOWN
 extern "C" TSLanguage* tree_sitter_markdown();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_markdown(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_markdown(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_markdown();
 }
 #endif
@@ -158,14 +159,14 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_markdown(JNIEnv* env, jclass s
 #ifdef TS_LANGUAGE_OCAML
 extern "C" TSLanguage* tree_sitter_ocaml();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_ocaml(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_ocaml(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_ocaml();
 }
 #endif
 
 #ifdef TS_LANGUAGE_PHP
 extern "C" TSLanguage* tree_sitter_php();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_php(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_php(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_php();
 }
@@ -174,7 +175,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_php(JN
 #ifdef TS_LANGUAGE_PYTHON
 extern "C" TSLanguage* tree_sitter_python();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_python(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_python(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_python();
 }
 #endif
@@ -182,7 +183,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_python(JNIEnv* env, jclass sel
 #ifdef TS_LANGUAGE_RUBY
 extern "C" TSLanguage* tree_sitter_ruby();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_ruby(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_ruby(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_ruby();
 }
 #endif
@@ -190,7 +191,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_ruby(JNIEnv* env, jclass self)
 #ifdef TS_LANGUAGE_RUST
 extern "C" TSLanguage* tree_sitter_rust();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_rust(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_rust(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_rust();
 }
 #endif
@@ -198,7 +199,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_rust(JNIEnv* env, jclass self)
 #ifdef TS_LANGUAGE_SCALA
 extern "C" TSLanguage* tree_sitter_scala();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_scala(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_scala(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_scala();
 }
 #endif
@@ -206,7 +207,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_scala(JNIEnv* env, jclass self
 #ifdef TS_LANGUAGE_SCSS
 extern "C" TSLanguage* tree_sitter_scss();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_scss(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_scss(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_scss();
 }
 #endif
@@ -214,7 +215,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_scss(JNIEnv* env, jclass self)
 #ifdef TS_LANGUAGE_SWIFT
 extern "C" TSLanguage* tree_sitter_swift();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_swift(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_swift(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_swift();
 }
 #endif
@@ -222,14 +223,14 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_swift(JNIEnv* env, jclass self
 #ifdef TS_LANGUAGE_TOML
 extern "C" TSLanguage* tree_sitter_toml();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_toml(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_toml(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_toml();
 }
 #endif
 
 #ifdef TS_LANGUAGE_TSX
 extern "C" TSLanguage* tree_sitter_tsx();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_tsx(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_tsx(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_tsx();
 }
@@ -238,14 +239,14 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_tsx(JN
 #ifdef TS_LANGUAGE_TYPESCRIPT
 extern "C" TSLanguage* tree_sitter_typescript();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_typescript(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_typescript(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_typescript();
 }
 #endif
 
 #ifdef TS_LANGUAGE_VUE
 extern "C" TSLanguage* tree_sitter_vue();
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_vue(JNIEnv* env,
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_vue(JNIEnv* env,
                                                                   jclass self) {
   return (jlong)tree_sitter_vue();
 }
@@ -254,7 +255,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSLanguages_vue(JN
 #ifdef TS_LANGUAGE_YAML
 extern "C" TSLanguage* tree_sitter_yaml();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_yaml(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_yaml(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_yaml();
 }
 #endif
@@ -262,7 +263,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguages_yaml(JNIEnv* env, jclass self)
 #ifdef TS_LANGUAGE_WASM
 extern "C" TSLanguage* tree_sitter_wasm();
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguages_wasm(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSLanguages_00024Native_wasm(JNIEnv* env, jclass self) {
   return (jlong)tree_sitter_wasm();
 }
 #endif
