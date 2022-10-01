@@ -183,6 +183,13 @@ public class TSNode {
    */
   public native String getType();
 
+  /**
+   * Get the node's type as a numerical id.
+   *
+   * @return The node's type as a numerical id.
+   */
+  public native int getSymbol();
+
   /** Check if the node is null. */
   public native boolean isNull();
 

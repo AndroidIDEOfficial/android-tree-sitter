@@ -105,6 +105,14 @@ JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getType
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getSymbol
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getSymbol
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
  * Method:    isNull
  * Signature: ()Z
  */

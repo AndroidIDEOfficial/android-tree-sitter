@@ -18,6 +18,9 @@ public class NodeTest extends TestBase {
               "def foo(bar, baz):\n  print(bar)\n  print(baz)",
               TSInputEncoding.TSInputEncodingUTF16)) {
         var root = tree.getRootNode();
+        var symbol = root.getSymbol();
+        assertThat(tree.getLanguage().getSymbolName(symbol)).isEqualTo("module");
+
         var start = root.getStartPoint();
         assertThat(0).isEqualTo(start.row);
         assertThat(0).isEqualTo(start.column);
