@@ -33,6 +33,14 @@ JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Nativ
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TSParser_Native
+ * Method:    getLanguage
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getLanguage
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSParser_Native
  * Method:    parseBytes
  * Signature: (J[BII)J
  */

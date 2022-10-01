@@ -31,6 +31,7 @@ public class ParserTest extends TestBase {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguages.java());
+      assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguages.java().pointer);
       try (var tree =
           parser.parseString(
               readString(Paths.get("./src/test/resources/CodeEditor.java.txt")),

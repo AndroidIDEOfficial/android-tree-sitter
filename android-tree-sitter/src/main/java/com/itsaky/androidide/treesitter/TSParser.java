@@ -25,6 +25,15 @@ public class TSParser implements AutoCloseable {
   }
 
   /**
+   * Get the language for this parser instance.
+   *
+   * @return The language instance.
+   */
+  public TSLanguage getLanguage() {
+    return new TSLanguage(Native.getLanguage(this.pointer));
+  }
+
+  /**
    * Parses the given String source. Uses {@link TSInputEncoding#TSInputEncodingUTF8} as the default
    * encoding.
    *
@@ -96,9 +105,15 @@ public class TSParser implements AutoCloseable {
 
   private static class Native {
     public static native long newParser();
+
     public static native void delete(long parser);
+
     public static native void setLanguage(long parser, long language);
+
+    public static native long getLanguage(long parser);
+
     public static native long parseBytes(long parser, byte[] source, int length, int encoding);
+
     public static native long incrementalParseBytes(
         long parser, long old_tree, byte[] source, int length, int encoding);
   }
