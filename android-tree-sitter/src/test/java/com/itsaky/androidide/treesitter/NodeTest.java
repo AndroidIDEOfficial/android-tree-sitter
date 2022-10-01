@@ -64,6 +64,8 @@ public class NodeTest extends TestBase {
         assertThat(isNull).isFalse();
 
         var function = root.getChild(0);
+        var fieldNameForChild = root.getFieldNameForChild(0);
+        assertThat(fieldNameForChild).isNull();
         start = function.getStartPoint();
         assertThat(0).isEqualTo(start.row);
         assertThat(0).isEqualTo(start.column);

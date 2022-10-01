@@ -41,6 +41,14 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getChildB
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getFieldNameForChild
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getFieldNameForChild
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
  * Method:    getChildCount
  * Signature: ()I
  */

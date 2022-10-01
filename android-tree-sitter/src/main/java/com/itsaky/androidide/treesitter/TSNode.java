@@ -15,6 +15,12 @@ public class TSNode {
 
   public TSNode() {}
 
+  /**
+   * Get the child of the given node at the child index.
+   *
+   * @param index The index of the child.
+   * @return The child at the child index.
+   */
   public TSNode getChild(int index) {
     final var count = getChildCount();
     if (index < 0 || index >= count) {
@@ -24,6 +30,12 @@ public class TSNode {
     return getChildAt(index);
   }
 
+  /**
+   * Get the named child of the given node at the given index.
+   *
+   * @param index The index of the named child.
+   * @return The named child node at the given index.
+   */
   public TSNode getNamedChild(int index) {
     final var count = getNamedChildCount();
     if (index < 0 || index >= count) {
@@ -33,6 +45,12 @@ public class TSNode {
     return getNamedChildAt(index);
   }
 
+  /**
+   * Find the child node of the given node by field name.
+   *
+   * @param fieldName The field name.
+   * @return The found node.
+   */
   public TSNode getChildByFieldName(String fieldName) {
     final var bytes = fieldName.getBytes(StandardCharsets.UTF_8);
     return getChildByFieldName(bytes, bytes.length);
@@ -106,30 +124,20 @@ public class TSNode {
    */
   public native TSNode getParent();
 
-  /**
-   * Get the child of the given node at the child index.
-   *
-   * @param index The index of the child.
-   * @return The child at the child index.
-   */
   private native TSNode getChildAt(int index);
 
-  /**
-   * Get the named child of the given node at the given index.
-   *
-   * @param index The index of the named child.
-   * @return The named child node at the given index.
-   */
   private native TSNode getNamedChildAt(int index);
 
-  /**
-   * Find the child node of the given node by field name.
-   *
-   * @param bytes The field name of the child.
-   * @param length The length of `fieldName`.
-   * @return The found node.
-   */
   private native TSNode getChildByFieldName(byte[] bytes, int length);
+
+  /**
+   * Get the field name for node's child at the given index, where zero represents * the first
+   * child.
+   *
+   * @param childIndex The index of the child.
+   * @return The field name for the child or <code>null</code>.
+   */
+  public native String getFieldNameForChild(int childIndex);
 
   /**
    * Get the number of children of the node.

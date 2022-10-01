@@ -47,6 +47,18 @@ Java_com_itsaky_androidide_treesitter_TSNode_getChildByFieldName(
   return found;
 }
 
+JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getFieldNameForChild
+  (JNIEnv* env, jobject self, jint index) {
+    const char* fieldName = ts_node_field_name_for_child(_unmarshalNode(env, self), index);
+    if (fieldName == NULL) {
+      return NULL;
+    }
+    
+    jstring result = env->NewStringUTF(fieldName);
+    free((char*)fieldName);
+    return result;
+  }
+
 JNIEXPORT jstring JNICALL
 Java_com_itsaky_androidide_treesitter_TSNode_getNodeString(JNIEnv* env,
                                                            jobject self) {
