@@ -1,22 +1,22 @@
-#include "com_itsaky_androidide_treesitter_TreeSitter.h"
+#include "com_itsaky_androidide_treesitter_TSParser_Native.h"
 #include "ts_utils.h"
 
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TreeSitter_newParser(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(JNIEnv* env, jclass self) {
   return (jlong)ts_parser_new();
 }
 
-JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserDelete(
+JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_delete(
   JNIEnv* env, jclass self, jlong parser) {
   ts_parser_delete((TSParser*)parser);
 }
 
-JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserSetLanguage(
+JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setLanguage(
   JNIEnv* env, jclass self, jlong parser, jlong language) {
   ts_parser_set_language((TSParser*)parser, (TSLanguage*)language);
 }
 
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserParseBytes(
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parseBytes(
   JNIEnv* env, jclass self, jlong parser, jbyteArray source_bytes,
   jint length, jint encodingFlag) {
   TSInputEncoding encoding = encodingFlag == 0 ? TSInputEncodingUTF8 : TSInputEncodingUTF16;
@@ -27,7 +27,7 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserP
   return result;
 }
 
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserIncrementalParseBytes(
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_incrementalParseBytes(
   JNIEnv* env, jclass self, jlong parser, jlong old_tree, jbyteArray source_bytes,
   jint length, jint encodingFlag) {
   TSInputEncoding encoding = encodingFlag == 0 ? TSInputEncodingUTF8 : TSInputEncodingUTF16;

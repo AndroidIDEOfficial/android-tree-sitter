@@ -9,46 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    newParser
- * Signature: ()J
- */
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_newParser
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    parserDelete
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserDelete
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    parserSetLanguage
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserSetLanguage
-  (JNIEnv *, jclass, jlong, jlong);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    parserParseBytes
- * Signature: (J[BII)J
- */
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserParseBytes
-  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    parserIncrementalParseBytes
- * Signature: (JJ[BII)J
- */
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_parserIncrementalParseBytes
-  (JNIEnv *, jclass, jlong, jlong, jbyteArray, jint, jint);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    treeCursorNew
  * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)J
  */
