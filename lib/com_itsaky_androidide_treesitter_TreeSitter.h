@@ -9,38 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    treeEdit
- * Signature: (JLcom/itsaky/androidide/treesitter/TSInputEdit;)V
- */
-JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeEdit
-  (JNIEnv *, jclass, jlong, jobject);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    treeDelete
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeDelete
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    treeCopy
- * Signature: (J)J
- */
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeCopy
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
- * Method:    treeRootNode
- * Signature: (J)Lcom/itsaky/androidide/treesitter/TSNode;
- */
-JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_treeRootNode
-  (JNIEnv *, jclass, jlong);
-
-/*
- * Class:     com_itsaky_androidide_treesitter_TreeSitter
  * Method:    tsQueryNew
  * Signature: (JLjava/lang/String;)J
  */
