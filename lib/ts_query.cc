@@ -1,7 +1,7 @@
-#include "com_itsaky_androidide_treesitter_TreeSitter.h"
+#include "com_itsaky_androidide_treesitter_TSQuery_Native.h"
 #include "ts_utils.h"
 
-JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_tsQueryNew(
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_newQuery(
   JNIEnv* env, jclass self, jlong language, jstring source) {
 
   const char* c_source;
