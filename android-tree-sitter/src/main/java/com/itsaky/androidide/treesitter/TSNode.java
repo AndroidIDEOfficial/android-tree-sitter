@@ -140,6 +140,87 @@ public class TSNode {
   public native String getFieldNameForChild(int childIndex);
 
   /**
+   * Get the child for the given field id.
+   *
+   * @param fieldId The field id.
+   * @return The child node. Maybe <code>null</code>.
+   */
+  public native TSNode getChildByFieldId(int fieldId);
+
+  /**
+   * Get the next sibling node of this node.
+   *
+   * @return The next sibling node.
+   */
+  public native TSNode getNextSibling();
+
+  /**
+   * Get the previous sibling node of this node.
+   *
+   * @return The previous sibling node.
+   */
+  public native TSNode getPreviousSibling();
+
+  /**
+   * Get the next named sibling node of this node.
+   *
+   * @return The next named sibling node.
+   */
+  public native TSNode getNextNamedSibling();
+
+  /**
+   * Get the previous named sibling node of this node.
+   *
+   * @return The previous named sibling node.
+   */
+  public native TSNode getPreviousNamedSibling();
+
+  /**
+   * Get the node's first child that extends beyond the given byte offset.
+   *
+   * @param byteOffset The byte offsest.
+   * @return The first child beyond the byte offset.
+   */
+  public native TSNode getFirstChildForByte(int byteOffset);
+
+  /**
+   * Get the node's first named child that extends beyond the given byte offset.
+   *
+   * @param byteOffset The byte offsest.
+   * @return The first named child beyond the byte offset.
+   */
+  public native TSNode getFirstNamedChildForByte(int byteOffset);
+
+  /**
+   * Get the smallest node within this node that spans the given range of bytes or (row, column)
+   * positions.
+   */
+  public native TSNode getDescendantForByteRange(int start, int end);
+
+  /**
+   * @see #getDescendantForByteRange(int, int)
+   */
+  public native TSNode getDescendantForPointRange(TSPoint start, TSPoint end);
+
+  /**
+   * Get the smallest node within this node that spans the given range of bytes or (row, column)
+   * positions.
+   */
+  public native TSNode getNamedDescendantForByteRange(int start, int end);
+
+  /**
+   * @see #getNamedDescendantForByteRange(int, int)
+   */
+  public native TSNode getNamedDescendantForPointRange(TSPoint start, TSPoint end);
+
+  /**
+   * Check if this node and the other node are identical.
+   *
+   * @param another The node to check.
+   */
+  public native boolean isEqualTo(TSNode another);
+
+  /**
    * Get the number of children of the node.
    *
    * @return The number of children.

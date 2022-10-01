@@ -20,6 +20,7 @@ public class NodeTest extends TestBase {
         var root = tree.getRootNode();
         var symbol = root.getSymbol();
         assertThat(tree.getLanguage().getSymbolName(symbol)).isEqualTo("module");
+        assertThat(root.getFieldNameForChild(0)).isNull();
 
         var start = root.getStartPoint();
         assertThat(0).isEqualTo(start.row);
@@ -64,11 +65,11 @@ public class NodeTest extends TestBase {
         assertThat(isNull).isFalse();
 
         var function = root.getChild(0);
-        var fieldNameForChild = root.getFieldNameForChild(0);
-        assertThat(fieldNameForChild).isNull();
         start = function.getStartPoint();
         assertThat(0).isEqualTo(start.row);
         assertThat(0).isEqualTo(start.column);
+        assertThat(function.isEqualTo(function)).isTrue();
+        assertThat(function.getFieldNameForChild(1)).isEqualTo("name");
 
         end = function.getEndPoint();
         assertThat(2).isEqualTo(end.row);

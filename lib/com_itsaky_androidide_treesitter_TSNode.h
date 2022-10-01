@@ -49,6 +49,102 @@ JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getFieldN
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getChildByFieldId
+ * Signature: (I)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getChildByFieldId
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getNextSibling
+ * Signature: ()Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getNextSibling
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getPreviousSibling
+ * Signature: ()Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getPreviousSibling
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getNextNamedSibling
+ * Signature: ()Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getNextNamedSibling
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getPreviousNamedSibling
+ * Signature: ()Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getPreviousNamedSibling
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getFirstChildForByte
+ * Signature: (I)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getFirstChildForByte
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getFirstNamedChildForByte
+ * Signature: (I)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getFirstNamedChildForByte
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getDescendantForByteRange
+ * Signature: (II)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getDescendantForByteRange
+  (JNIEnv *, jobject, jint, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getDescendantForPointRange
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSPoint;Lcom/itsaky/androidide/treesitter/TSPoint;)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getDescendantForPointRange
+  (JNIEnv *, jobject, jobject, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getNamedDescendantForByteRange
+ * Signature: (II)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getNamedDescendantForByteRange
+  (JNIEnv *, jobject, jint, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    getNamedDescendantForPointRange
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSPoint;Lcom/itsaky/androidide/treesitter/TSPoint;)Lcom/itsaky/androidide/treesitter/TSNode;
+ */
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getNamedDescendantForPointRange
+  (JNIEnv *, jobject, jobject, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
+ * Method:    isEqualTo
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSNode;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TSNode_isEqualTo
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSNode
  * Method:    getChildCount
  * Signature: ()I
  */

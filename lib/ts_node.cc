@@ -47,16 +47,104 @@ Java_com_itsaky_androidide_treesitter_TSNode_getChildByFieldName(
   return found;
 }
 
-JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getFieldNameForChild
-  (JNIEnv* env, jobject self, jint index) {
-    const char* fieldName = ts_node_field_name_for_child(_unmarshalNode(env, self), index);
-    if (fieldName == NULL) {
-      return NULL;
-    }
-    
-    jstring result = env->NewStringUTF(fieldName);
-    free((char*)fieldName);
-    return result;
+JNIEXPORT jstring JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getFieldNameForChild(JNIEnv* env,
+                                                                  jobject self,
+                                                                  jint index) {
+  const char* fieldName =
+      ts_node_field_name_for_child(_unmarshalNode(env, self), index);
+  if (fieldName == NULL) {
+    return NULL;
+  }
+
+  jstring result = env->NewStringUTF(fieldName);
+  return result;
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getChildByFieldId(JNIEnv* env,
+                                                               jobject self,
+                                                               jint fieldId) {
+  return _marshalNode(
+      env, ts_node_child_by_field_id(_unmarshalNode(env, self), fieldId));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getNextSibling(JNIEnv* env,
+                                                            jobject self) {
+  return _marshalNode(env, ts_node_next_sibling(_unmarshalNode(env, self)));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getPreviousSibling(JNIEnv* env,
+                                                                jobject self) {
+  return _marshalNode(env, ts_node_prev_sibling(_unmarshalNode(env, self)));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getNextNamedSibling(JNIEnv* env,
+                                                                 jobject self) {
+  return _marshalNode(env,
+                      ts_node_next_named_sibling(_unmarshalNode(env, self)));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getPreviousNamedSibling(
+    JNIEnv* env, jobject self) {
+  return _marshalNode(env,
+                      ts_node_prev_named_sibling(_unmarshalNode(env, self)));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getFirstChildForByte(JNIEnv* env,
+                                                                  jobject self,
+                                                                  jint offset) {
+  return _marshalNode(
+      env, ts_node_first_child_for_byte(_unmarshalNode(env, self), offset));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getFirstNamedChildForByte(
+    JNIEnv* env, jobject self, jint offset) {
+  return _marshalNode(env, ts_node_first_named_child_for_byte(
+                               _unmarshalNode(env, self), offset));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getDescendantForByteRange(
+    JNIEnv* env, jobject self, jint start, jint end) {
+  return _marshalNode(env, ts_node_descendant_for_byte_range(
+                               _unmarshalNode(env, self), start, end));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getNamedDescendantForByteRange(
+    JNIEnv* env, jobject self, jint start, jint end) {
+  return _marshalNode(env, ts_node_named_descendant_for_byte_range(
+                               _unmarshalNode(env, self), start, end));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getDescendantForPointRange(
+    JNIEnv* env, jobject self, jobject start, jobject end) {
+  TSPoint sPoint = _unmarshalPoint(env, start);
+  TSPoint ePoint = _unmarshalPoint(env, end);
+  return _marshalNode(env, ts_node_descendant_for_point_range(
+                               _unmarshalNode(env, self), sPoint, ePoint));
+}
+
+JNIEXPORT jobject JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getNamedDescendantForPointRange(
+    JNIEnv* env, jobject self, jobject start, jobject end) {
+  TSPoint sPoint = _unmarshalPoint(env, start);
+  TSPoint ePoint = _unmarshalPoint(env, end);
+  return _marshalNode(env, ts_node_named_descendant_for_point_range(
+                               _unmarshalNode(env, self), sPoint, ePoint));
+}
+
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TSNode_isEqualTo
+  (JNIEnv* env, jobject self, jobject other) {
+    return (jboolean) ts_node_eq(_unmarshalNode(env, self), _unmarshalNode(env, other));
   }
 
 JNIEXPORT jstring JNICALL
@@ -98,10 +186,10 @@ JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getType(
   return result;
 }
 
-JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getSymbol
-  (JNIEnv* env, jobject self) {
-    return (jint) ts_node_symbol(_unmarshalNode(env, self));
-  }
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getSymbol(
+    JNIEnv* env, jobject self) {
+  return (jint)ts_node_symbol(_unmarshalNode(env, self));
+}
 
 JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSNode_isNull(JNIEnv* env, jobject self) {
