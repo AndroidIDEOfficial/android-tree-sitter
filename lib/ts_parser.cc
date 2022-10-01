@@ -2,7 +2,7 @@
 #include "ts_utils.h"
 
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TreeSitter_parserNew(JNIEnv* env, jclass self) {
+Java_com_itsaky_androidide_treesitter_TreeSitter_newParser(JNIEnv* env, jclass self) {
   return (jlong)ts_parser_new();
 }
 
