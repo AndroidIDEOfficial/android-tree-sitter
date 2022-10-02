@@ -24,6 +24,7 @@ static jclass _pointClass;
 static jfieldID _pointRowField;
 static jfieldID _pointColumnField;
 
+// TSRange
 static jclass _rangeClass;
 static jfieldID _rangeClassStartByteField;
 static jfieldID _rangeClassEndByteField;

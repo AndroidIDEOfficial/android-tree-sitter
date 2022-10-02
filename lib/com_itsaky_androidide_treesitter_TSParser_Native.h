@@ -79,6 +79,22 @@ JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Nativ
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout
   (JNIEnv *, jclass, jlong);
 
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSParser_Native
+ * Method:    setIncludedRanges
+ * Signature: (J[Lcom/itsaky/androidide/treesitter/TSRange;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges
+  (JNIEnv *, jclass, jlong, jobjectArray);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSParser_Native
+ * Method:    getIncludedRanges
+ * Signature: (J)[Lcom/itsaky/androidide/treesitter/TSRange;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,6 +1,8 @@
 #include "com_itsaky_androidide_treesitter_TSParser_Native.h"
 #include "ts_utils.h"
 
+#include <iostream>
+
 JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
     JNIEnv* env, jclass self) {
@@ -69,5 +71,33 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setTimeout(
 JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout(
     JNIEnv* env, jclass self, jlong parser) {
-  return (jlong) ts_parser_timeout_micros((TSParser*)parser);
+  return (jlong)ts_parser_timeout_micros((TSParser*)parser);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges(
+    JNIEnv* env, jclass self, jlong parser, jobjectArray ranges) {
+  int count = env->GetArrayLength(ranges);
+  TSRange tsRanges[count];
+  for (int i = 0; i < count; i++) {
+    tsRanges[i] = _unmarshalRange(env, env->GetObjectArrayElement(ranges, i));
+  }
+
+  const TSRange* r = tsRanges;
+  return (jboolean) ts_parser_set_included_ranges((TSParser*)parser, r, count);
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges(
+    JNIEnv* env, jclass self, jlong parser) {
+  uint32_t count;
+  const TSRange* ranges = ts_parser_included_ranges((TSParser*)parser, &count);
+  std::cout << "Number of included ranges is " << count << std::endl;
+  jclass klass = env->FindClass("com/itsaky/androidide/treesitter/TSRange");
+  jobjectArray result = env->NewObjectArray(count, klass, NULL);
+  for (uint32_t i = 0; i < count; i++) {
+    const TSRange *r = (ranges + i);
+    env->SetObjectArrayElement(result, i, _marshalRange(env, *r));
+  }
+  return result;
 }

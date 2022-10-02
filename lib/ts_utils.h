@@ -18,7 +18,7 @@ struct TreeCursorNode {
 
 #define _loadField(VARIABLE, CLASS, NAME, TYPE) \
   { VARIABLE = env->GetFieldID(CLASS, NAME, TYPE); }
-
+  
 
 void onLoad(JNIEnv* env);
 
