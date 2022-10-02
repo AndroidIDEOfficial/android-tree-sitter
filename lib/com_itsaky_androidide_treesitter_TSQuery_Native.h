@@ -10,10 +10,42 @@ extern "C" {
 /*
  * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
  * Method:    newQuery
- * Signature: (JLjava/lang/String;)J
+ * Signature: (Lcom/itsaky/androidide/treesitter/TSQuery;JLjava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_newQuery
-  (JNIEnv *, jclass, jlong, jstring);
+  (JNIEnv *, jclass, jobject, jlong, jstring);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    delete
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_delete
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    captureCount
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureCount
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    patternCount
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternCount
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    stringCount
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_stringCount
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
