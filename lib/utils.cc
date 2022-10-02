@@ -24,6 +24,12 @@ static jclass _pointClass;
 static jfieldID _pointRowField;
 static jfieldID _pointColumnField;
 
+static jclass _rangeClass;
+static jfieldID _rangeClassStartByteField;
+static jfieldID _rangeClassEndByteField;
+static jfieldID _rangeClassStartPointField;
+static jfieldID _rangeClassEndPointField;
+
 // TSInputEdit
 static jclass _inputEditClass;
 static jfieldID _inputEditStartByteField;
@@ -70,6 +76,15 @@ void onLoad(JNIEnv* env) {
   _loadField(_pointRowField, _pointClass, "row", "I");
   _loadField(_pointColumnField, _pointClass, "column", "I");
 
+  // TSRange
+  _loadClass(_rangeClass, "com/itsaky/androidide/treesitter/TSRange");
+  _loadField(_rangeClassStartByteField, _rangeClass, "startByte", "I");
+  _loadField(_rangeClassEndByteField, _rangeClass, "endByte", "I");
+  _loadField(_rangeClassStartPointField, _rangeClass, "startPoint",
+             "Lcom/itsaky/androidide/treesitter/TSPoint;");
+  _loadField(_rangeClassEndPointField, _rangeClass, "endPoint",
+             "Lcom/itsaky/androidide/treesitter/TSPoint;");
+
   // TSInputEdit
   _loadClass(_inputEditClass, "com/itsaky/androidide/treesitter/TSInputEdit");
   _loadField(_inputEditStartByteField, _inputEditClass, "startByte", "I");
@@ -100,6 +115,7 @@ void onUnload(JNIEnv* env) {
   env->DeleteGlobalRef(_nodeClass);
   env->DeleteGlobalRef(_treeCursorNodeClass);
   env->DeleteGlobalRef(_pointClass);
+  env->DeleteGlobalRef(_rangeClass);
   env->DeleteGlobalRef(_inputEditClass);
   env->DeleteGlobalRef(_matchClass);
   env->DeleteGlobalRef(_captureClass);
@@ -177,7 +193,8 @@ jobject _marshalMatch(JNIEnv* env, TSQueryMatch match) {
   jobject obj = env->AllocObject(_matchClass);
   env->SetIntField(obj, _matchClassIdField, match.id);
   env->SetIntField(obj, _matchClassPatternIndexField, match.pattern_index);
-  jobjectArray captures = env->NewObjectArray(match.capture_count, _captureClass, NULL);
+  jobjectArray captures =
+      env->NewObjectArray(match.capture_count, _captureClass, NULL);
   for (int i = 0; i < match.capture_count; i++) {
     const TSQueryCapture* c = match.captures + i;
     env->SetObjectArrayElement(captures, i, _marshalCapture(env, *c));
@@ -189,8 +206,31 @@ jobject _marshalMatch(JNIEnv* env, TSQueryMatch match) {
 jobject _marshalCapture(JNIEnv* env, TSQueryCapture capture) {
   jobject obj = env->AllocObject(_captureClass);
   env->SetIntField(obj, _captureClassIndexField, capture.index);
-  env->SetObjectField(obj, _captureClassNodeField, _marshalNode(env, capture.node));
+  env->SetObjectField(obj, _captureClassNodeField,
+                      _marshalNode(env, capture.node));
   return obj;
+}
+
+jobject _marshalRange(JNIEnv* env, TSRange range) {
+  jobject obj = env->AllocObject(_rangeClass);
+  env->SetIntField(obj, _rangeClassStartByteField, range.start_byte);
+  env->SetIntField(obj, _rangeClassEndByteField, range.end_byte);
+  env->SetObjectField(obj, _rangeClassStartPointField,
+                      _marshalPoint(env, range.start_point));
+  env->SetObjectField(obj, _rangeClassEndPointField,
+                      _marshalPoint(env, range.end_point));
+  return obj;
+}
+
+TSRange _unmarshalRange(JNIEnv* env, jobject javaObject) {
+  return (TSRange) {
+    _unmarshalPoint(
+        env, env->GetObjectField(javaObject, _rangeClassStartPointField)),
+        _unmarshalPoint(
+            env, env->GetObjectField(javaObject, _rangeClassEndPointField)),
+        (uint32_t)env->GetIntField(javaObject, _rangeClassStartByteField),
+        (uint32_t)env->GetIntField(javaObject, _rangeClassEndByteField)
+  };
 }
 
 #endif

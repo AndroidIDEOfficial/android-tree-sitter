@@ -25,16 +25,17 @@ void onLoad(JNIEnv* env);
 void onUnload(JNIEnv* env);
 
 jobject _marshalNode(JNIEnv* env, TSNode node);
-
 TSNode _unmarshalNode(JNIEnv* env, jobject javaObject);
 
-jobject _marshalTreeCursorNode(JNIEnv* env, TreeCursorNode node);
-
 jobject _marshalPoint(JNIEnv* env, TSPoint point);
-
 TSPoint _unmarshalPoint(JNIEnv* env, jobject javaObject);
 
-TSInputEdit _unmarshalInputEdit(JNIEnv* env, jobject inputEdit);
+jobject _marshalRange(JNIEnv *env, TSRange range);
+TSRange _unmarshalRange(JNIEnv *env, jobject javaObject);
 
 jobject _marshalMatch(JNIEnv *env, TSQueryMatch match);
 jobject _marshalCapture(JNIEnv *env, TSQueryCapture capture);
+
+jobject _marshalTreeCursorNode(JNIEnv* env, TreeCursorNode node);
+
+TSInputEdit _unmarshalInputEdit(JNIEnv* env, jobject inputEdit);
