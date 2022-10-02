@@ -52,3 +52,22 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_incrementalParseBytes
   env->ReleaseByteArrayElements(source_bytes, source, JNI_ABORT);
   return result;
 }
+
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_reset(JNIEnv* env,
+                                                                 jclass self,
+                                                                 jlong parser) {
+  ts_parser_reset((TSParser*)parser);
+}
+
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setTimeout(
+    JNIEnv* env, jclass self, jlong parser, jlong macros) {
+  ts_parser_set_timeout_micros((TSParser*)parser, macros);
+}
+
+JNIEXPORT jlong JNICALL
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout(
+    JNIEnv* env, jclass self, jlong parser) {
+  return (jlong) ts_parser_timeout_micros((TSParser*)parser);
+}

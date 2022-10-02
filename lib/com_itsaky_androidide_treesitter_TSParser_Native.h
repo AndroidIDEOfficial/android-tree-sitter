@@ -55,6 +55,30 @@ JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Nati
 JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_incrementalParseBytes
   (JNIEnv *, jclass, jlong, jlong, jbyteArray, jint, jint);
 
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSParser_Native
+ * Method:    reset
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_reset
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSParser_Native
+ * Method:    setTimeout
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setTimeout
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSParser_Native
+ * Method:    getTimeout
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif

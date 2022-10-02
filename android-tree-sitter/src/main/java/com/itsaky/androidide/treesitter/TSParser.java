@@ -97,6 +97,36 @@ public class TSParser implements AutoCloseable {
             pointer, oldTree.getPointer(), bytes, bytes.length, encoding.getFlag()));
   }
 
+  /**
+   * Instruct the parser to start the next parse from the beginning.
+   *
+   * <p>If the parser previously failed because of a timeout or a cancellation, then by default, it
+   * will resume where it left off on the next call to any of the parsing functions. If you don't
+   * want to resume, and instead intend to use this parser to parse some other document, you must
+   * call this function first.
+   */
+  public void reset() {
+    Native.reset(this.pointer);
+  }
+
+  /**
+   * Set the maximum duration in microseconds that parsing should be allowed to take before halting.
+   *
+   * <p>If parsing takes longer than this, it will halt early, returning <code>null</code>.
+   */
+  public void setTimeout(long microseconds) {
+    Native.setTimeout(this.pointer, microseconds);
+  }
+
+  /**
+   * Get the duration in microseconds that parsing is allowed to take.
+   *
+   * @return The timeout in microseconds.
+   */
+  public long getTimeout() {
+    return Native.getTimeout(this.pointer);
+  }
+
   /** Closes and deletes the current parser. */
   @Override
   public void close() {
@@ -116,5 +146,11 @@ public class TSParser implements AutoCloseable {
 
     public static native long incrementalParseBytes(
         long parser, long old_tree, byte[] source, int length, int encoding);
+
+    public static native void reset(long parser);
+
+    public static native void setTimeout(long parser, long timeout);
+
+    public static native long getTimeout(long parser);
   }
 }
