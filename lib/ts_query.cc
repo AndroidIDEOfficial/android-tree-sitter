@@ -1,6 +1,9 @@
 #include "com_itsaky_androidide_treesitter_TSQuery_Native.h"
 #include "ts_utils.h"
 
+void fillQuery(JNIEnv*, jobject, uint32_t, TSQueryError);
+jint getErrorType(TSQueryError);
+
 JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_newQuery(
     JNIEnv* env, jclass self, jobject queryObject, jlong language,
