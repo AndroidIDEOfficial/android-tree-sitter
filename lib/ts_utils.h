@@ -35,3 +35,6 @@ jobject _marshalPoint(JNIEnv* env, TSPoint point);
 TSPoint _unmarshalPoint(JNIEnv* env, jobject javaObject);
 
 TSInputEdit _unmarshalInputEdit(JNIEnv* env, jobject inputEdit);
+
+jobject _marshalMatch(JNIEnv *env, TSQueryMatch match);
+jobject _marshalCapture(JNIEnv *env, TSQueryCapture capture);

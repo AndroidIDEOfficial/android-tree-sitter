@@ -59,12 +59,7 @@ public class TSQueryCursor implements AutoCloseable {
   }
 
   public TSQueryMatch nextMatch() {
-    TSQueryMatch match = new TSQueryMatch();
-    if (Native.nextMatch(this.pointer, match)) {
-      return match;
-    }
-
-    return null;
+    return Native.nextMatch(this.pointer);
   }
 
   public void removeMatch(int id) {
@@ -93,7 +88,7 @@ public class TSQueryCursor implements AutoCloseable {
 
     public static native void setPointRange(long cursor, TSPoint start, TSPoint end);
 
-    public static native boolean nextMatch(long cursor, TSQueryMatch match);
+    public static native TSQueryMatch nextMatch(long cursor);
 
     public static native void removeMatch(long cursor, int id);
   }

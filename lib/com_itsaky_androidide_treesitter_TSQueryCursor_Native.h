@@ -74,10 +74,10 @@ JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024
 /*
  * Class:     com_itsaky_androidide_treesitter_TSQueryCursor_Native
  * Method:    nextMatch
- * Signature: (JLcom/itsaky/androidide/treesitter/TSQueryMatch;)Z
+ * Signature: (J)Lcom/itsaky/androidide/treesitter/TSQueryMatch;
  */
-JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_nextMatch
-  (JNIEnv *, jclass, jlong, jobject);
+JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_nextMatch
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TSQueryCursor_Native

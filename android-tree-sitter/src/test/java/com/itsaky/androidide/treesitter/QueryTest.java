@@ -13,14 +13,20 @@ public class QueryTest extends TestBase {
   public void implementationTest() throws Exception {
     try (final var parser = new TSParser()) {
       parser.setLanguage(TSLanguages.java());
-      try (final var tree = parser.parseString("public class MyClass { int x = 0; }");
-          final var query = new TSQuery(tree.getLanguage(), "(class_body)");
-          final var cursor = new TSQueryCursor()) {
+      try (final var tree =
+          parser.parseString("public class MyClass { int x = 0; public void myFunc(){} }")) {
+        var query =
+            new TSQuery(
+                TSLanguages.java(), "(class_declaration name: (identifier) @MyClass)");
+        var cursor = new TSQueryCursor();
         cursor.exec(query, tree.getRootNode());
-        TSQueryMatch match;
-        while((match = cursor.nextMatch()) != null) {
-          assertThat(match.getCaptures()).isNotEmpty();
-        }
+        final var match = cursor.nextMatch();
+        assertThat(match).isNotNull();
+        assertThat(match.getCaptures()).hasLength(1);
+        query.close();
+        cursor.close();
+      } catch (Throwable err) {
+        throw new RuntimeException(err);
       }
     }
   }
