@@ -73,8 +73,10 @@ for (def arch : archs) {
 }
 
 def buildFor(Task task, String arch, String classifier, String ndkDir, String javaHome) {
-    task.inputs.dir "${rootProject.projectDir.path}/lib"
-    task.outputs.file "${rootProject.projectDir.path}/output/${classifier}/libts.so"
+    def outputFile = new File("${rootProject.projectDir.path}/output/${classifier}/libts.so")
+    def inputs = rootProject.fileTree("lib").files
+    task.inputs.files(inputs)
+    task.outputs.file outputFile
 
     task.doLast {
         exec {

@@ -6,4 +6,5 @@ plugins {
 
 task clean {
     delete "output"
+    delete "build"
 }
