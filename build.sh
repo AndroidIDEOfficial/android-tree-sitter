@@ -30,7 +30,7 @@ ndk_dir=""
 verbose_out=false
 
 OPTIND=1
-while getopts "h?sa:o:m:n:" opt; do
+while getopts "h?sva:o:m:n:" opt; do
   case "$opt" in
     h|\?)
       print_help
@@ -118,15 +118,14 @@ mkdir -p $dest_dir
 macros=""
 sources=""
 for file in ${script_dir}/lib/*; do
-  if [[ $file == *.h ]]; then
+  if [[ $file == *.h || -d $file ]]; then
     verbose "Skiping $file"
     continue
   fi
   sources+=${file}
   sources+=" "
 done
-# sources="${script_dir}/lib/ts.cc"
-# sources+=" ${script_dir}/lib/langs.cc"
+
 iscpp=""
 for lang in $*
 do
@@ -147,11 +146,20 @@ do
   macros+=" -DTS_LANGUAGE_${g_LANG}=1"
 done
 
-verbose "Sources --------------------------------\n" "$sources"
-verbose "Macros --------------------------------" "$macros"
+verbose
+verbose "Sources --------------------------------"
+for source in $sources; do
+  verbose $source
+done
+verbose ""
+verbose "Macros --------------------------------"
+for macro in $macros; do
+  verbose $macro
+done
+verbose ""
 
 objects=""
-includes="-I${script_dir}/tree-sitter/lib/include -I${script_dir}/tree-sitter/lib/src"
+includes="-I${script_dir}/tree-sitter/lib/include -I${script_dir}/tree-sitter/lib/src -I${script_dir}/lib/include"
 out_dir_base="${script_dir}/output/${clang_qualifier}"
 
 if [ ! -z "${for_host+x}" ]; then

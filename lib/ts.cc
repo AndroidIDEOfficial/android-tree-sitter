@@ -1,4 +1,5 @@
 #include <string.h>
+#include "com_itsaky_androidide_treesitter_TreeSitter.h"
 #include "ts_utils.h"
 
 #if defined(__ANDROID__)
@@ -23,3 +24,14 @@ void JNI_OnUnload(JavaVM* vm, void* reserved) {
   vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION);
   onUnload(env);
 }
+
+
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_getLanguageVersion
+  (JNIEnv *env, jclass self) {
+    return (jint) TREE_SITTER_LANGUAGE_VERSION;
+  }
+
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_getMinimumCompatibleLanguageVersion
+  (JNIEnv *env, jclass self) {
+    return (jint) TREE_SITTER_MIN_COMPATIBLE_LANGUAGE_VERSION;
+  }
