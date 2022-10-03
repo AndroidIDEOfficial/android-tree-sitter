@@ -18,6 +18,8 @@ implementation 'io.github.itsaky:android-tree-sitter:<version>'
 - Init/update submodules with `git submodule update --init`
 - If building from Android Studio, set the `ndk.dir` and `java.home` properties in your `local.properties` file.
 
+**Note** : Even though this an Android Gradle project, it uses `gcc` and other Linux tools to build the shared libraries for the host operating system. Therefore, in order to build `android-tree-sitter` on Windows, you might need to setup those tools first. You might need to modify the Gradle build scripts as well.
+
 ### Use the `build.sh` script
 
 ```
