@@ -23,6 +23,14 @@ public class TSTree implements AutoCloseable {
     return Native.rootNode(pointer);
   }
 
+  public TSRange[] getChangedRanges(TSTree oldTree) {
+    TSRange[] ranges = Native.changedRanges(this.pointer, oldTree.pointer);
+    if (ranges == null) {
+      return new TSRange[0];
+    }
+    return ranges;
+  }
+
   /**
    * Make a shallow copy of this tree. This is very fast.
    *
@@ -67,6 +75,8 @@ public class TSTree implements AutoCloseable {
     public static native long copy(long tree);
 
     public static native TSNode rootNode(long tree);
+
+    public static native TSRange[] changedRanges(long tree, long oldTree);
 
     public static native long getLanguage(long tree);
   }

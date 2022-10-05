@@ -41,6 +41,14 @@ JNIEXPORT jobject JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Nati
 
 /*
  * Class:     com_itsaky_androidide_treesitter_TSTree_Native
+ * Method:    changedRanges
+ * Signature: (JJ)[Lcom/itsaky/androidide/treesitter/TSRange;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native_changedRanges
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSTree_Native
  * Method:    getLanguage
  * Signature: (J)J
  */

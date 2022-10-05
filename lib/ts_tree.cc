@@ -29,6 +29,23 @@ Java_com_itsaky_androidide_treesitter_TSTree_00024Native_rootNode(JNIEnv* env,
   return _marshalNode(env, ts_tree_root_node((TSTree*)tree));
 }
 
+JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native_changedRanges
+  (JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
+    uint32_t count;
+    TSRange *ranges = ts_tree_get_changed_ranges((TSTree*) oldTree, (TSTree*) tree, &count);
+    if (count == 0) {
+      return NULL;
+    }
+
+    jclass klass = env->FindClass("com/itsaky/androidide/treesitter/TSRange");
+    jobjectArray arr = env->NewObjectArray(count, klass, NULL);
+    for (uint32_t i = 0; i < count; i++) {
+      TSRange *r = (ranges + i);
+      env->SetObjectArrayElement(arr, i, _marshalRange(env, *r));
+    }
+    return arr;
+  }
+
 JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_getLanguage(
     JNIEnv* env, jclass self, jlong tree) {
