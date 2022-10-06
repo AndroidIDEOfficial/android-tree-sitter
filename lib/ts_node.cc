@@ -158,13 +158,13 @@ Java_com_itsaky_androidide_treesitter_TSNode_getNodeString(JNIEnv* env,
 
 JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSNode_getEndByte(
     JNIEnv* env, jobject self) {
-  return (jint)ts_node_end_byte(_unmarshalNode(env, self)) / 2;
+  return (jint)ts_node_end_byte(_unmarshalNode(env, self));
 }
 
 JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSNode_getStartByte(JNIEnv* env,
                                                           jobject self) {
-  return (jint)ts_node_start_byte(_unmarshalNode(env, self)) / 2;
+  return (jint)ts_node_start_byte(_unmarshalNode(env, self));
 }
 
 JNIEXPORT jobject JNICALL

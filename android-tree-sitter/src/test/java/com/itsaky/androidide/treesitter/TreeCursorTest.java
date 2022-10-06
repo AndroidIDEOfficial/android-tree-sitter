@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
 
-public class TreeCursorTest extends TestBase {
+public class TreeCursorTest extends TreeSitterTest {
 
   @Test
   public void testWalk() throws UnsupportedEncodingException {

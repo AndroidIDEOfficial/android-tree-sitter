@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 
 @RunWith(JUnit4.class)
-public class ParserTest extends TestBase {
+public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testParse() throws UnsupportedEncodingException {
@@ -54,6 +54,42 @@ public class ParserTest extends TestBase {
               TSInputEncoding.TSInputEncodingUTF16)) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println("\nParsed View.java in: " + (System.currentTimeMillis() - start) + "ms");
+      }
+    }
+  }
+
+  @Test
+  public void testTimeout() throws UnsupportedEncodingException {
+    final var timeout = 1000L; // 1 millisecond
+    final var start = System.currentTimeMillis();
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguages.java());
+      parser.setTimeout(timeout);
+      assertThat(parser.getTimeout()).isEqualTo(timeout);
+      try (final var tree =
+          parser.parseString(readString(Paths.get("./src/test/resources/View.java.txt")))) {
+        final var timeConsumed = System.currentTimeMillis() - start;
+        assertThat(tree).isNull();
+        System.out.println("Parsed in " + timeConsumed + "ms");
+      }
+    }
+  }
+
+  @Test
+  public void testIncrementalParsing() throws UnsupportedEncodingException {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguages.java());
+      parser.setIncludedRanges(
+          new TSRange[] {new TSRange(21, 65, new TSPoint(0, 21), new TSPoint(0, 65))});
+      final var source = "public class Main { class Inner { public static void main() {} } }";
+      try (final var tree = parser.parseString(source)) {
+        assertThat(tree).isNotNull();
+
+        final var root = tree.getRootNode();
+        assertThat(root).isNotNull();
+
+        // errorneous type
+        assertThat(root.getChild(0).getType()).isEqualTo("local_variable_declaration");
       }
     }
   }

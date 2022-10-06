@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * @author Akash Yadav
  */
-public class QueryTest extends TestBase {
+public class QueryTest extends TreeSitterTest {
 
   @Test
   public void queryTest() throws Exception {
@@ -19,6 +19,13 @@ public class QueryTest extends TestBase {
             new TSQuery(tree.getLanguage(), "(class_declaration name: (identifier) @MyClass)");
         var cursor = new TSQueryCursor();
         cursor.exec(query, tree.getRootNode());
+
+        // < 0 = no errors
+        assertThat(query.getErrorOffset()).isLessThan(0);
+        assertThat(query.getCaptureCount()).isEqualTo(1);
+        assertThat(query.getPatternCount()).isEqualTo(1);
+        assertThat(query.getStringCount()).isEqualTo(0);
+
         var match = cursor.nextMatch();
         assertThat(match).isNotNull();
         assertThat(match.getCaptures()).isNotNull();
@@ -58,7 +65,8 @@ public class QueryTest extends TestBase {
       parser.setLanguage(TSLanguages.java());
       try (final var tree = parser.parseString("public class MyClass {}")) {
         var query =
-            new TSQuery(tree.getLanguage(), "(method_declaration name: (identifier) @NoDeclWithThisName)");
+            new TSQuery(
+                tree.getLanguage(), "(method_declaration name: (identifier) @NoDeclWithThisName)");
         var cursor = new TSQueryCursor();
         cursor.exec(query, tree.getRootNode());
         var match = cursor.nextMatch();

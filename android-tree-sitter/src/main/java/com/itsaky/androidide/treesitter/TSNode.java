@@ -13,7 +13,21 @@ public class TSNode {
   private long id;
   private long tree;
 
-  public TSNode() {}
+  private TSTree mTree;
+
+  private TSNode() {}
+
+  /**
+   * Get the syntax tree that this node is associated with.
+   *
+   * @return The syntax tree.
+   */
+  public TSTree getTree() {
+    if (mTree == null) {
+      mTree = new TSTree(this.tree);
+    }
+    return mTree;
+  }
 
   /**
    * Get the child of the given node at the child index.

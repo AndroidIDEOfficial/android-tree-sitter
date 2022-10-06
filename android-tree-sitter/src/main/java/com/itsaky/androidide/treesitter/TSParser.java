@@ -13,6 +13,13 @@ public class TSParser implements AutoCloseable {
     this(Native.newParser());
   }
 
+  private TSTree createTree(long pointer) {
+    if (pointer == 0) {
+      return null;
+    }
+    return new TSTree(pointer);
+  }
+
   /**
    * Set the language of the given parser.
    *
@@ -56,7 +63,8 @@ public class TSParser implements AutoCloseable {
   public TSTree parseString(String source, TSInputEncoding encoding)
       throws UnsupportedEncodingException {
     byte[] bytes = source.getBytes(encoding.getCharset());
-    return new TSTree(Native.parseBytes(pointer, bytes, bytes.length, encoding.getFlag()));
+    final var tree = TSParser.Native.parseBytes(pointer, bytes, bytes.length, encoding.getFlag());
+    return createTree(tree);
   }
 
   /**
@@ -68,7 +76,7 @@ public class TSParser implements AutoCloseable {
    * @return The parsed tree.
    */
   public TSTree parseBytes(byte[] bytes, int bytesLength, int encodingFlag) {
-    return new TSTree(Native.parseBytes(pointer, bytes, bytesLength, encodingFlag));
+    return createTree(Native.parseBytes(pointer, bytes, bytesLength, encodingFlag));
   }
 
   /**
@@ -92,7 +100,7 @@ public class TSParser implements AutoCloseable {
   public TSTree parseString(TSTree oldTree, String source, TSInputEncoding encoding)
       throws UnsupportedEncodingException {
     byte[] bytes = source.getBytes(encoding.getCharset());
-    return new TSTree(
+    return createTree(
         Native.incrementalParseBytes(
             pointer, oldTree.getPointer(), bytes, bytes.length, encoding.getFlag()));
   }

@@ -5,6 +5,8 @@ plugins {
 }
 
 task clean {
-    delete "output"
-    delete "build"
+    doLast {
+        delete "output"
+        delete "build"
+    }
 }

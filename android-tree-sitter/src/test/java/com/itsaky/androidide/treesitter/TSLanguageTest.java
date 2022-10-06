@@ -10,7 +10,7 @@ import org.junit.runners.JUnit4;
  * @author Akash Yadav
  */
 @RunWith(JUnit4.class)
-public class TSLanguageTest extends TestBase {
+public class TSLanguageTest extends TreeSitterTest {
 
   @Test
   public void testFunctionality() {

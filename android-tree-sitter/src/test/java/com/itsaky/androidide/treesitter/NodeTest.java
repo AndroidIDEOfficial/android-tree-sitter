@@ -5,30 +5,30 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
-public class NodeTest extends TestBase {
+public class NodeTest extends TreeSitterTest {
 
   @Test
-  public void testGetChildren() throws UnsupportedEncodingException {
+  public void multiTest() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguages.python());
       final var sourceToParse = "def foo(bar, baz):\n  print(bar)\n  print(baz)";
-      try (TSTree tree =
-          parser.parseString(
-              "def foo(bar, baz):\n  print(bar)\n  print(baz)",
-              TSInputEncoding.TSInputEncodingUTF16)) {
+      try (TSTree tree = parser.parseString(sourceToParse, TSInputEncoding.TSInputEncodingUTF8)) {
         var root = tree.getRootNode();
+        assertThat(root.getTree().getPointer()).isEqualTo(tree.getPointer());
+
         var symbol = root.getSymbol();
         assertThat(tree.getLanguage().getSymbolName(symbol)).isEqualTo("module");
         assertThat(root.getFieldNameForChild(0)).isNull();
 
         var start = root.getStartPoint();
-        assertThat(0).isEqualTo(start.row);
-        assertThat(0).isEqualTo(start.column);
+        assertThat(start.row).isEqualTo(0);
+        assertThat(start.column).isEqualTo(0);
 
         var end = root.getEndPoint();
-        assertThat(2).isEqualTo(end.row);
-        assertThat(12).isEqualTo(end.column);
+        assertThat(end.row).isEqualTo(2);
+        assertThat(end.column).isEqualTo(12);
 
         var type = root.getType();
         assertThat("module").isEqualTo(type);
@@ -37,14 +37,14 @@ public class NodeTest extends TestBase {
         assertThat(0).isEqualTo(startByte);
 
         var endByte = root.getEndByte();
-        assertThat(sourceToParse.getBytes(java.nio.charset.StandardCharsets.UTF_8))
+        assertThat(sourceToParse.getBytes(StandardCharsets.UTF_8))
             .hasLength(endByte);
 
         var children = root.getChildCount();
-        assertThat(1).isEqualTo(children);
+        assertThat(children).isEqualTo(1);
 
         var namedChildren = root.getNamedChildCount();
-        assertThat(1).isEqualTo(namedChildren);
+        assertThat(namedChildren).isEqualTo(1);
 
         var isNamed = root.isNamed();
         assertThat(isNamed).isTrue();
@@ -66,23 +66,38 @@ public class NodeTest extends TestBase {
 
         var function = root.getChild(0);
         start = function.getStartPoint();
-        assertThat(0).isEqualTo(start.row);
-        assertThat(0).isEqualTo(start.column);
+        assertThat(start.row).isEqualTo(0);
+        assertThat(start.column).isEqualTo(0);
         assertThat(function.isEqualTo(function)).isTrue();
         assertThat(function.getFieldNameForChild(1)).isEqualTo("name");
 
         end = function.getEndPoint();
-        assertThat(2).isEqualTo(end.row);
-        assertThat(12).isEqualTo(end.column);
+        assertThat(end.row).isEqualTo(2);
+        assertThat(end.column).isEqualTo(12);
 
         type = function.getType();
         assertThat("function_definition").isEqualTo(type);
 
         children = function.getChildCount();
-        assertThat(5).isEqualTo(children);
+        assertThat(children).isEqualTo(5);
 
         isNull = function.isNull();
         assertThat(isNull).isFalse();
+
+        var def = function.getChild(0);
+        assertThat(def.isNull()).isFalse();
+        assertThat(def.getType()).isEqualTo("def");
+        assertThat(def.getNextSibling().getType()).isEqualTo("identifier");
+        assertThat(def.getNextNamedSibling().isEqualTo(def.getNextSibling())).isTrue();
+        assertThat(def.getNextSibling().getNextSibling().getType()).isEqualTo("parameters");
+        assertThat(def.getNextSibling().getNextSibling().getNextSibling().getType()).isEqualTo(":");
+        assertThat(
+                def.getNextSibling()
+                    .getNextSibling()
+                    .getNextSibling()
+                    .getPreviousSibling()
+                    .getType())
+            .isEqualTo("parameters");
 
         var body = function.getChildByFieldName("body");
 

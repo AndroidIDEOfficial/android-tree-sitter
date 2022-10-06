@@ -44,6 +44,7 @@ publishing {
 }
 
 final def archs = ["aarch64", "arm", "x86", "x86_64"]
+def inputs = rootProject.file("lib")
 def ndkDir = System.getenv("ANDROID_NDK_HOME")
 def javaHome = System.getenv("JAVA_HOME")
 
@@ -66,45 +67,46 @@ if (ndkDir == null || javaHome == null) {
 }
 
 for (def arch : archs) {
-    task("buildSharedObjectFor${arch.capitalize()}") { task ->
+    task("buildSharedObjectFor${arch.capitalize()}") { Task task ->
         def classifier = classifierFor(arch)
-        buildFor(task, arch, classifier, ndkDir, javaHome)
-    }
-}
+        task.inputs.dir inputs
+        task.outputs.file sharedOutput(classifier)
 
-def buildFor(Task task, String arch, String classifier, String ndkDir, String javaHome) {
-    def outputFile = new File("${rootProject.projectDir.path}/output/${classifier}/libts.so")
-    def inputs = rootProject.fileTree("lib").files
-    task.inputs.files(inputs)
-    task.outputs.file outputFile
-
-    task.doLast {
-        exec {
-            environment("JAVA_HOME", javaHome)
-            if (classifier == "host") {
-                commandLine "${rootProject.projectDir.path}/build.sh", "-s", "python", "java"
-            } else {
-                commandLine "${rootProject.projectDir.path}/build.sh",
-                        "-a", arch,
-                        "-m", android.defaultConfig.minSdk,
-                        "-n", ndkDir,
-                        "python", "java"
-            }
+        task.doLast {
+            buildFor(arch, classifier, ndkDir, javaHome)
         }
     }
 }
 
-task buildSharedObjectForHost { task ->
-    buildFor(task, "", "host", ndkDir, javaHome)
+def buildFor(String arch, String classifier, String ndkDir, String javaHome) {
+    exec {
+        environment("JAVA_HOME", javaHome)
+        if (classifier == "host") {
+            commandLine "${rootProject.projectDir.path}/build.sh", "-s", "python", "java"
+        } else {
+            commandLine "${rootProject.projectDir.path}/build.sh",
+                    "-a", arch,
+                    "-m", android.defaultConfig.minSdk,
+                    "-n", ndkDir,
+                    "python", "java"
+        }
+    }
+}
+
+task buildSharedObjectForHost { Task task ->
+    task.inputs.dir inputs
+    task.outputs.file sharedOutput("host")
+    task.doLast {
+        buildFor("", "host", ndkDir, javaHome)
+    }
 }
 
 task buildSharedObjectForAll() {
-    archs.forEach {
-        dependsOn("buildSharedObjectFor${it.capitalize()}")
-    }
     dependsOn("buildSharedObjectForHost")
+    dependsOn(archs.collect { "buildSharedObjectFor${it.capitalize()}"})
 }
 
+@SuppressWarnings('GrMethodMayBeStatic')
 String classifierFor(String arch) {
     def clangPrefix = arch
     def clangSuffix = ""
@@ -118,6 +120,10 @@ String classifierFor(String arch) {
     }
 
     return "${clangPrefix}-linux-android${clangSuffix}${android.defaultConfig.minSdk}"
+}
+
+File sharedOutput(String classifier) {
+    return rootProject.file("output/${classifier}/libts.so")
 }
 
 tasks.withType(JavaCompile) {

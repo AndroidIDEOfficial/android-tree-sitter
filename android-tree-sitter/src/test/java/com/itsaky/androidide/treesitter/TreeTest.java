@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * @author Akash Yadav
  */
-public class TreeTest extends TestBase {
+public class TreeTest extends TreeSitterTest {
 
   @Test
   public void testTreeCopy() throws UnsupportedEncodingException {

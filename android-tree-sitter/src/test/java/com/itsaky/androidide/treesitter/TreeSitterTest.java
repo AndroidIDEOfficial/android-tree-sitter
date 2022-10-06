@@ -4,7 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 
-public class TestBase {
+public class TreeSitterTest {
   static {
     System.load(System.getProperty("user.dir") + "/../output/host/libts.so");
   }

@@ -164,7 +164,7 @@ jobject _marshalPoint(JNIEnv* env, TSPoint point) {
   jobject javaObject = env->AllocObject(_pointClass);
 
   env->SetIntField(javaObject, _pointRowField, point.row);
-  env->SetIntField(javaObject, _pointColumnField, point.column / 2);
+  env->SetIntField(javaObject, _pointColumnField, point.column);
   return javaObject;
 }
 
