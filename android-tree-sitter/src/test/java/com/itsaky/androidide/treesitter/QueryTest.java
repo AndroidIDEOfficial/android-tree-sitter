@@ -20,8 +20,6 @@ public class QueryTest extends TreeSitterTest {
         var cursor = new TSQueryCursor();
         cursor.exec(query, tree.getRootNode());
 
-        // < 0 = no errors
-        assertThat(query.getErrorOffset()).isLessThan(0);
         assertThat(query.getCaptureCount()).isEqualTo(1);
         assertThat(query.getPatternCount()).isEqualTo(1);
         assertThat(query.getStringCount()).isEqualTo(0);
