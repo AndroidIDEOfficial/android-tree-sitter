@@ -1,6 +1,9 @@
 package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.itsaky.androidide.treesitter.TSInputEncoding.TSInputEncodingUTF16;
+import static com.itsaky.androidide.treesitter.TestUtils.readString;
+import static java.nio.file.Paths.get;
 
 import org.junit.Test;
 
@@ -14,8 +17,7 @@ public class TreeCursorTest extends TreeSitterTest {
       parser.setLanguage(TSLanguages.python());
       try (TSTree tree =
           parser.parseString(
-              "def foo(bar, baz):\n  print(bar)\n  print(baz)",
-              TSInputEncoding.TSInputEncodingUTF16)) {
+              "def foo(bar, baz):\n  print(bar)\n  print(baz)", TSInputEncodingUTF16)) {
         try (TSTreeCursor cursor = tree.getRootNode().walk()) {
           assertThat(cursor.getCurrentTreeCursorNode().getType()).isEqualTo("module");
           assertThat(cursor.getCurrentNode().getType()).isEqualTo("module");

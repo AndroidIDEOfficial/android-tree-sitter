@@ -130,10 +130,6 @@ public class TSParser implements AutoCloseable {
    * parse only a *portion* of a document but still return a syntax tree whose ranges match up with
    * the document as a whole. You can also pass multiple disjoint ranges.
    *
-   * <p>The second and third parameters specify the location and length of an array of ranges. The
-   * parser does *not* take ownership of these ranges; it copies the data, so it doesn't matter how
-   * these ranges are allocated.
-   *
    * <p>If the ranges parameter is an empty array, then the entire document will be parsed.
    * Otherwise, the given ranges must be ordered from earliest to latest in the document, and they
    * must not overlap. That is, the following must hold for all `i` < `length - 1`:
