@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-		"${workspaceFolder/include}",
+		        "${workspaceFolder/include}",
                 "${workspaceFolder}/../tree-sitter/lib/src",
                 "${workspaceFolder}/../tree-sitter/lib/include",
                 "${env:JAVA_HOME}/include",
