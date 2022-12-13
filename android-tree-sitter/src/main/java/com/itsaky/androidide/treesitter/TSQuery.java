@@ -55,9 +55,43 @@ public class TSQuery implements AutoCloseable {
     return Native.stringCount(this.pointer);
   }
 
+  public int getStartByteForPattern(int pattern) {
+    validatePatternIndex(pattern);
+    return Native.startByteForPattern(this.pointer, pattern);
+  }
+
+  public TSQueryPredicateStep[] getPredicatesForPattern(int pattern) {
+    validatePatternIndex(pattern);
+    return Native.predicatesForPattern(this.pointer, pattern);
+  }
+
+  public boolean isPatternRooted(int pattern) {
+    validatePatternIndex(pattern);
+    return Native.patternRooted(this.pointer, pattern);
+  }
+
+  public boolean isPatternGuaranteedAtStep(int offset) {
+    return Native.patternGuaranteedAtStep(this.pointer, offset);
+  }
+
+  public String getCaptureNameForId(int id) {
+    return Native.captureNameForId(this.pointer, id);
+  }
+
+  public String getStringValueForId(int id) {
+    return Native.stringValueForId(this.pointer, id);
+  }
+
   @Override
   public void close() throws Exception {
     Native.delete(this.pointer);
+  }
+
+  private void validatePatternIndex(int pattern) {
+    if (pattern < 0 || pattern >= getPatternCount()) {
+      throw new IndexOutOfBoundsException(
+          "pattern count: " + getPatternCount() + ", pattern: " + pattern);
+    }
   }
 
   private static class Native {
@@ -70,5 +104,17 @@ public class TSQuery implements AutoCloseable {
     public static native int patternCount(long query);
 
     public static native int stringCount(long query);
+
+    public static native int startByteForPattern(long query, int pattern);
+
+    public static native TSQueryPredicateStep[] predicatesForPattern(long query, int pattern);
+
+    public static native boolean patternRooted(long query, int pattern);
+
+    public static native boolean patternGuaranteedAtStep(long query, int offset);
+
+    public static native String captureNameForId(long query, int id);
+
+    public static native String stringValueForId(long query, int id);
   }
 }

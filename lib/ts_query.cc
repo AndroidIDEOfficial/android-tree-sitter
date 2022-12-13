@@ -44,6 +44,58 @@ Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_stringCount(
   return ts_query_string_count((TSQuery*)query);
 }
 
+JNIEXPORT jint JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_startByteForPattern(
+    JNIEnv* env, jclass self, jlong query, jint pattern) {
+  return (jint)ts_query_start_byte_for_pattern((TSQuery*)query, pattern);
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_predicatesForPattern(
+    JNIEnv* env, jclass self, jlong query, jint pattern) {
+  uint32_t count;
+  const TSQueryPredicateStep* predicates =
+      ts_query_predicates_for_pattern((TSQuery*)query, pattern, &count);
+  jclass klass =
+      env->FindClass("com/itsaky/androidide/treesitter/TSQueryPredicateStep");
+  jobjectArray result = env->NewObjectArray(count, klass, NULL);
+  for (uint32_t i = 0; i < count; i++) {
+    const TSQueryPredicateStep* predicate = (predicates + i);
+    jobject obj = _marshalQueryPredicateStep(env, predicate);
+    env->SetObjectArrayElement(result, i, obj);
+  }
+  return result;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternRooted(
+    JNIEnv* env, jclass self, jlong query, jint pattern) {
+  return (jboolean)ts_query_is_pattern_rooted((TSQuery*)query, pattern);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternGuaranteedAtStep(
+    JNIEnv* env, jclass self, jlong query, jint offset) {
+  return (jboolean)ts_query_is_pattern_guaranteed_at_step((TSQuery*)query,
+                                                          offset);
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureNameForId(
+    JNIEnv* env, jclass self, jlong query, jint id) {
+  uint32_t count;
+  const char* name = ts_query_capture_name_for_id((TSQuery*)query, id, &count);
+  return (jstring)env->NewStringUTF(name);
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_stringValueForId(
+    JNIEnv* env, jclass self, jlong query, jint id) {
+  uint32_t count;
+  const char* str = ts_query_string_value_for_id((TSQuery*)query, id, &count);
+  return env->NewStringUTF(str);
+}
+
 void fillQuery(JNIEnv* env, jobject query, uint32_t error_offset,
                TSQueryError error_type) {
   jclass klass = env->GetObjectClass(query);

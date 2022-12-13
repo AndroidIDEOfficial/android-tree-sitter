@@ -47,6 +47,54 @@ JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native
 JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_stringCount
   (JNIEnv *, jclass, jlong);
 
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    startByteForPattern
+ * Signature: (JI)I
+ */
+JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_startByteForPattern
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    predicatesForPattern
+ * Signature: (JI)[Lcom/itsaky/androidide/treesitter/TSQueryPredicateStep;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_predicatesForPattern
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    patternRooted
+ * Signature: (JI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternRooted
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    patternGuaranteedAtStep
+ * Signature: (JI)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternGuaranteedAtStep
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    captureNameForId
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureNameForId
+  (JNIEnv *, jclass, jlong, jint);
+
+/*
+ * Class:     com_itsaky_androidide_treesitter_TSQuery_Native
+ * Method:    stringValueForId
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_stringValueForId
+  (JNIEnv *, jclass, jlong, jint);
+
 #ifdef __cplusplus
 }
 #endif

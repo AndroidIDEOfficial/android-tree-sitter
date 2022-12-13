@@ -3,6 +3,8 @@
 
 #include "ts_utils.h"
 
+jint getPredicateTypeId(TSQueryPredicateStepType type);
+
 // Node
 static jclass _nodeClass;
 static jfieldID _nodeContext0Field;
@@ -50,6 +52,11 @@ static jfieldID _matchClassCapturesField;
 static jclass _captureClass;
 static jfieldID _captureClassIndexField;
 static jfieldID _captureClassNodeField;
+
+// TSQueryPredicateStep
+static jclass _queryPredicateStepClass;
+static jfieldID _queryPredicateStepTypeField;
+static jfieldID _queryPredicateStepValueIdField;
 
 void onLoad(JNIEnv* env) {
   // Node
@@ -110,6 +117,14 @@ void onLoad(JNIEnv* env) {
   _loadField(_captureClassIndexField, _captureClass, "index", "I");
   _loadField(_captureClassNodeField, _captureClass, "node",
              "Lcom/itsaky/androidide/treesitter/TSNode;");
+
+  // TSQueryPredicateStep
+  _loadClass(_queryPredicateStepClass,
+             "com/itsaky/androidide/treesitter/TSQueryPredicateStep");
+  _loadField(_queryPredicateStepTypeField, _queryPredicateStepClass, "type",
+             "I");
+  _loadField(_queryPredicateStepValueIdField, _queryPredicateStepClass,
+             "valueId", "I");
 }
 
 void onUnload(JNIEnv* env) {
@@ -120,6 +135,7 @@ void onUnload(JNIEnv* env) {
   env->DeleteGlobalRef(_inputEditClass);
   env->DeleteGlobalRef(_matchClass);
   env->DeleteGlobalRef(_captureClass);
+  env->DeleteGlobalRef(_queryPredicateStepClass);
 }
 
 // Node
@@ -224,14 +240,35 @@ jobject _marshalRange(JNIEnv* env, TSRange range) {
 }
 
 TSRange _unmarshalRange(JNIEnv* env, jobject javaObject) {
-  return (TSRange) {
-    _unmarshalPoint(
-        env, env->GetObjectField(javaObject, _rangeClassStartPointField)),
-        _unmarshalPoint(
-            env, env->GetObjectField(javaObject, _rangeClassEndPointField)),
-        (uint32_t)env->GetIntField(javaObject, _rangeClassStartByteField),
-        (uint32_t)env->GetIntField(javaObject, _rangeClassEndByteField)
-  };
+  return (TSRange){
+      _unmarshalPoint(
+          env, env->GetObjectField(javaObject, _rangeClassStartPointField)),
+      _unmarshalPoint(
+          env, env->GetObjectField(javaObject, _rangeClassEndPointField)),
+      (uint32_t)env->GetIntField(javaObject, _rangeClassStartByteField),
+      (uint32_t)env->GetIntField(javaObject, _rangeClassEndByteField)};
+}
+
+jobject _marshalQueryPredicateStep(JNIEnv* env,
+                                   const TSQueryPredicateStep* predicate) {
+  jobject obj = env->AllocObject(_queryPredicateStepClass);
+  env->SetIntField(obj, _queryPredicateStepTypeField,
+                   getPredicateTypeId(predicate->type));
+  env->SetIntField(obj, _queryPredicateStepValueIdField, predicate->value_id);
+  return obj;
+}
+
+jint getPredicateTypeId(TSQueryPredicateStepType type) {
+  switch (type) {
+    case TSQueryPredicateStepTypeDone:
+      return 0;
+    case TSQueryPredicateStepTypeCapture:
+      return 1;
+    case TSQueryPredicateStepTypeString:
+      return 2;
+    default:
+      return 0;
+  }
 }
 
 #endif

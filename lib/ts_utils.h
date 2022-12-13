@@ -39,3 +39,5 @@ jobject _marshalCapture(JNIEnv *env, TSQueryCapture capture);
 jobject _marshalTreeCursorNode(JNIEnv* env, TreeCursorNode node);
 
 TSInputEdit _unmarshalInputEdit(JNIEnv* env, jobject inputEdit);
+
+jobject _marshalQueryPredicateStep(JNIEnv* env, const TSQueryPredicateStep* predicate);

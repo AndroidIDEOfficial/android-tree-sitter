@@ -92,7 +92,6 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges(
     JNIEnv* env, jclass self, jlong parser) {
   uint32_t count;
   const TSRange* ranges = ts_parser_included_ranges((TSParser*)parser, &count);
-  std::cout << "Number of included ranges is " << count << std::endl;
   jclass klass = env->FindClass("com/itsaky/androidide/treesitter/TSRange");
   jobjectArray result = env->NewObjectArray(count, klass, NULL);
   for (uint32_t i = 0; i < count; i++) {
