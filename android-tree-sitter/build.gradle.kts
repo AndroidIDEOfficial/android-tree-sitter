@@ -1,3 +1,4 @@
+import com.itsaky.androidide.treesitter.BuildForHostTask
 import com.itsaky.androidide.treesitter.TreeSitterPlugin
 
 plugins {
@@ -44,31 +45,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 
-fun executeCommand(workingDir: String, command: List<String>) {
-    val result = exec {
-        workingDir(workingDir)
-        commandLine(command)
-    }
-
-    if (result.exitValue != 0) {
-        throw GradleException("Failed to execute '${command.joinToString(" ")}'")
-    }
-}
-
-task("buildForHost") {
-    doLast {
-        val workingDir = project.file("src/main/cpp").absolutePath
-        executeCommand(workingDir, listOf("cmake", "--build", ".", "--clean-first"))
-        executeCommand(workingDir, listOf("make"))
-
-        val soName = "libandroid-tree-sitter.so"
-        val so = File(workingDir, soName)
-        val out = rootProject.file("build/host/${soName}")
-
-        out.parentFile.mkdirs()
-
-        so.renameTo(out)
-    }
+tasks.register("buildForHost", BuildForHostTask::class.java) {
+    libName = "android-tree-sitter"
 }
 
 tasks.withType(JavaCompile::class.java) {
