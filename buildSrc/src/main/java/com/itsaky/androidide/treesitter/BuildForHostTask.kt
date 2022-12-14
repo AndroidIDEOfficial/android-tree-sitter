@@ -1,12 +1,11 @@
 package com.itsaky.androidide.treesitter
 
+import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 /**
  * Gradle task to build shared library for host OS.
@@ -15,13 +14,20 @@ import java.io.File
  */
 abstract class BuildForHostTask : DefaultTask() {
 
-  @Input
-  var libName : String = ""
+  @Input var libName: String = ""
+
+  @Input var removeFiles = mutableListOf("CMakeFiles", "cmake_install.cmake", "CMakeCache.txt", "Makefile")
 
   @TaskAction
   fun buildForHost() {
     val workingDir = project.file("src/main/cpp").absolutePath
-    project.executeCommand(workingDir, listOf("cmake", "--build", ".", "--clean-first"))
+
+    for (file in removeFiles) {
+      val f = File(workingDir, file)
+      f.delete()
+    }
+
+    project.executeCommand(workingDir, listOf("cmake", "."))
     project.executeCommand(workingDir, listOf("make"))
 
     if (libName.isEmpty()) {
@@ -47,5 +53,4 @@ abstract class BuildForHostTask : DefaultTask() {
       throw GradleException("Failed to execute '${command.joinToString(" ")}'")
     }
   }
-
 }

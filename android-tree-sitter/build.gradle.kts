@@ -10,9 +10,6 @@ apply {
     plugin(TreeSitterPlugin::class.java)
 }
 
-group = "io.github.itsaky"
-version = project.findProperty("VERSION_NAME")!!.toString()
-
 val rootProjDir: String = rootProject.projectDir.absolutePath
 val tsDir = "${rootProjDir}/tree-sitter-lib"
 val cppDir = project.file("src/main/cpp")
@@ -24,18 +21,6 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    externalNativeBuild {
-        cmake {
-            path = file("${cppDir}/CMakeLists.txt")
-            version = "3.22.1"
         }
     }
 }

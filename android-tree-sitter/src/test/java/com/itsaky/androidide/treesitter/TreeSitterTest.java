@@ -6,7 +6,9 @@ import org.junit.Test;
 
 public class TreeSitterTest {
   static {
-    System.load(System.getProperty("user.dir") + "/../build/host/libandroid-tree-sitter.so");
+    String hostDir = System.getProperty("user.dir") + "/../build/host";
+    System.load(hostDir + "/libandroid-tree-sitter.so");
+    System.load(hostDir + "/libtree-sitter-java.so");
   }
 
   @Test

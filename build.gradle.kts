@@ -38,6 +38,15 @@ fun Project.configureBaseExtension(isTreeSitterModule: Boolean) {
       sourceCompatibility = JavaVersion.VERSION_11
       targetCompatibility = JavaVersion.VERSION_11
     }
+
+    if (isTreeSitterModule) {
+      externalNativeBuild {
+        cmake {
+          path = file("${project.projectDir.absolutePath}/src/main/cpp/CMakeLists.txt")
+          version = "3.22.1"
+        }
+      }
+    }
   }
 }
 
