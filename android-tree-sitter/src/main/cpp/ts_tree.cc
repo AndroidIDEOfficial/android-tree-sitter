@@ -1,35 +1,35 @@
 #include "com_itsaky_androidide_treesitter_TSTree_Native.h"
 #include "ts_utils.h"
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_edit(
     JNIEnv* env, jclass self, jlong tree, jobject inputEdit) {
   TSInputEdit edit = _unmarshalInputEdit(env, inputEdit);
   ts_tree_edit((TSTree*)tree, &edit);
 }
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_delete(JNIEnv* env,
                                                                 jclass self,
                                                                 jlong tree) {
   ts_tree_delete((TSTree*)tree);
 }
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_copy(JNIEnv* env,
                                                               jclass self,
                                                               jlong tree) {
   return (jlong)ts_tree_copy((TSTree*)tree);
 }
 
-JNIEXPORT jobject JNICALL
+extern "C" JNIEXPORT jobject JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_rootNode(JNIEnv* env,
                                                                   jclass self,
                                                                   jlong tree) {
   return _marshalNode(env, ts_tree_root_node((TSTree*)tree));
 }
 
-JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native_changedRanges
+extern "C" JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native_changedRanges
   (JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
     uint32_t count;
     TSRange *ranges = ts_tree_get_changed_ranges((TSTree*) oldTree, (TSTree*) tree, &count);
@@ -46,7 +46,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSTree_0002
     return arr;
   }
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_getLanguage(
     JNIEnv* env, jclass self, jlong tree) {
   return (jlong)ts_tree_language((TSTree*)tree);

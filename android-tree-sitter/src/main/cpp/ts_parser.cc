@@ -3,31 +3,31 @@
 
 #include <iostream>
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
     JNIEnv* env, jclass self) {
   return (jlong)ts_parser_new();
 }
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_delete(
     JNIEnv* env, jclass self, jlong parser) {
   ts_parser_delete((TSParser*)parser);
 }
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setLanguage(
     JNIEnv* env, jclass self, jlong parser, jlong language) {
   ts_parser_set_language((TSParser*)parser, (TSLanguage*)language);
 }
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getLanguage(
     JNIEnv* env, jclass self, jlong parser) {
   return (jlong)ts_parser_language((TSParser*)parser);
 }
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parseBytes(
     JNIEnv* env, jclass self, jlong parser, jbyteArray source_bytes,
     jint length, jint encodingFlag) {
@@ -41,7 +41,7 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parseBytes(
   return result;
 }
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_incrementalParseBytes(
     JNIEnv* env, jclass self, jlong parser, jlong old_tree,
     jbyteArray source_bytes, jint length, jint encodingFlag) {
@@ -55,26 +55,26 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_incrementalParseBytes
   return result;
 }
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_reset(JNIEnv* env,
                                                                  jclass self,
                                                                  jlong parser) {
   ts_parser_reset((TSParser*)parser);
 }
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setTimeout(
     JNIEnv* env, jclass self, jlong parser, jlong macros) {
   ts_parser_set_timeout_micros((TSParser*)parser, macros);
 }
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout(
     JNIEnv* env, jclass self, jlong parser) {
   return (jlong)ts_parser_timeout_micros((TSParser*)parser);
 }
 
-JNIEXPORT jboolean JNICALL
+extern "C" JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges(
     JNIEnv* env, jclass self, jlong parser, jobjectArray ranges) {
   int count = env->GetArrayLength(ranges);
@@ -87,7 +87,7 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges(
   return (jboolean) ts_parser_set_included_ranges((TSParser*)parser, r, count);
 }
 
-JNIEXPORT jobjectArray JNICALL
+extern "C" JNIEXPORT jobjectArray JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges(
     JNIEnv* env, jclass self, jlong parser) {
   uint32_t count;

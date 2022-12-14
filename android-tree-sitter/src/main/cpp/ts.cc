@@ -26,12 +26,12 @@ void JNI_OnUnload(JavaVM* vm, void* reserved) {
 }
 
 
-JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_getLanguageVersion
+extern "C" JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_getLanguageVersion
   (JNIEnv *env, jclass self) {
     return (jint) TREE_SITTER_LANGUAGE_VERSION;
   }
 
-JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_getMinimumCompatibleLanguageVersion
+extern "C" JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TreeSitter_getMinimumCompatibleLanguageVersion
   (JNIEnv *env, jclass self) {
     return (jint) TREE_SITTER_MIN_COMPATIBLE_LANGUAGE_VERSION;
   }

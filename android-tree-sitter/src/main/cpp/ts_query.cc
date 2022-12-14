@@ -4,7 +4,7 @@
 void fillQuery(JNIEnv*, jobject, uint32_t, TSQueryError);
 jint getErrorType(TSQueryError);
 
-JNIEXPORT jlong JNICALL
+extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_newQuery(
     JNIEnv* env, jclass self, jobject queryObject, jlong language,
     jstring source) {
@@ -19,38 +19,38 @@ Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_newQuery(
   return (jlong)query;
 }
 
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_delete(JNIEnv* env,
                                                                  jclass self,
                                                                  jlong query) {
   ts_query_delete((TSQuery*)query);
 }
 
-JNIEXPORT jint JNICALL
+extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureCount(
     JNIEnv* env, jclass self, jlong query) {
   return ts_query_capture_count((TSQuery*)query);
 }
 
-JNIEXPORT jint JNICALL
+extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternCount(
     JNIEnv* env, jclass self, jlong query) {
   return ts_query_pattern_count((TSQuery*)query);
 }
 
-JNIEXPORT jint JNICALL
+extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_stringCount(
     JNIEnv* env, jclass self, jlong query) {
   return ts_query_string_count((TSQuery*)query);
 }
 
-JNIEXPORT jint JNICALL
+extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_startByteForPattern(
     JNIEnv* env, jclass self, jlong query, jint pattern) {
   return (jint)ts_query_start_byte_for_pattern((TSQuery*)query, pattern);
 }
 
-JNIEXPORT jobjectArray JNICALL
+extern "C" JNIEXPORT jobjectArray JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_predicatesForPattern(
     JNIEnv* env, jclass self, jlong query, jint pattern) {
   uint32_t count;
@@ -67,20 +67,20 @@ Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_predicatesForPattern(
   return result;
 }
 
-JNIEXPORT jboolean JNICALL
+extern "C" JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternRooted(
     JNIEnv* env, jclass self, jlong query, jint pattern) {
   return (jboolean)ts_query_is_pattern_rooted((TSQuery*)query, pattern);
 }
 
-JNIEXPORT jboolean JNICALL
+extern "C" JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternGuaranteedAtStep(
     JNIEnv* env, jclass self, jlong query, jint offset) {
   return (jboolean)ts_query_is_pattern_guaranteed_at_step((TSQuery*)query,
                                                           offset);
 }
 
-JNIEXPORT jstring JNICALL
+extern "C" JNIEXPORT jstring JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureNameForId(
     JNIEnv* env, jclass self, jlong query, jint id) {
   uint32_t count;
@@ -88,7 +88,7 @@ Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureNameForId(
   return (jstring)env->NewStringUTF(name);
 }
 
-JNIEXPORT jstring JNICALL
+extern "C" JNIEXPORT jstring JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_stringValueForId(
     JNIEnv* env, jclass self, jlong query, jint id) {
   uint32_t count;
