@@ -9,6 +9,7 @@ public class TreeSitterTest {
     String hostDir = System.getProperty("user.dir") + "/../build/host";
     System.load(hostDir + "/libandroid-tree-sitter.so");
     System.load(hostDir + "/libtree-sitter-java.so");
+    System.load(hostDir + "/libtree-sitter-python.so");
   }
 
   @Test

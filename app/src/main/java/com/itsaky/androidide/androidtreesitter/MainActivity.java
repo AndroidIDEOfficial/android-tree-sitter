@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding;
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding;
 import com.itsaky.androidide.treesitter.TSLanguage;
-import com.itsaky.androidide.treesitter.TSLanguages;
 import com.itsaky.androidide.treesitter.TSParser;
 import com.itsaky.androidide.treesitter.TSTreeCursor;
 

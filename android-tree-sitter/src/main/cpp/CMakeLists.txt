@@ -31,7 +31,6 @@ add_library(android-tree-sitter SHARED
         "${TS_DIR}/lib/src/lib.c"
 
         # android-tree-sitter sources
-        langs.cc
         parser.cc
         ts.cc
         ts_cursor.cc

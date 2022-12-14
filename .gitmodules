@@ -1,5 +1,5 @@
 [submodule "grammars/tree-sitter-python"]
-	path = grammars/tree-sitter-python
+	path = tree-sitter-python/src/main/cpp/grammar
 	url = https://github.com/tree-sitter/tree-sitter-python.git
 [submodule "grammars/tree-sitter-java"]
 	path = tree-sitter-java/src/main/cpp/grammar

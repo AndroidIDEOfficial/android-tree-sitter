@@ -15,7 +15,13 @@ dependencyResolutionManagement {
 
 rootProject.name = "AndroidTreeSitter"
 
+// Test application
 include ':app'
 
+// Android Tree Sitter library
 include ':android-tree-sitter'
+
+
+// =========== Grammars ============
 include ':tree-sitter-java'
+include ':tree-sitter-python'

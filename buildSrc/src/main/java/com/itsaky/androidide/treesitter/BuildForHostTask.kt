@@ -18,17 +18,18 @@ abstract class BuildForHostTask : DefaultTask() {
 
   @TaskAction
   fun buildForHost() {
-    val workingDir = project.file("src/main/cpp").absolutePath
-    val buildDir =
-        File(workingDir, "host-build")
+    val cppDir = project.file("src/main/cpp").absolutePath
+    val workingDir =
+        project
+            .file("${cppDir}/host-build")
             .apply {
-              if (exists()) {
-                delete()
+              if (!exists()) {
+                mkdirs()
               }
             }
             .absolutePath
 
-    project.executeCommand(workingDir, listOf("cmake", ".", "-B", buildDir))
+    project.executeCommand(workingDir, listOf("cmake", cppDir))
     project.executeCommand(workingDir, listOf("make"))
 
     if (libName.isEmpty()) {

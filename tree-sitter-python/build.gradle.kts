@@ -5,7 +5,9 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-apply { plugin(TreeSitterPlugin::class.java) }
+apply {
+  plugin(TreeSitterPlugin::class.java)
+}
 
 val rootProjDir: String = rootProject.projectDir.absolutePath
 val tsDir = "${rootProjDir}/tree-sitter-lib"
@@ -15,7 +17,9 @@ android {
   ndkVersion = "24.0.8215888"
 
   defaultConfig {
-    externalNativeBuild { cmake { arguments("-DPROJECT_DIR=${rootProjDir}", "-DTS_DIR=${tsDir}") } }
+    externalNativeBuild {
+      cmake { arguments("-DPROJECT_DIR=${rootProjDir}", "-DTS_DIR=${tsDir}") }
+    }
   }
 
   buildTypes {
@@ -33,10 +37,14 @@ android {
   }
 }
 
-dependencies { implementation(project(":android-tree-sitter")) }
-
-tasks.register("buildForHost", com.itsaky.androidide.treesitter.BuildForHostTask::class.java) {
-  libName = "tree-sitter-java"
+dependencies {
+  implementation(project(":android-tree-sitter"))
 }
 
-tasks.withType(JavaCompile::class.java) { dependsOn("buildForHost") }
+tasks.register("buildForHost", com.itsaky.androidide.treesitter.BuildForHostTask::class.java) {
+  libName = "tree-sitter-python"
+}
+
+tasks.withType(JavaCompile::class.java) {
+  dependsOn("buildForHost")
+}
