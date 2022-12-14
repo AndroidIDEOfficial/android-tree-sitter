@@ -3,6 +3,9 @@ plugins {
     id 'com.vanniktech.maven.publish' version '0.21.0'
 }
 
+def rootProjDir = rootProject.projectDir.absolutePath
+def tsDir = "${rootProjDir}/tree-sitter-lib"
+
 android {
     namespace 'com.itsaky.androidide.treesitter'
     ndkVersion "24.0.8215888"
@@ -14,10 +17,9 @@ android {
         versionName project.findProperty("VERSION_NAME")
         versionCode Integer.valueOf(project.findProperty("VERSION_CODE"))
         externalNativeBuild {
-            def proj = rootProject.projectDir.absolutePath
             cmake {
-                arguments "-DPROJECT_DIR=${proj}",
-                        "-DTS_DIR=${proj}/tree-sitter-lib"
+                arguments "-DPROJECT_DIR=${rootProjDir}",
+                        "-DTS_DIR=${tsDir}"
             }
         }
     }
