@@ -1,4 +1,3 @@
-#include "com_itsaky_androidide_treesitter_TSTreeCursor_Native.h"
 #include "ts_utils.h"
 
 extern "C" JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_newCursor(

@@ -6,23 +6,8 @@ project("android-tree-sitter")
 # Include common configuration
 include(../../../../common-config.cmake)
 
-# Include paths from tree-sitter
-set(TS_INCLUDES ${TS_DIR}/lib/include ${TS_DIR}/lib/src)
-
-# JNI header files
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 # android-tree-sitter header files
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-# tree-sitter header files
-include_directories(${TS_INCLUDES})
-
-# target to generate header files
-add_custom_target(generate-native-headers)
-
-# Command to generate header files for native methods in Java
-add_custom_command(TARGET generate-native-headers PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/gen.header.cmake)
 
 # add android-tree-sitter library
 add_library(android-tree-sitter SHARED

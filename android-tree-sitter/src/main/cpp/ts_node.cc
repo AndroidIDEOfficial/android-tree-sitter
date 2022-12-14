@@ -1,4 +1,3 @@
-#include "com_itsaky_androidide_treesitter_TSNode.h"
 #include "ts_utils.h"
 
 extern "C" JNIEXPORT jobject JNICALL

@@ -13,4 +13,5 @@ include(${PROJECT_DIR}/grammar-generator.cmake)
 
 # add tree-sitter-java library
 add_library(${CMAKE_PROJECT_NAME} SHARED
-        grammar/src/parser.c)
+        grammar/src/parser.c
+        tree-sitter-java.cpp)

@@ -17,3 +17,9 @@ endif ()
 if (NOT DEFINED TS_DIR)
     set(TS_DIR "${PROJECT_DIR}/tree-sitter-lib")
 endif ()
+
+# Include paths from tree-sitter
+set(TS_INCLUDES ${TS_DIR}/lib/include ${TS_DIR}/lib/src)
+
+# tree-sitter header files
+include_directories(${TS_INCLUDES})

@@ -14,6 +14,8 @@ import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding;
 import com.itsaky.androidide.treesitter.TSLanguage;
 import com.itsaky.androidide.treesitter.TSParser;
 import com.itsaky.androidide.treesitter.TSTreeCursor;
+import com.itsaky.androidide.treesitter.java.TSLanguageJava;
+import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     System.loadLibrary("ts");
   }
 
-  private final TSLanguage[] langs = {TSLanguages.java(), TSLanguages.python()};
+  private final TSLanguage[] langs = {TSLanguageJava.newInstance(), TSLanguagePython.newInstance()};
   private ActivityMainBinding binding;
   private ContentMainBinding content;
 

@@ -1,4 +1,3 @@
-#include "com_itsaky_androidide_treesitter_TSQuery_Native.h"
 #include "ts_utils.h"
 
 void fillQuery(JNIEnv*, jobject, uint32_t, TSQueryError);

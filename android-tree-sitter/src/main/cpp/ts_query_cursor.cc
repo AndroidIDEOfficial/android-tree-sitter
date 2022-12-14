@@ -1,4 +1,3 @@
-#include "com_itsaky_androidide_treesitter_TSQueryCursor_Native.h"
 #include "ts_utils.h"
 
 #include <iostream>

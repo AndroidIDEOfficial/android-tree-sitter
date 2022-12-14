@@ -1,5 +1,4 @@
 #include <string.h>
-#include "com_itsaky_androidide_treesitter_TreeSitter.h"
 #include "ts_utils.h"
 
 #if defined(__ANDROID__)

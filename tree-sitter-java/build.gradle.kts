@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.itsaky.androidide.treesitter.TreeSitterPlugin
 
 plugins {
@@ -38,5 +39,9 @@ dependencies { implementation(project(":android-tree-sitter")) }
 tasks.register("buildForHost", com.itsaky.androidide.treesitter.BuildForHostTask::class.java) {
   libName = "tree-sitter-java"
 }
+
+tasks.create("cleanHostBuild", type = Delete::class) { delete("src/main/cpp/host-build") }
+
+tasks.named("clean").dependsOn("cleanHostBuild")
 
 tasks.withType(JavaCompile::class.java) { dependsOn("buildForHost") }
