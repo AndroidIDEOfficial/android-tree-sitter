@@ -1,4 +1,5 @@
 import com.android.build.gradle.BaseExtension
+import com.itsaky.androidide.treesitter.TreeSitterPlugin
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
@@ -13,11 +14,29 @@ fun Project.configureBaseExtension() {
     extensions.findByType(BaseExtension::class)?.run {
         compileSdkVersion(33)
 
+        val isTreeSitterModule = this@configureBaseExtension.plugins.hasPlugin(TreeSitterPlugin::class.java)
+
+        if (isTreeSitterModule) {
+            @Suppress("UnstableApiUsage")
+            ndkVersion = "24.0.8215888"
+        }
+
         defaultConfig {
             minSdk = 21
             targetSdk = 33
             versionCode = project.findProperty("VERSION_CODE")!!.toString().toInt()
             versionName = project.findProperty("VERSION_NAME")!!.toString()
+
+            if (isTreeSitterModule) {
+                val rootProjDir: String = rootProject.projectDir.absolutePath
+                val tsDir = "${rootProjDir}/tree-sitter-lib"
+                externalNativeBuild {
+                    cmake {
+                        arguments("-DPROJECT_DIR=${rootProjDir}",
+                            "-DTS_DIR=${tsDir}")
+                    }
+                }
+            }
         }
 
         compileOptions {

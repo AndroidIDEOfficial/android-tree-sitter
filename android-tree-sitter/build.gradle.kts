@@ -1,6 +1,12 @@
+import com.itsaky.androidide.treesitter.TreeSitterPlugin
+
 plugins {
     id("com.android.library")
     id("com.vanniktech.maven.publish.base")
+}
+
+apply {
+    plugin(TreeSitterPlugin::class.java)
 }
 
 group = "io.github.itsaky"
@@ -12,18 +18,6 @@ val cppDir = project.file("src/main/cpp")
 
 android {
     namespace = "com.itsaky.androidide.treesitter"
-
-    @Suppress("UnstableApiUsage")
-    ndkVersion = "24.0.8215888"
-
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-                arguments("-DPROJECT_DIR=${rootProjDir}",
-                        "-DTS_DIR=${tsDir}")
-            }
-        }
-    }
 
     buildTypes {
         release {
