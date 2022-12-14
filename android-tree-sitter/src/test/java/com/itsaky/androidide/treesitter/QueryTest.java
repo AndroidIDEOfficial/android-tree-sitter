@@ -2,6 +2,8 @@ package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.itsaky.androidide.treesitter.java.TSLanguageJava;
+
 import org.junit.Test;
 
 /**
@@ -12,7 +14,7 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void queryTest() throws Exception {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.java());
+      parser.setLanguage(TSLanguageJava.newInstance());
       try (final var tree =
           parser.parseString("public class MyClass { int x = 0; public void myFunc(){} }")) {
         var query =
@@ -50,7 +52,7 @@ public class QueryTest extends TreeSitterTest {
 
   @Test
   public void testQuerySyntaxError() throws Exception {
-    try (TSQuery query = new TSQuery(TSLanguages.java(), "(class_declaration")) {
+    try (TSQuery query = new TSQuery(TSLanguageJava.newInstance(), "(class_declaration")) {
       assertThat(query.pointer).isEqualTo(0);
       assertThat(query.getErrorOffset()).isEqualTo("(class_declaration".length());
       assertThat(query.getErrorType()).isEqualTo(TSQueryError.Syntax);
@@ -60,7 +62,7 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void testQueryNoResult() {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.java());
+      parser.setLanguage(TSLanguageJava.newInstance());
       try (final var tree = parser.parseString("public class MyClass {}")) {
         var query =
             new TSQuery(

@@ -2,6 +2,8 @@ package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.itsaky.androidide.treesitter.python.TSLanguagePython;
+
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -12,7 +14,7 @@ public class NodeTest extends TreeSitterTest {
   @Test
   public void multiTest() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.python());
+      parser.setLanguage(TSLanguagePython.newInstance());
       final var sourceToParse = "def foo(bar, baz):\n  print(bar)\n  print(baz)";
       try (TSTree tree = parser.parseString(sourceToParse, TSInputEncoding.TSInputEncodingUTF8)) {
         var root = tree.getRootNode();

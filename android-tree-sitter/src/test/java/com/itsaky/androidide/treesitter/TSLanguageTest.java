@@ -1,6 +1,6 @@
 package com.itsaky.androidide.treesitter;
 
-import static com.google.common.truth.Truth.assertThat;
+import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +14,7 @@ public class TSLanguageTest extends TreeSitterTest {
 
   @Test
   public void testFunctionality() {
-    final var lang = TSLanguages.java();
+    final var lang = TSLanguageJava.newInstance();
     lang.getLanguageVersion();
     lang.getFieldCount();
     lang.getSymbolCount();

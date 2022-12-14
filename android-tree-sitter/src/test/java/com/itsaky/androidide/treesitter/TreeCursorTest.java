@@ -5,6 +5,8 @@ import static com.itsaky.androidide.treesitter.TSInputEncoding.TSInputEncodingUT
 import static com.itsaky.androidide.treesitter.TestUtils.readString;
 import static java.nio.file.Paths.get;
 
+import com.itsaky.androidide.treesitter.python.TSLanguagePython;
+
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -14,7 +16,7 @@ public class TreeCursorTest extends TreeSitterTest {
   @Test
   public void testWalk() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.python());
+      parser.setLanguage(TSLanguagePython.newInstance());
       try (TSTree tree =
           parser.parseString(
               "def foo(bar, baz):\n  print(bar)\n  print(baz)", TSInputEncodingUTF16)) {

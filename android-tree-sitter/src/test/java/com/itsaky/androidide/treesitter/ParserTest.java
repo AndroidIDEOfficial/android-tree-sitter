@@ -3,6 +3,9 @@ package com.itsaky.androidide.treesitter;
 import static com.google.common.truth.Truth.assertThat;
 import static com.itsaky.androidide.treesitter.TestUtils.readString;
 
+import com.itsaky.androidide.treesitter.java.TSLanguageJava;
+import com.itsaky.androidide.treesitter.python.TSLanguagePython;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -16,7 +19,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testParse() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.python());
+      parser.setLanguage(TSLanguagePython.newInstance());
       try (TSTree tree =
           parser.parseString("print(\"hi\")", TSInputEncoding.TSInputEncodingUTF16)) {
         assertThat(tree.getRootNode().getNodeString())
@@ -30,8 +33,8 @@ public class ParserTest extends TreeSitterTest {
   public void testCodeEditor() throws Throwable {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.java());
-      assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguages.java().pointer);
+      parser.setLanguage(TSLanguageJava.newInstance());
+      assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguageJava.newInstance().pointer);
       try (var tree =
           parser.parseString(
               readString(Paths.get("./src/test/resources/CodeEditor.java.txt")),
@@ -47,7 +50,7 @@ public class ParserTest extends TreeSitterTest {
   public void testView() throws Throwable {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.java());
+      parser.setLanguage(TSLanguageJava.newInstance());
       try (var tree =
           parser.parseString(
               readString(Paths.get("./src/test/resources/View.java.txt")),
@@ -63,7 +66,7 @@ public class ParserTest extends TreeSitterTest {
     final var timeout = 1000L; // 1 millisecond
     final var start = System.currentTimeMillis();
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.java());
+      parser.setLanguage(TSLanguageJava.newInstance());
       parser.setTimeout(timeout);
       assertThat(parser.getTimeout()).isEqualTo(timeout);
       try (final var tree =
@@ -78,7 +81,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testIncrementalParsing() throws UnsupportedEncodingException {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguages.java());
+      parser.setLanguage(TSLanguageJava.newInstance());
       parser.setIncludedRanges(
           new TSRange[] {new TSRange(21, 65, new TSPoint(0, 21), new TSPoint(0, 65))});
       final var source = "public class Main { class Inner { public static void main() {} } }";
