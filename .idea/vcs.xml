@@ -5,5 +5,6 @@
     <mapping directory="$PROJECT_DIR$/grammars/tree-sitter-java" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/grammars/tree-sitter-python" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tree-sitter-lib" vcs="Git" />
   </component>
 </project>

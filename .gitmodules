@@ -5,5 +5,5 @@
 	path = grammars/tree-sitter-java
 	url = https://github.com/tree-sitter/tree-sitter-java.git
 [submodule "tree-sitter"]
-	path = tree-sitter
+	path = tree-sitter-lib
 	url = https://github.com/tree-sitter/tree-sitter.git

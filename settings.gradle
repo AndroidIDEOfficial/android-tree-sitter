@@ -12,6 +12,9 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 rootProject.name = "AndroidTreeSitter"
+
 include ':app'
+
 include ':android-tree-sitter'

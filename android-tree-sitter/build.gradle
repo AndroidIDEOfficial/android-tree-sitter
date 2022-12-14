@@ -13,6 +13,13 @@ android {
         targetSdk 33
         versionName project.findProperty("VERSION_NAME")
         versionCode Integer.valueOf(project.findProperty("VERSION_CODE"))
+        externalNativeBuild {
+            def proj = rootProject.projectDir.absolutePath
+            cmake {
+                arguments "-DPROJECT_DIR=${proj}",
+                        "-DTS_DIR=${proj}/tree-sitter-lib"
+            }
+        }
     }
 
     buildTypes {
@@ -25,6 +32,13 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
+    }
+
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
     }
 }
 
@@ -43,89 +57,9 @@ publishing {
     }
 }
 
-final def archs = ["aarch64", "arm", "x86", "x86_64"]
-def inputs = rootProject.file("lib")
-def ndkDir = System.getenv("ANDROID_NDK_HOME")
-def javaHome = System.getenv("JAVA_HOME")
-
-if (ndkDir == null || javaHome == null) {
-    def local = rootProject.file("local.properties")
-    if (local.exists()) {
-        def props = new Properties()
-        props.load(local.newReader())
-        ndkDir = props.getProperty("ndk.dir")
-        javaHome = props.getProperty("java.home")
-
-        if (ndkDir == null) {
-            ndkDir = props.getProperty("ts.ndk.dir")
-        }
-    }
-}
-
-if (ndkDir == null || javaHome == null) {
-    throw new IllegalStateException("Please make sure that ANDROID_NDK_HOME and JAVA_HOME environment variables are set.\nts.ndk.dir=$ndkDir\njava.home=$javaHome")
-}
-
-for (def arch : archs) {
-    task("buildSharedObjectFor${arch.capitalize()}") { Task task ->
-        def classifier = classifierFor(arch)
-        task.inputs.dir inputs
-        task.outputs.file sharedOutput(classifier)
-
-        task.doLast {
-            buildFor(arch, classifier, ndkDir, javaHome)
-        }
-    }
-}
-
-def buildFor(String arch, String classifier, String ndkDir, String javaHome) {
+clean.doLast {
     exec {
-        environment("JAVA_HOME", javaHome)
-        if (classifier == "host") {
-            commandLine "${rootProject.projectDir.path}/build.sh", "-s", "python", "java"
-        } else {
-            commandLine "${rootProject.projectDir.path}/build.sh",
-                    "-a", arch,
-                    "-m", android.defaultConfig.minSdk,
-                    "-n", ndkDir,
-                    "python", "java"
-        }
+        workingDir tsDir
+        commandLine "make", "clean"
     }
-}
-
-task buildSharedObjectForHost { Task task ->
-    task.inputs.dir inputs
-    task.outputs.file sharedOutput("host")
-    task.doLast {
-        buildFor("", "host", ndkDir, javaHome)
-    }
-}
-
-task buildSharedObjectForAll() {
-    dependsOn("buildSharedObjectForHost")
-    dependsOn(archs.collect { "buildSharedObjectFor${it.capitalize()}"})
-}
-
-@SuppressWarnings('GrMethodMayBeStatic')
-String classifierFor(String arch) {
-    def clangPrefix = arch
-    def clangSuffix = ""
-    if (clangPrefix == "arm") {
-        clangPrefix = "armv7a"
-        clangSuffix = "eabi"
-    }
-
-    if (clangPrefix == "x86") {
-        clangPrefix = "i686"
-    }
-
-    return "${clangPrefix}-linux-android${clangSuffix}${android.defaultConfig.minSdk}"
-}
-
-File sharedOutput(String classifier) {
-    return rootProject.file("output/${classifier}/libts.so")
-}
-
-tasks.withType(JavaCompile) {
-    dependsOn("buildSharedObjectForAll")
 }
