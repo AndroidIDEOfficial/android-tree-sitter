@@ -1,7 +1,5 @@
 # If not building for Android, we need to include header files from JDK
-set(IS_ANDROID_BUILD TRUE)
 if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android)
-    set(IS_ANDROID_BUILD FALSE)
 
     find_package(JNI REQUIRED)
 
@@ -14,9 +12,6 @@ endif ()
 
 # If not building with Gradle, these variables won't be set
 if (NOT DEFINED PROJECT_DIR)
-    if (NOT ${IS_ANDROID_BUILD})
-        message(WARNING "Building with Gradle is recommended")
-    endif ()
     set(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../")
 endif ()
 if (NOT DEFINED TS_DIR)
