@@ -16,18 +16,19 @@ abstract class BuildForHostTask : DefaultTask() {
 
   @Input var libName: String = ""
 
-  @Input var removeFiles = mutableListOf("CMakeFiles", "cmake_install.cmake", "CMakeCache.txt", "Makefile")
-
   @TaskAction
   fun buildForHost() {
     val workingDir = project.file("src/main/cpp").absolutePath
+    val buildDir =
+        File(workingDir, "host-build")
+            .apply {
+              if (exists()) {
+                delete()
+              }
+            }
+            .absolutePath
 
-    for (file in removeFiles) {
-      val f = File(workingDir, file)
-      f.delete()
-    }
-
-    project.executeCommand(workingDir, listOf("cmake", "."))
+    project.executeCommand(workingDir, listOf("cmake", ".", "-B", buildDir))
     project.executeCommand(workingDir, listOf("make"))
 
     if (libName.isEmpty()) {

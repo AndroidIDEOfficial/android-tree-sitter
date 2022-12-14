@@ -9,13 +9,30 @@ apply {
   plugin(TreeSitterPlugin::class.java)
 }
 
+val rootProjDir: String = rootProject.projectDir.absolutePath
+val tsDir = "${rootProjDir}/tree-sitter-lib"
+
 android {
   namespace = "com.itsaky.androidide.treesitter.java"
+  ndkVersion = "24.0.8215888"
+
+  defaultConfig {
+    externalNativeBuild {
+      cmake { arguments("-DPROJECT_DIR=${rootProjDir}", "-DTS_DIR=${tsDir}") }
+    }
+  }
 
   buildTypes {
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path = file("src/main/cpp/CMakeLists.txt")
+      version = "3.22.1"
     }
   }
 }
