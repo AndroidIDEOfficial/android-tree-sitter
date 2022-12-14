@@ -3,8 +3,27 @@ cmake_minimum_required(VERSION 3.22.1)
 # Project name
 project("android-tree-sitter")
 
+# If not building for Android, we need to include header files from JDK
+if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android)
+    find_package(JNI REQUIRED)
+
+    # Path for jni.h
+    include_directories(${JAVA_INCLUDE_PATH})
+
+    # Path for jni_md.h
+    include_directories(${JAVA_INCLUDE_PATH2})
+endif ()
+
+# If not building with Gradle, these variables won't be set
+if (NOT DEFINED PROJECT_DIR)
+    set(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../")
+endif ()
+if (NOT DEFINED TS_DIR)
+    set(TS_DIR "${PROJECT_DIR}/tree-sitter-lib")
+endif ()
+
 # Include paths from tree-sitter
-set(TS_INCLUDES ${TS_DIR}/lib/include)
+set(TS_INCLUDES ${TS_DIR}/lib/include ${TS_DIR}/lib/src)
 
 # JNI header files
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -15,6 +34,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # tree-sitter header files
 include_directories(${TS_INCLUDES})
 
+# target to generate header files
 add_custom_target(generate-native-headers)
 
 # Command to generate header files for native methods in Java
