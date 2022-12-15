@@ -1,10 +1,15 @@
 package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.itsaky.androidide.treesitter.TestUtils.readString;
+
+import static java.nio.file.Paths.get;
 
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 
 import org.junit.Test;
+
+import java.nio.file.Paths;
 
 /**
  * @author Akash Yadav
@@ -71,6 +76,33 @@ public class QueryTest extends TreeSitterTest {
         cursor.exec(query, tree.getRootNode());
         var match = cursor.nextMatch();
         assertThat(match).isNull();
+        query.close();
+        cursor.close();
+      } catch (Throwable err) {
+        throw new RuntimeException(err);
+      }
+    }
+  }
+
+  @Test
+  public void testHighlightsFunctionality() {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguageJava.newInstance());
+      try (final var tree = parser.parseString(readString(get("./src/test/resources/View.java.txt")))) {
+        var query =
+          new TSQuery(
+            tree.getLanguage(), readString(get("./src/test/resources/highlights-java.scm")));
+        var cursor = new TSQueryCursor();
+        cursor.exec(query, tree.getRootNode());
+        TSQueryMatch match;
+        while((match = cursor.nextMatch()) != null) {
+          for (TSQueryCapture capture : match.getCaptures()) {
+            assertThat(capture).isNotNull();
+            final var captureName = query.getCaptureNameForId(capture.getIndex());
+            assertThat(captureName).isNotNull();
+            assertThat(captureName.trim()).isNotEmpty();
+          }
+        }
         query.close();
         cursor.close();
       } catch (Throwable err) {
