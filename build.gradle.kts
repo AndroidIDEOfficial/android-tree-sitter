@@ -33,12 +33,24 @@ subprojects {
   plugins.withId("com.android.library") { configureBaseExtension() }
 
   plugins.withId("com.vanniktech.maven.publish.base") {
-    @Suppress("UnstableApiUsage")
+
+    configure<PublishingExtension> {
+      repositories {
+        maven {
+          name = "GitHubPackages"
+          url = uri("https://maven.pkg.github.com/androidideofficial/android-tree-sitter")
+          credentials {
+            username = project.findProperty("ghPackagesUsername") as String? ?: System.getenv("USERNAME")
+            password = project.findProperty("ghPackagesToken") as String? ?: System.getenv("TOKEN")
+          }
+        }
+      }
+    }
+
     configure<MavenPublishBaseExtension> {
-      group = "io.github.itsaky"
+      group = "com.itsaky.androidide.treesitter"
       version = project.findProperty("VERSION_NAME")!!
       pomFromGradleProperties()
-      publishToMavenCentral(SonatypeHost.S01)
       signAllPublications()
       configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
     }
