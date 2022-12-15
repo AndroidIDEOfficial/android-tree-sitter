@@ -29,8 +29,8 @@ abstract class BuildForHostTask : DefaultTask() {
             }
             .absolutePath
 
-    project.executeCommand(workingDir, listOf("cmake", cppDir))
-    project.executeCommand(workingDir, listOf("make"))
+    project.executeCommand(workingDir, "cmake", cppDir)
+    project.executeCommand(workingDir, "make")
 
     if (libName.isEmpty()) {
       throw GradleException("'libName' must be specified for '${javaClass.simpleName}'")
@@ -43,16 +43,5 @@ abstract class BuildForHostTask : DefaultTask() {
     out.parentFile.mkdirs()
 
     so.renameTo(out)
-  }
-
-  private fun Project.executeCommand(workingDir: String, command: List<String>) {
-    val result = exec {
-      workingDir(workingDir)
-      commandLine(command)
-    }
-
-    if (result.exitValue != 0) {
-      throw GradleException("Failed to execute '${command.joinToString(" ")}'")
-    }
   }
 }

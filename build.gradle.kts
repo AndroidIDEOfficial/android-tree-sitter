@@ -1,4 +1,5 @@
 import com.android.build.gradle.BaseExtension
+import com.itsaky.androidide.treesitter.BuildTsCliTask
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
@@ -47,4 +48,5 @@ subprojects {
 tasks.register<Delete>("clean").configure {
   delete(rootProject.buildDir)
   delete(rootProject.file("build/host"))
+  delete(rootProject.file("tree-sitter-lib/cli/build"))
 }

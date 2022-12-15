@@ -1,6 +1,4 @@
-plugins {
-  `kotlin-dsl`
-}
+plugins { `kotlin-dsl` }
 
 repositories {
   google()
@@ -9,5 +7,6 @@ repositories {
 }
 
 dependencies {
-  implementation (gradleApi())
+  implementation(gradleApi())
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }

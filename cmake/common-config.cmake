@@ -14,9 +14,11 @@ endif ()
 if (NOT DEFINED PROJECT_DIR)
     set(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 endif ()
+
 if (NOT DEFINED PROJECT_CMAKE_DIR)
-    set(PROJECT_DIR "${PROJECT_DIR}/cmake")
+    set(PROJECT_CMAKE_DIR "${PROJECT_DIR}/cmake")
 endif ()
+
 if (NOT DEFINED TS_DIR)
     set(TS_DIR "${PROJECT_DIR}/tree-sitter-lib")
 endif ()
