@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project("android-tree-sitter")
 
 # Include common configuration
-include(../../../../common-config.cmake)
+include(../../../../cmake/common-config.cmake)
 
 # android-tree-sitter header files
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
