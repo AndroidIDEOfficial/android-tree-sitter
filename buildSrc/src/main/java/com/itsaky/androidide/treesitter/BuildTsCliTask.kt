@@ -11,16 +11,12 @@ import org.gradle.api.tasks.TaskAction
  */
 abstract class BuildTsCliTask : DefaultTask() {
 
-  companion object {
-    const val ENV_NAME = "TS_CLI_BUILD_FROM_SOURCE"
-  }
-
   @TaskAction
   fun buildTsCli() {
-    val toBuild = System.getenv(ENV_NAME)?.toBoolean() ?: true
 
-    if (!toBuild) {
-      project.logger.warn("Skipping tree-sitter-cli build as $ENV_NAME is set to 'false'")
+
+    if (!BUILD_TS_CLI_FROM_SOURCE) {
+      project.logger.warn("Skipping tree-sitter-cli build as $ENV_TS_CLI_BUILD_FROM_SOURCE is set to 'false'")
       return
     }
 

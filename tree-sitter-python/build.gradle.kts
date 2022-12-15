@@ -1,12 +1,15 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.itsaky.androidide.treesitter.TreeSitterPlugin
+import com.itsaky.androidide.treesitter.TsGrammarPlugin
 
 plugins {
   id("com.android.library")
   id("com.vanniktech.maven.publish.base")
 }
 
-apply { plugin(TreeSitterPlugin::class.java) }
+apply {
+  plugin(TreeSitterPlugin::class.java)
+  plugin(TsGrammarPlugin::class.java)
+}
 
 val rootProjDir: String = rootProject.projectDir.absolutePath
 val tsDir = "${rootProjDir}/tree-sitter-lib"
@@ -35,13 +38,3 @@ android {
 }
 
 dependencies { implementation(project(":android-tree-sitter")) }
-
-tasks.register("buildForHost", com.itsaky.androidide.treesitter.BuildForHostTask::class.java) {
-  libName = "tree-sitter-python"
-}
-
-tasks.create("cleanHostBuild", type = Delete::class) { delete("src/main/cpp/host-build") }
-
-tasks.named("clean").dependsOn("cleanHostBuild")
-
-tasks.withType(JavaCompile::class.java) { dependsOn("buildForHost") }
