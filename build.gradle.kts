@@ -48,7 +48,7 @@ subprojects {
     }
 
     configure<MavenPublishBaseExtension> {
-      group = "com.itsaky.androidide.treesitter"
+      group = "com.itsaky.androidide"
       version = project.findProperty("VERSION_NAME")!!
       pomFromGradleProperties()
       signAllPublications()
