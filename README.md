@@ -4,7 +4,7 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 
 ## Add to your project
 
-![Latest maven release](https://img.shields.io/maven-central/v/io.github.itsaky/android-tree-sitter)
+![Latest GH Packages release](https://img.shields.io/github/v/release/AndroidIDEOfficial/android-tree-sitter?include_prereleases&amp;label=latest%20release)
 
 ```gradle
 // main library
