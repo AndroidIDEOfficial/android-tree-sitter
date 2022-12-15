@@ -1,4 +1,4 @@
-#include "ts_utils.h"
+#include "utils/ts_utils.h"
 
 void fillQuery(JNIEnv*, jobject, uint32_t, TSQueryError);
 jint getErrorType(TSQueryError);

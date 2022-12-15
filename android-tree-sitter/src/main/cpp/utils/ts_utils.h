@@ -1,5 +1,5 @@
 #include <jni.h>
-#include <tree_sitter/api.h>
+#include "tree_sitter/api.h"
 
 struct TreeCursorNode {
   const char* type;

@@ -1,4 +1,4 @@
-#include "ts_utils.h"
+#include "utils/ts_utils.h"
 
 extern "C" JNIEXPORT jlong JNICALL Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_newCursor(
   JNIEnv* env, jclass self, jobject node) {

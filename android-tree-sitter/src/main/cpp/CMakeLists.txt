@@ -25,4 +25,4 @@ add_library(android-tree-sitter SHARED
         ts_query.cc
         ts_query_cursor.cc
         ts_tree.cc
-        utils.cc)
+        utils/utils.cc)
