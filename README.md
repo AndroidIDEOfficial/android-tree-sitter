@@ -8,13 +8,13 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 
 ```gradle
 // main library
-implementation 'com.itsaky.androidide:android-tree-sitter:<version>'
+implementation 'io.github.itsaky:android-tree-sitter:<version>'
 
 // tree-sitter-java
-implementation 'com.itsaky.androidide:tree-sitter-java:<version>'
+implementation 'io.github.itsaky:tree-sitter-java:<version>'
 
 // tree-sitter-python
-implementation 'com.itsaky.androidide:tree-sitter-python:<version>'
+implementation 'io.github.itsaky:tree-sitter-python:<version>'
 ```
 
 ## Building
