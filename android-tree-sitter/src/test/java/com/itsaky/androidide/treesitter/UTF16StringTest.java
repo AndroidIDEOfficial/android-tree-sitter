@@ -39,6 +39,16 @@ public class UTF16StringTest extends TreeSitterTest {
     assertThat(str.length()).isEqualTo(5);
     assertThat(str.byteLength()).isEqualTo(10);
 
+    assertThat(str.chatAt(0)).isEqualTo('H');
+    str.setCharAt(0, 'h');
+    assertThat(str.chatAt(0)).isEqualTo('h');
+    str.setCharAt(0, 'H');
+
+    assertThat(str.byteAt(0)).isEqualTo((byte) 'H');
+    str.setByteAt(0, (byte) 'h');
+    assertThat(str.byteAt(0)).isEqualTo('h');
+    str.setByteAt(0, (byte) 'H');
+
     str.append(" World!");
     assertThat(str.toString()).isEqualTo("Hello World!");
     assertThat(str.length()).isEqualTo(12);
@@ -84,26 +94,22 @@ public class UTF16StringTest extends TreeSitterTest {
     assertThat(str.length()).isEqualTo(10);
     assertThat(str.byteLength()).isEqualTo(20);
 
-    System.out.println("1");
-    var substr = str.substrChars(7);
+    var substr = str.subseqChars(7);
     assertThat(substr.toString()).isEqualTo("IDE");
     assertThat(substr.length()).isEqualTo(3);
     assertThat(substr.byteLength()).isEqualTo(6);
 
-    System.out.println("2");
-    substr = str.substrChars(7, 8);
+    substr = str.subseqChars(7, 8);
     assertThat(substr.toString()).isEqualTo("I");
     assertThat(substr.length()).isEqualTo(1);
     assertThat(substr.byteLength()).isEqualTo(2);
 
-    System.out.println("3");
-    substr = str.substrBytes(14);
+    substr = str.subseqBytes(14);
     assertThat(substr.toString()).isEqualTo("IDE");
     assertThat(substr.length()).isEqualTo(3);
     assertThat(substr.byteLength()).isEqualTo(6);
 
-    System.out.println("4");
-    substr = str.substrBytes(14, 16);
+    substr = str.subseqBytes(14, 16);
     assertThat(substr.toString()).isEqualTo("I");
     assertThat(substr.length()).isEqualTo(1);
     assertThat(substr.byteLength()).isEqualTo(2);

@@ -175,3 +175,40 @@ Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_subjstring_
                                                                                        jint end) {
     return as_str(pointer)->subjstring_bytes(env, start, end);
 }
+
+extern "C"
+JNIEXPORT jbyte JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteAt(JNIEnv *env,
+                                                                            jclass clazz,
+                                                                            jlong pointer,
+                                                                            jint index) {
+    return as_str(pointer)->byte_at(index);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setByteAt(JNIEnv *env,
+                                                                               jclass clazz,
+                                                                               jlong pointer,
+                                                                               jint index,
+                                                                               jbyte b) {
+    as_str(pointer)->set_byte_at(index, b);
+}
+
+extern "C"
+JNIEXPORT jchar JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_chatAt(JNIEnv *env,
+                                                                            jclass clazz,
+                                                                            jlong pointer,
+                                                                            jint index) {
+    return as_str(pointer)->char_at(index);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setCharAt(JNIEnv *env,
+                                                                               jclass clazz,
+                                                                               jlong pointer,
+                                                                               jint index,
+                                                                               jchar c) {
+    as_str(pointer)->set_char_at(index, c);
+}

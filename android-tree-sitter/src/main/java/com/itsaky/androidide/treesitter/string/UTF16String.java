@@ -38,6 +38,44 @@ public class UTF16String implements AutoCloseable {
   }
 
   /**
+   * Get the byte at the given index.
+   *
+   * @param index The index of the byte.
+   * @return The byte.
+   */
+  public byte byteAt(int index) {
+    return Native.byteAt(this.pointer, index);
+  }
+
+  /**
+   * Set the byte at the given index.
+   *
+   * @param index The index of the byte.
+   */
+  public void setByteAt(int index, byte b) {
+    Native.setByteAt(this.pointer, index, b);
+  }
+
+  /**
+   * Get the char at the given index.
+   *
+   * @param index The index of the char.
+   * @return The char.
+   */
+  public char chatAt(int index) {
+    return Native.chatAt(this.pointer, index);
+  }
+
+  /**
+   * Set the char at the given index.
+   *
+   * @param index The index of the char.
+   */
+  public void setCharAt(int index, char c) {
+    Native.setCharAt(this.pointer, index, c);
+  }
+
+  /**
    * Appends the given string to the end of this {@link UTF16String}.
    *
    * @param string The string to append.
@@ -61,8 +99,8 @@ public class UTF16String implements AutoCloseable {
   /**
    * Inserts the given string at the given index.
    *
-   * @param index  The index to insert at. This should be Java {@code char}-based index * in the
-   *               given string.
+   * @param index The index to insert at. This should be Java {@code char}-based index * in the
+   *     given string.
    * @param string The string to insert.
    */
   public void insert(int index, String string) {
@@ -95,8 +133,8 @@ public class UTF16String implements AutoCloseable {
    * string. The indices should be Java {@code char}-based indices in the given string.
    *
    * @param fromIndex The index to replace from.
-   * @param toIndex   The index to replace to.
-   * @param str       The string to replace with.
+   * @param toIndex The index to replace to.
+   * @param str The string to replace with.
    */
   public void replaceChars(int fromIndex, int toIndex, String str) {
     Native.replaceChars(this.pointer, fromIndex, toIndex, str);
@@ -107,53 +145,116 @@ public class UTF16String implements AutoCloseable {
    * string. The indices should be Java {@code byte}-based indices in the given string.
    *
    * @param fromIndex The index to replace from.
-   * @param toIndex   The index to replace to.
-   * @param str       The string to replace with.
+   * @param toIndex The index to replace to.
+   * @param str The string to replace with.
    */
   public void replaceBytes(int fromIndex, int toIndex, String str) {
     Native.replaceBytes(this.pointer, fromIndex, toIndex, str);
   }
 
-  public UTF16String substrChars(int start) {
-    return substrChars(start, length());
+  /**
+   * Get the subsequence of this string.
+   *
+   * @param start The start index of the substring in characters.
+   * @return The subsequence.
+   */
+  public UTF16String subseqChars(int start) {
+    return subseqChars(start, length());
   }
 
-  public UTF16String substrChars(int start, int end) {
+  /**
+   * Get the subsequence of this string.
+   *
+   * @param start The start index of the substring in characters.
+   * @param end The start index of the substring in characters (exclusive).
+   * @return The subsequence.
+   */
+  public UTF16String subseqChars(int start, int end) {
     return new UTF16String(Native.substring_chars(this.pointer, start, end));
   }
 
-  public UTF16String substrBytes(int start) {
-    return substrBytes(start, byteLength());
+  /**
+   * Get the subsequence of this string.
+   *
+   * @param start The start index of the substring in bytes.
+   * @return The subsequence.
+   */
+  public UTF16String subseqBytes(int start) {
+    return subseqBytes(start, byteLength());
   }
 
-  public UTF16String substrBytes(int start, int end) {
+  /**
+   * Get the subsequence of this string.
+   *
+   * @param start The start index of the substring in bytes.
+   * @param end The start index of the substring in bytes (exclusive).
+   * @return The subsequence.
+   */
+  public UTF16String subseqBytes(int start, int end) {
     return new UTF16String(Native.substring_bytes(this.pointer, start, end));
   }
 
+  /**
+   * Get the substring of this string.
+   *
+   * @param start The start index of the substring in characters.
+   * @return The substring.
+   */
   public String substringChars(int start) {
     return substringChars(start, length());
   }
 
+  /**
+   * Get the substring of this string.
+   *
+   * @param start The start index of the substring in characters.
+   * @param end The start index of the substring in characters (exclusive).
+   * @return The substring.
+   */
   public String substringChars(int start, int end) {
     return Native.subjstring_chars(this.pointer, start, end);
   }
 
-  public String substringBytess(int start) {
+  /**
+   * Get the substring of this string.
+   *
+   * @param start The start index of the substring in bytes.
+   * @return The substring.
+   */
+  public String substringBytes(int start) {
     return substringBytes(start, length());
   }
 
+  /**
+   * Get the substring of this string.
+   *
+   * @param start The start index of the substring in bytes.
+   * @param end The start index of the substring in bytes (exclusive).
+   * @return The substring.
+   */
   public String substringBytes(int start, int end) {
     return Native.subjstring_bytes(this.pointer, start, end);
   }
 
+  /**
+   * Get the length of this string in terms of Java characters.
+   *
+   * @return The length in characters.
+   */
   public int length() {
     return Native.length(this.pointer);
   }
 
+  /**
+   * Get the length of this string in terms of Java bytes.
+   *
+   * @return The length in bytes.
+   */
   public int byteLength() {
     return Native.byteLength(this.pointer);
   }
 
+  /** Close this string and release resources. */
   @Override
   public void close() {
     Native.erase(this.pointer);
@@ -180,6 +281,14 @@ public class UTF16String implements AutoCloseable {
   private static class Native {
     static native long newUtf16String(String src);
 
+    static native byte byteAt(long pointer, int index);
+
+    static native void setByteAt(long pointer, int index, byte b);
+
+    static native char chatAt(long pointer, int index);
+
+    static native void setCharAt(long pointer, int index, char c);
+
     static native void append(long pointer, String str);
 
     static native void appendPart(long pointer, String str, int fromIndex, int len);
@@ -195,9 +304,11 @@ public class UTF16String implements AutoCloseable {
     static native void replaceBytes(long pointer, int start, int end, String str);
 
     static native long substring_chars(long pointer, int start, int end);
+
     static native long substring_bytes(long pointer, int start, int end);
 
     static native String subjstring_chars(long pointer, int start, int end);
+
     static native String subjstring_bytes(long pointer, int start, int end);
 
     static native String toString(long pointer);
