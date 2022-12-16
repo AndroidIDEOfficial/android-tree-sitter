@@ -39,9 +39,9 @@ public class UTF16StringTest extends TreeSitterTest {
     assertThat(str.length()).isEqualTo(5);
     assertThat(str.byteLength()).isEqualTo(10);
 
-    assertThat(str.chatAt(0)).isEqualTo('H');
+    assertThat(str.charAt(0)).isEqualTo('H');
     str.setCharAt(0, 'h');
-    assertThat(str.chatAt(0)).isEqualTo('h');
+    assertThat(str.charAt(0)).isEqualTo('h');
     str.setCharAt(0, 'H');
 
     assertThat(str.byteAt(0)).isEqualTo((byte) 'H');
