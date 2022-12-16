@@ -42,7 +42,6 @@ public class TSParser implements AutoCloseable {
    *
    * @param language The language to set.
    * @see TSLanguage
-   * @see TSLanguages
    */
   public void setLanguage(TSLanguage language) {
     Native.setLanguage(pointer, language.pointer);

@@ -86,10 +86,13 @@ public:
     /**
      * @return The byte-based length of this string.
      */
-    jint length_bytes();
+    jint byte_length();
 
     /**
-     * @return This string as C-style string.
+     * Returns this string as a C-style string.
+     *
+     * @return This string as C-style string. It is the responsibility of the caller to call
+     *         <code>delete [] chars</code> on the returned pointer.
      */
     const char *to_cstring();
 
@@ -104,6 +107,7 @@ public:
 };
 
 UTF16String *as_str(jlong pointer);
+
 int vsize(const vector<jbyte> &vc);
 
 #endif //ANDROIDTREESITTER_UTF16STRING_H

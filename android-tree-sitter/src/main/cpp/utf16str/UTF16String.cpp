@@ -79,7 +79,7 @@ UTF16String *UTF16String::insert(jchar c, int index) {
 UTF16String *UTF16String::insert(JNIEnv *env, jstring src, jint index) {
     uint32_t len;
     const jchar *chars = FNI_GetStringChars(env, src, &len);
-    _string.reserve(length_bytes() + len);
+    _string.reserve(byte_length() + len);
     for (int i = 0; i < len; ++i) {
         auto c = *(chars + i);
         insert(c, index  + i);
@@ -89,16 +89,25 @@ UTF16String *UTF16String::insert(JNIEnv *env, jstring src, jint index) {
     return this;
 }
 
-jint UTF16String::length_bytes() {
+jint UTF16String::byte_length() {
     return vsize(_string);
 }
 
 jint UTF16String::length() {
-    return length_bytes() >> CODER;
+    return byte_length() >> CODER;
 }
 
 jstring UTF16String::to_jstring(JNIEnv *env) {
-    return FNI_NewString(env, _string.data(), length_bytes());
+    return FNI_NewString(env, _string.data(), byte_length());
+}
+
+const char *UTF16String::to_cstring() {
+    char *chars = new char[byte_length()];
+    for (int i = 0; i < byte_length(); ++i) {
+        *(chars + i) = _string.at(i);
+    }
+    cout << chars << endl;
+    return chars;
 }
 
 UTF16String *as_str(jlong pointer) {

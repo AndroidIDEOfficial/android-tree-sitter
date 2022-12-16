@@ -72,7 +72,7 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteLength(JNIEnv *env, jclass clazz,
                                                                          jlong pointer) {
-    return as_str(pointer)->length_bytes();
+    return as_str(pointer)->byte_length();
 }
 extern "C"
 JNIEXPORT void JNICALL

@@ -76,7 +76,9 @@ public class UTF16String implements AutoCloseable {
    * @param fromIndex The index to delete from.
    * @param toIndex The index to delete to.
    */
-  public void delete(int fromIndex, int toIndex) {}
+  public void delete(int fromIndex, int toIndex) {
+
+  }
 
   /**
    * Deletes the contents of this string between the given byte indices.
