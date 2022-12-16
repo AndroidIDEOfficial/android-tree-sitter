@@ -1,4 +1,4 @@
-#include "utils/ts_utils.h"
+#include "utils/ts_obj_utils.h"
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_edit(

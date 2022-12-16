@@ -1,5 +1,5 @@
 #include <string.h>
-#include "utils/ts_utils.h"
+#include "utils/ts_obj_utils.h"
 
 #if defined(__ANDROID__)
 static jint JNI_VERSION = JNI_VERSION_1_6;

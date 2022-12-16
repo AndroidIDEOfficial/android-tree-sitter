@@ -1,7 +1,7 @@
 #ifndef TS_UTILS
 #define TS_UTILS
 
-#include "ts_utils.h"
+#include "ts_obj_utils.h"
 
 jint getPredicateTypeId(TSQueryPredicateStepType type);
 

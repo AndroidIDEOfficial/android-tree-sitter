@@ -1,4 +1,4 @@
-#include "utils/ts_utils.h"
+#include "utils/ts_obj_utils.h"
 
 extern "C" JNIEXPORT jint JNICALL Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symCount
   (JNIEnv * env, jclass self, jlong ptr) {

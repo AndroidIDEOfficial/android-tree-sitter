@@ -6,9 +6,6 @@ project("android-tree-sitter")
 # Include common configuration
 include(../../../../cmake/common-config.cmake)
 
-# android-tree-sitter header files
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 # add android-tree-sitter library
 add_library(android-tree-sitter SHARED
 
@@ -25,4 +22,10 @@ add_library(android-tree-sitter SHARED
         ts_query.cc
         ts_query_cursor.cc
         ts_tree.cc
-        utils/utils.cc)
+        cache/StrCache.cpp
+        utf16str/JavaUTF16String.cpp
+        utf16str/UTF16String.cpp
+        utils/jni_string.cpp
+        utils/jni_utils.cpp
+        utils/ts_obj_utils.cc
+        utils/utils.cpp)
