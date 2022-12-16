@@ -19,7 +19,8 @@ package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import org.junit.Before;
+import com.itsaky.androidide.treesitter.string.UTF16String;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -30,11 +31,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class UTF16StringTest extends TreeSitterTest {
 
-  @Before
+  @Test
   public void testFunctionality() {
-    System.out.println("testFunc");
     final var str = UTF16String.newInstance("Hello");
-    final var str2 = UTF16String.newInstance("World");
 
     assertThat(str.toString()).isEqualTo("Hello");
     assertThat(str.length()).isEqualTo(5);
@@ -44,12 +43,21 @@ public class UTF16StringTest extends TreeSitterTest {
     assertThat(str.toString()).isEqualTo("Hello World!");
     assertThat(str.length()).isEqualTo(12);
     assertThat(str.byteLength()).isEqualTo(24);
+
+    str.append("__Only AndroidIDE will be appended__", 6, 11);
+    assertThat(str.toString()).isEqualTo("Hello World! AndroidIDE");
+    assertThat(str.length()).isEqualTo(23);
+    assertThat(str.byteLength()).isEqualTo(46);
+
+    str.insert("Love ", 13);
+    assertThat(str.toString()).isEqualTo("Hello World! Love AndroidIDE");
+    assertThat(str.length()).isEqualTo(28);
+    assertThat(str.byteLength()).isEqualTo(56);
     str.close();
   }
 
   @Test
   public void testEmoji() {
-    System.out.println("testEmoji");
     final var str = UTF16String.newInstance("😍");
 
     str.append("\n\n");
@@ -103,5 +111,12 @@ public class UTF16StringTest extends TreeSitterTest {
     for (Thread thread : threads) {
       thread.join();
     }
+  }
+
+  @Test
+  public void testInsertion() {
+    final var str = UTF16String.newInstance("! A");
+    str.insert("Love ", 1);
+    str.close();
   }
 }

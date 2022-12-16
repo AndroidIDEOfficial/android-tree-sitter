@@ -31,6 +31,7 @@ import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding;
 import com.itsaky.androidide.treesitter.TSLanguage;
 import com.itsaky.androidide.treesitter.TSParser;
 import com.itsaky.androidide.treesitter.TSTreeCursor;
+import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 
@@ -44,7 +45,9 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
   static {
-    System.loadLibrary("ts");
+    System.loadLibrary("android-tree-sitter");
+    System.loadLibrary("tree-sitter-java");
+    System.loadLibrary("tree-sitter-python");
   }
 
   private final TSLanguage[] langs = {TSLanguageJava.newInstance(), TSLanguagePython.newInstance()};
@@ -60,7 +63,12 @@ public class MainActivity extends AppCompatActivity {
     setContentView(binding.getRoot());
     setSupportActionBar(binding.toolbar);
 
-    Log.d("MainActivity", "post setContentView()");
+    // new String(byte[], String) is not supported on Android)
+    // so we use ByteBuffer to decode the string
+    // Test working of UTF16String.toString() on Android
+    final var utf16String = UTF16String.newInstance("android-tree-sitter UTF16String");
+    Log.d("MainActivity", "UTF16Str: " + utf16String);
+    utf16String.close();
 
     content.code.addTextChangedListener(
         new Watcher() {

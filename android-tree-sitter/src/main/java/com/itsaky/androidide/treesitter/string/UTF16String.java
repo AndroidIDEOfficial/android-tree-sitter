@@ -12,10 +12,10 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/\>.
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter;
+package com.itsaky.androidide.treesitter.string;
 
 import java.util.Objects;
 
@@ -54,7 +54,9 @@ public class UTF16String implements AutoCloseable {
    *     in the given string.
    * @param length The number of character to append.
    */
-  public void append(String string, int fromIndex, int length) {}
+  public void append(String string, int fromIndex, int length) {
+    Native.appendPart(this.pointer, string, fromIndex, length);
+  }
 
   /**
    * Inserts the given string at the given index.
@@ -63,7 +65,9 @@ public class UTF16String implements AutoCloseable {
    * @param index The index to insert at. This should be Java {@code char}-based index * in the
    *     given string.
    */
-  public void insert(String string, int index) {}
+  public void insert(String string, int index) {
+    Native.insert(this.pointer, string, index);
+  }
 
   /**
    * Deletes the contents of this {@link UTF16String} between the given indices. The indices must be
@@ -90,7 +94,8 @@ public class UTF16String implements AutoCloseable {
    * @param fromIndex The index to replace from.
    * @param toIndex The index to replace to.
    */
-  public void replace(String str, int fromIndex, int toIndex) {}
+  public void replace(String str, int fromIndex, int toIndex) {
+  }
 
   public int length() {
     return Native.length(this.pointer);
@@ -127,6 +132,10 @@ public class UTF16String implements AutoCloseable {
     static native long newUtf16String(String src);
 
     static native void append(long pointer, String str);
+
+    static native void appendPart(long pointer, String str, int fromIndex, int len);
+
+    static native void insert(long pointer, String str, int index);
 
     static native String toString(long pointer);
 

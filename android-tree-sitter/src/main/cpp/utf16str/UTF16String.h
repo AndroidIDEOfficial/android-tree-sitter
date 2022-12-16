@@ -29,17 +29,54 @@ using namespace std;
 class UTF16String {
 
 private:
-    std::vector<jbyte> _string;
+    vector<jbyte> _string;
 
 public:
     UTF16String();
 
     /**
-     * Appends the given source jstring to this StdString.
+     * Get the Java 'char' at the given index.
+     * @param index The index of the character to retrive.
+     * @return The Java character.
+     */
+    jchar char_at(int index);
+
+    /**
+     * Insert the Java 'char' at the given index.
+     * @param c The Java character to insert.
+     * @param index The index to insert at.
+     * @return Returns this instance.
+     */
+    UTF16String *insert(jchar c, int index);
+
+    /**
+     * Appends the given Java character.
+     * @param c The character to append.
+     */
+    void append(jchar c);
+
+    /**
+     * Appends the given source jstring to this UTF16String.
      * @param src The jstring to append.
      * @return Returns this instance.
      */
     UTF16String *append(JNIEnv *env, jstring src);
+
+    /**
+     * Appends the given part of the source jstring to this UTF16String.
+     * @param src The jstring to append.
+     * @return Returns this instance.
+     */
+    UTF16String *append(JNIEnv *env, jstring src, jint from, jint len);
+
+    /**
+     * Insert the given string at the given index.
+     * @param env The JNI environment.
+     * @param src The source string to insert.
+     * @param index The index to insert at.
+     * @return Returns this instance.
+     */
+    UTF16String *insert(JNIEnv *env, jstring src, jint index);
 
     /**
      * @return The length (char-based) of this string.
@@ -47,7 +84,7 @@ public:
     jint length();
 
     /**
-     * @return The length (byte-based) of this string.
+     * @return The byte-based length of this string.
      */
     jint length_bytes();
 
@@ -67,6 +104,6 @@ public:
 };
 
 UTF16String *as_str(jlong pointer);
-int vsize(const vector<jbyte>& vc);
+int vsize(const vector<jbyte> &vc);
 
 #endif //ANDROIDTREESITTER_UTF16STRING_H

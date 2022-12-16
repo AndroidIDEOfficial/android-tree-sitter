@@ -12,24 +12,29 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/\>.
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ANDROIDTREESITTER_JNI_STRING_H
-#define ANDROIDTREESITTER_JNI_STRING_H
+package com.itsaky.androidide.treesitter.string;
 
-#include <jni.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string>
-#include <cstring>
+import static java.nio.charset.StandardCharsets.UTF_16LE;
 
-jsize FNI_GetStringLength(JNIEnv *env, jstring string);
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
-const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, uint32_t *length);
+/**
+ * Decodes bytes in {@link UTF16String} to {@link String}.
+ *
+ * @author Akash Yadav
+ */
+public class StringDecoder {
 
-void FNI_ReleaseStringChars(const jchar *chars);
+  public static String fromBytes(byte[] bytes) {
+    return fromBytes(bytes, UTF_16LE);
+  }
 
-jstring FNI_NewString(JNIEnv *env, const jbyte *bytes, int len);
-
-#endif //ANDROIDTREESITTER_JNI_STRING_H
+  public static String fromBytes(byte[] bytes, Charset charset) {
+    final var buff = charset.decode(ByteBuffer.wrap(bytes));
+    return buff.toString();
+  }
+}

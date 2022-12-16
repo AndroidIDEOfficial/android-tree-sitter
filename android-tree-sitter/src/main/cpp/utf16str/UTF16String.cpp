@@ -19,6 +19,7 @@
 #include <sstream>
 #include <cstring>
 #include <utility>
+#include <iostream>
 
 #include "UTF16String.h"
 #include "../utils/jni_string.h"
@@ -32,26 +33,59 @@
 
 using namespace std;
 
-jchar get_char(vector<jbyte> bytes, int index) {
-    auto idx = index << CODER;
-    int hi = (bytes.at(idx++) & 0xff) << HI_BYTE_SHIFT;
-    int lo = (bytes.at(idx) & 0xff) << LO_BYTE_SHIFT;
-    return (jchar) (hi | lo);
-}
-
 UTF16String::UTF16String() {
     _string = vector<jbyte>();
 }
 
+void UTF16String::append(jchar c) {
+    _string.emplace_back((jbyte) (c >> HI_BYTE_SHIFT));
+    _string.emplace_back((jbyte) (c >> LO_BYTE_SHIFT));
+}
+
+jchar UTF16String::char_at(int index) {
+    auto idx = index << CODER;
+    int hi = (_string[idx++] & 0xff) << HI_BYTE_SHIFT;
+    int lo = (_string[idx] & 0xff) << LO_BYTE_SHIFT;
+    return (jchar) (hi | lo);
+}
+
 UTF16String *UTF16String::append(JNIEnv *env, jstring src) {
     uint32_t len;
-    const jchar *chars = FNI_GetStringChars(env, src, &len, nullptr);
+    const jchar *chars = FNI_GetStringChars(env, src, &len);
+    _string.reserve(vsize(_string) + len);
     for (int i = 0; i < len; ++i) {
         auto c = *(chars + i);
-        _string.emplace_back((jbyte) (c >> HI_BYTE_SHIFT));
-        _string.emplace_back((jbyte) (c >> LO_BYTE_SHIFT));
+        append(c);
     }
     FNI_ReleaseStringChars(chars);
+    return this;
+}
+
+UTF16String *UTF16String::append(JNIEnv *env, jstring src, jint from, jint len) {
+    const jchar *chars = FNI_GetStringChars(env, src, nullptr);
+    for (int i = from; i < from + len; ++i) {
+        auto c = *(chars + i);
+        append(c);
+    }
+    return this;
+}
+
+UTF16String *UTF16String::insert(jchar c, int index) {
+    _string.insert(_string.begin() + (index << CODER), (jbyte) (c >> HI_BYTE_SHIFT));
+    _string.insert(_string.begin() + (index << CODER) + 1, (jbyte) (c >> LO_BYTE_SHIFT));
+    return this;
+}
+
+UTF16String *UTF16String::insert(JNIEnv *env, jstring src, jint index) {
+    uint32_t len;
+    const jchar *chars = FNI_GetStringChars(env, src, &len);
+    _string.reserve(length_bytes() + len);
+    for (int i = 0; i < len; ++i) {
+        auto c = *(chars + i);
+        insert(c, index  + i);
+    }
+
+    cout << endl;
     return this;
 }
 
@@ -64,23 +98,11 @@ jint UTF16String::length() {
 }
 
 jstring UTF16String::to_jstring(JNIEnv *env) {
-    jint len = length();
-    auto *dst = new jchar[len];
-    auto srcBegin = 0;
-    auto srcEnd = len;
-    auto dstbegin = 0;
-    for (int i = srcBegin; i < srcEnd; ++i) {
-        dst[dstbegin++] = get_char(_string, i);
-    }
-    return FNI_NewString(env, dst, len);
+    return FNI_NewString(env, _string.data(), length_bytes());
 }
 
 UTF16String *as_str(jlong pointer) {
     return (UTF16String *) pointer;
-}
-
-int vsize(const vector<jbyte>& vc) {
-    return static_cast<int>(vc.size());
 }
 
 bool UTF16String::operator==(const UTF16String &rhs) const {
@@ -89,4 +111,8 @@ bool UTF16String::operator==(const UTF16String &rhs) const {
 
 bool UTF16String::operator!=(const UTF16String &rhs) const {
     return !(rhs == *this);
+}
+
+int vsize(const vector<jbyte> &vc) {
+    return static_cast<int>(vc.size());
 }

@@ -17,20 +17,27 @@
 
 #include "jni_string.h"
 
+jstring FNI_NewAndroidString(JNIEnv *pEnv, const jbyte *bytes, int len);
+jstring FNI_NewJVMString(JNIEnv *env, const jbyte *bytes, jsize len);
+
+static const char *charset_name = "UTF_16LE";
+
 /** Constructs a new java.lang.String object from an array of Unicode
  * characters.
  *
  * Returns a Java string object, or NULL if the string cannot be constructed.
  */
-jstring FNI_NewString(JNIEnv *env, const jchar *unicodeChars, jsize len) {
+jstring FNI_NewJVMString(JNIEnv *env, const jbyte *bytes, jsize len) {
     jstring result;
+    jstring charset = env->NewStringUTF(charset_name);
     jclass strcls = env->FindClass("java/lang/String");
-    jmethodID cid = env->GetMethodID(strcls, "<init>", "([C)V");
-    jcharArray ca = env->NewCharArray(len);
-    env->SetCharArrayRegion(ca, 0, len, unicodeChars);
-    result = (jstring) env->NewObject(strcls, cid, ca);
-    env->DeleteLocalRef(ca);
+    jmethodID cid = env->GetMethodID(strcls, "<init>", "([BLjava/lang/String;)V");
+    jbyteArray ba = env->NewByteArray(len);
+    env->SetByteArrayRegion(ba, 0, len, bytes);
+    result = (jstring) env->NewObject(strcls, cid, ba, charset);
+    env->DeleteLocalRef(ba);
     env->DeleteLocalRef(strcls);
+    env->DeleteLocalRef(charset);
     return result;
 }
 
@@ -51,15 +58,14 @@ jsize FNI_GetStringLength(JNIEnv *env, jstring string) {
  *
  * Returns a pointer to a Unicode string, or NULL if the operation fails.
  */
-const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, uint32_t *length, jboolean *isCopy) {
+const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, uint32_t *length) {
     jclass strcls = env->FindClass("java/lang/String");
     jmethodID mid = env->GetMethodID(strcls, "toCharArray", "()[C");
     auto ca = (jcharArray) env->CallObjectMethod(string, mid);
     jsize len = env->GetArrayLength(ca);
-    *length = len;
+    if (length != nullptr) *length = len;
     auto *result = new jchar [len];
     env->GetCharArrayRegion(ca, 0, len, result);
-    if (isCopy != nullptr) *isCopy = JNI_TRUE;
     env->DeleteLocalRef(strcls);
     env->DeleteLocalRef(ca);
     return result;
@@ -70,4 +76,24 @@ const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, uint32_t *length, j
  */
 void FNI_ReleaseStringChars(const jchar *chars) {
     delete [] chars;
+}
+
+jstring FNI_NewString(JNIEnv *env, const jbyte *bytes, int len) {
+#ifdef __ANDROID__
+    return FNI_NewAndroidString(env, bytes, len);
+#else
+    return FNI_NewJVMString(env, bytes, len);
+#endif
+}
+
+jstring FNI_NewAndroidString(JNIEnv *env, const jbyte *bytes, int len) {
+    jstring result;
+    jclass strcls = env->FindClass("com/itsaky/androidide/treesitter/string/StringDecoder");
+    jmethodID newStr = env->GetStaticMethodID(strcls, "fromBytes", "([B)Ljava/lang/String;");
+    jbyteArray ba = env->NewByteArray(len);
+    env->SetByteArrayRegion(ba, 0, len, bytes);
+    result = (jstring) env->CallStaticObjectMethod(strcls, newStr, ba);
+    env->DeleteLocalRef(ba);
+    env->DeleteLocalRef(strcls);
+    return result;
 }
