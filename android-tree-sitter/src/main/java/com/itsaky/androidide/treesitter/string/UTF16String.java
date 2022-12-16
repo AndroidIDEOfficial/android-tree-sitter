@@ -114,6 +114,38 @@ public class UTF16String implements AutoCloseable {
     Native.replaceBytes(this.pointer, fromIndex, toIndex, str);
   }
 
+  public UTF16String substrChars(int start) {
+    return substrChars(start, length());
+  }
+
+  public UTF16String substrChars(int start, int end) {
+    return new UTF16String(Native.substring_chars(this.pointer, start, end));
+  }
+
+  public UTF16String substrBytes(int start) {
+    return substrBytes(start, byteLength());
+  }
+
+  public UTF16String substrBytes(int start, int end) {
+    return new UTF16String(Native.substring_bytes(this.pointer, start, end));
+  }
+
+  public String substringChars(int start) {
+    return substringChars(start, length());
+  }
+
+  public String substringChars(int start, int end) {
+    return Native.subjstring_chars(this.pointer, start, end);
+  }
+
+  public String substringBytess(int start) {
+    return substringBytes(start, length());
+  }
+
+  public String substringBytes(int start, int end) {
+    return Native.subjstring_bytes(this.pointer, start, end);
+  }
+
   public int length() {
     return Native.length(this.pointer);
   }
@@ -161,6 +193,12 @@ public class UTF16String implements AutoCloseable {
     static native void replaceChars(long pointer, int start, int end, String str);
 
     static native void replaceBytes(long pointer, int start, int end, String str);
+
+    static native long substring_chars(long pointer, int start, int end);
+    static native long substring_bytes(long pointer, int start, int end);
+
+    static native String subjstring_chars(long pointer, int start, int end);
+    static native String subjstring_bytes(long pointer, int start, int end);
 
     static native String toString(long pointer);
 

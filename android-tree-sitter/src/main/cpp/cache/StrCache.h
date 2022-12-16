@@ -20,6 +20,7 @@
 
 #include <jni.h>
 #include <list>
+#include <vector>
 #include <mutex>
 
 #include "../utf16str/UTF16String.h"
@@ -30,8 +31,11 @@ private:
     mutex lock;
 public:
     UTF16String *create(JNIEnv *env, jstring str);
+    UTF16String *create(vector<jbyte> bytes);
+    UTF16String *register_str(const UTF16String& str);
     void erase(UTF16String *str);
 };
 
+static StrCache cache;
 
 #endif //ANDROIDTREESITTER_STRCACHE_H

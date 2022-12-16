@@ -17,10 +17,20 @@
 
 #include "StrCache.h"
 
+#include <utility>
+
 UTF16String *StrCache::create(JNIEnv *env, jstring str) {
-    std::lock_guard<mutex> guard(lock);
     auto ustr = UTF16String();
     ustr.append(env, str);
+    return register_str(ustr);
+}
+
+UTF16String *StrCache::create(vector<jbyte> bytes) {
+    return register_str(UTF16String(std::move(bytes)));
+}
+
+UTF16String *StrCache::register_str(const UTF16String &ustr) {
+    std::lock_guard<mutex> guard(lock);
     strings.emplace_back(ustr);
     auto result = &strings.back();
     return result;

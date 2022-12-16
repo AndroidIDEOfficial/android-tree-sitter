@@ -33,6 +33,7 @@ private:
 
 public:
     UTF16String();
+    UTF16String(vector<jbyte> bytes);
 
     /**
      * Get the Java 'byte' at the given index.
@@ -148,6 +149,50 @@ public:
     UTF16String *replace_bytes(JNIEnv *env, jint start, jint end, jstring str);
 
     /**
+     * Creates a sub-string of this string containing the characters between the given indices.
+     * The indices must be Java char-based.
+     *
+     * @param env The JNI environment.
+     * @param start The start index.
+     * @param end The end index.
+     * @return The substring.
+     */
+    UTF16String *substring_chars(jint start, jint end);
+
+    /**
+     * Creates a sub-string of this string containing the characters between the given indices.
+     * The indices must be byte-based.
+     *
+     * @param env The JNI environment.
+     * @param start The start index.
+     * @param end The end index.
+     * @return The substring.
+     */
+    UTF16String *substring_bytes(jint start, jint end);
+
+    /**
+     * Creates a sub-string of this string containing the characters between the given indices.
+     * The indices must be Java char-based.
+     *
+     * @param env The JNI environment.
+     * @param start The start index.
+     * @param end The end index.
+     * @return The substring.
+     */
+    jstring subjstring_chars(JNIEnv *env, jint start, jint end);
+
+    /**
+     * Creates a sub-string of this string containing the characters between the given indices.
+     * The indices must be byte-based.
+     *
+     * @param env The JNI environment.
+     * @param start The start index.
+     * @param end The end index.
+     * @return The substring.
+     */
+    jstring subjstring_bytes(JNIEnv *env, jint start, jint end);
+
+    /**
      * @return The length (char-based) of this string.
      */
     jint length();
@@ -173,8 +218,6 @@ public:
     bool operator==(const UTF16String &rhs) const;
 
     bool operator!=(const UTF16String &rhs) const;
-
-    const jbyte *to_bytes(const jchar *chars, jint len);
 };
 
 UTF16String *as_str(jlong pointer);

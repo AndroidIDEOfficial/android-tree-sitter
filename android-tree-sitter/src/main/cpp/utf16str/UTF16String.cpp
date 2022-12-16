@@ -22,6 +22,7 @@
 #include <iostream>
 
 #include "UTF16String.h"
+#include "../cache/StrCache.h"
 #include "../utils/jni_string.h"
 #include "../utils/jni_utils.h"
 #include "../utils/ts_obj_utils.h"
@@ -33,8 +34,14 @@
 
 using namespace std;
 
+const jbyte *to_bytes(const jchar *chars, jint len);
+
 UTF16String::UTF16String() {
     _string = vector<jbyte>();
+}
+
+UTF16String::UTF16String(vector<jbyte> bytes) {
+    _string = std::move(bytes);
 }
 
 void UTF16String::append(jchar c) {
@@ -88,6 +95,7 @@ UTF16String *UTF16String::append(JNIEnv *env, jstring src, jint from, jint len) 
 
 UTF16String *UTF16String::insert(jint index, jbyte byte) {
     _string.insert(_string.begin() + index, byte);
+    return this;
 }
 
 UTF16String *UTF16String::insert(jint index, jchar c) {
@@ -131,13 +139,13 @@ UTF16String *UTF16String::replace_bytes(JNIEnv *env, jint start, jint end, jstri
     const jbyte *bytes = to_bytes(chars, len);
 
     jint i = start;
-    while(i < last) {
+    while (i < last) {
         set_byte_at(i, *(bytes + i));
         ++i;
     }
 
     if (blen > end) {
-        while(i < blen) {
+        while (i < blen) {
             insert(i, *(bytes + i));
             ++i;
         }
@@ -146,6 +154,26 @@ UTF16String *UTF16String::replace_bytes(JNIEnv *env, jint start, jint end, jstri
     }
 
     return this;
+}
+
+UTF16String *UTF16String::substring_chars(jint start, jint end) {
+    return substring_bytes(start << CODER, end << CODER);
+}
+
+UTF16String *UTF16String::substring_bytes(jint start, jint end) {
+    auto copy = vector<jbyte>();
+    for (int i = start; i < end; ++i) {
+        copy.emplace_back(_string[i]);
+    }
+    return cache.create(copy);
+}
+
+jstring UTF16String::subjstring_chars(JNIEnv *env, jint start, jint end) {
+    return substring_chars(start, end)->to_jstring(env);
+}
+
+jstring UTF16String::subjstring_bytes(JNIEnv *env, jint start, jint end) {
+    return substring_bytes(start, end)->to_jstring(env);
 }
 
 jint UTF16String::byte_length() {
@@ -180,7 +208,7 @@ bool UTF16String::operator!=(const UTF16String &rhs) const {
     return !(rhs == *this);
 }
 
-const jbyte *UTF16String::to_bytes(const jchar *chars, jint len) {
+const jbyte *to_bytes(const jchar *chars, jint len) {
     auto *bytes = new jbyte[len << CODER];
     for (int i = 0; i < len; ++i) {
         jint idx = i << CODER;
