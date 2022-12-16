@@ -82,10 +82,20 @@ UTF16String *UTF16String::insert(JNIEnv *env, jstring src, jint index) {
     _string.reserve(byte_length() + len);
     for (int i = 0; i < len; ++i) {
         auto c = *(chars + i);
-        insert(c, index  + i);
+        insert(c, index + i);
     }
 
     cout << endl;
+    return this;
+}
+
+UTF16String *UTF16String::delete_chars(JNIEnv *env, jint start, jint end) {
+    return delete_bytes(env, start << CODER, end << CODER);
+}
+
+UTF16String *UTF16String::delete_bytes(JNIEnv *env, jint start, jint end) {
+    const auto &iter = _string.begin();
+    _string.erase(iter + start, iter + end);
     return this;
 }
 

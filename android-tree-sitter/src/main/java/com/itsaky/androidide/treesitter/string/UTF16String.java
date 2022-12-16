@@ -77,7 +77,7 @@ public class UTF16String implements AutoCloseable {
    * @param toIndex The index to delete to.
    */
   public void delete(int fromIndex, int toIndex) {
-
+    Native.deleteChars(this.pointer, fromIndex, toIndex);
   }
 
   /**
@@ -86,7 +86,9 @@ public class UTF16String implements AutoCloseable {
    * @param fromIndex The byte index to delete from.
    * @param toIndex The byte index to delete to.
    */
-  public void deleteBytes(int fromIndex, int toIndex) {}
+  public void deleteBytes(int fromIndex, int toIndex) {
+    Native.deleteBytes(this.pointer, fromIndex, toIndex);
+  }
 
   /**
    * Replaces the contents of this {@link UTF16String} between the given indices with the given
@@ -138,6 +140,10 @@ public class UTF16String implements AutoCloseable {
     static native void appendPart(long pointer, String str, int fromIndex, int len);
 
     static native void insert(long pointer, String str, int index);
+
+    static native void deleteChars(long pointer, int start, int end);
+
+    static native void deleteBytes(long pointer, int start, int end);
 
     static native String toString(long pointer);
 

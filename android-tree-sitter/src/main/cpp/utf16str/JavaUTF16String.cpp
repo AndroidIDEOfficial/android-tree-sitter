@@ -81,3 +81,21 @@ Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_insert(JNIE
                                                                      jint index) {
     as_str(pointer)->insert(env, str, index);
 }
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteChars(JNIEnv *env,
+                                                                                 jclass clazz,
+                                                                                 jlong pointer,
+                                                                                 jint start,
+                                                                                 jint end) {
+    as_str(pointer)->delete_chars(env, start, end);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteBytes(JNIEnv *env,
+                                                                                 jclass clazz,
+                                                                                 jlong pointer,
+                                                                                 jint start,
+                                                                                 jint end) {
+    as_str(pointer)->delete_bytes(env, start, end);
+}

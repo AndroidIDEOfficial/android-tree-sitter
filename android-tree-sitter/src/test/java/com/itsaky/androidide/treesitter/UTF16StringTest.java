@@ -53,6 +53,12 @@ public class UTF16StringTest extends TreeSitterTest {
     assertThat(str.toString()).isEqualTo("Hello World! Love AndroidIDE");
     assertThat(str.length()).isEqualTo(28);
     assertThat(str.byteLength()).isEqualTo(56);
+
+    str.delete(0, 13);
+    assertThat(str.toString()).isEqualTo("Love AndroidIDE");
+    assertThat(str.length()).isEqualTo(15);
+    assertThat(str.byteLength()).isEqualTo(30);
+
     str.close();
   }
 
@@ -111,12 +117,5 @@ public class UTF16StringTest extends TreeSitterTest {
     for (Thread thread : threads) {
       thread.join();
     }
-  }
-
-  @Test
-  public void testInsertion() {
-    final var str = UTF16String.newInstance("! A");
-    str.insert("Love ", 1);
-    str.close();
   }
 }

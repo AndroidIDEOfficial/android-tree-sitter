@@ -79,6 +79,26 @@ public:
     UTF16String *insert(JNIEnv *env, jstring src, jint index);
 
     /**
+     * Deletes the range of characters from this string. The indices must be Java char-based indices.
+     *
+     * @param env The JNI environment.
+     * @param start The start index to delete from.
+     * @param end The end index to delete to.
+     * @return Returns this instance.
+     */
+    UTF16String *delete_chars(JNIEnv *env, jint start, jint end);
+
+    /**
+     * Deletes the range of characters from this string. The indices must be byte-based indices.
+     *
+     * @param env The JNI environment.
+     * @param start The start index to delete from.
+     * @param end The end index to delete to.
+     * @return Returns this instance.
+     */
+    UTF16String *delete_bytes(JNIEnv *env, jint start, jint end);
+
+    /**
      * @return The length (char-based) of this string.
      */
     jint length();
