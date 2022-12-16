@@ -26,7 +26,7 @@
 
 jsize FNI_GetStringLength(JNIEnv *env, jstring string);
 
-const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, uint32_t *length);
+const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, int32_t *length);
 
 void FNI_ReleaseStringChars(const jchar *chars);
 

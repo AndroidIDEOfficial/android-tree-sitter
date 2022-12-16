@@ -88,7 +88,7 @@ Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteChars
                                                                                  jlong pointer,
                                                                                  jint start,
                                                                                  jint end) {
-    as_str(pointer)->delete_chars(env, start, end);
+    as_str(pointer)->delete_chars(start, end);
 }
 extern "C"
 JNIEXPORT void JNICALL
@@ -97,5 +97,25 @@ Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteBytes
                                                                                  jlong pointer,
                                                                                  jint start,
                                                                                  jint end) {
-    as_str(pointer)->delete_bytes(env, start, end);
+    as_str(pointer)->delete_bytes(start, end);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceChars(JNIEnv *env,
+                                                                                  jclass clazz,
+                                                                                  jlong pointer,
+                                                                                  jint start,
+                                                                                  jint end,
+                                                                                  jstring str) {
+    as_str(pointer)->replace_chars(env, start, end, str);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceBytes(JNIEnv *env,
+                                                                                  jclass clazz,
+                                                                                  jlong pointer,
+                                                                                  jint start,
+                                                                                  jint end,
+                                                                                  jstring str) {
+    as_str(pointer)->replace_bytes(env, start, end, str);
 }

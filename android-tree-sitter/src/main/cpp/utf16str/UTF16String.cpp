@@ -42,18 +42,34 @@ void UTF16String::append(jchar c) {
     _string.emplace_back((jbyte) (c >> LO_BYTE_SHIFT));
 }
 
-jchar UTF16String::char_at(int index) {
+jbyte UTF16String::byte_at(jint index) {
+    return _string.at(index);
+}
+
+UTF16String *UTF16String::set_byte_at(jint index, jbyte byte) {
+    _string[index] = byte;
+    return this;
+}
+
+jchar UTF16String::char_at(jint index) {
     auto idx = index << CODER;
-    int hi = (_string[idx++] & 0xff) << HI_BYTE_SHIFT;
-    int lo = (_string[idx] & 0xff) << LO_BYTE_SHIFT;
+    jint hi = (_string[idx++] & 0xff) << HI_BYTE_SHIFT;
+    jint lo = (_string[idx] & 0xff) << LO_BYTE_SHIFT;
     return (jchar) (hi | lo);
 }
 
+UTF16String *UTF16String::set_char_at(jint index, jchar c) {
+    jint idx = index << CODER;
+    _string[idx++] = (jbyte) (c >> HI_BYTE_SHIFT);
+    _string[idx] = (jbyte) (c >> LO_BYTE_SHIFT);
+    return this;
+}
+
 UTF16String *UTF16String::append(JNIEnv *env, jstring src) {
-    uint32_t len;
+    jint len;
     const jchar *chars = FNI_GetStringChars(env, src, &len);
     _string.reserve(vsize(_string) + len);
-    for (int i = 0; i < len; ++i) {
+    for (jint i = 0; i < len; ++i) {
         auto c = *(chars + i);
         append(c);
     }
@@ -63,39 +79,72 @@ UTF16String *UTF16String::append(JNIEnv *env, jstring src) {
 
 UTF16String *UTF16String::append(JNIEnv *env, jstring src, jint from, jint len) {
     const jchar *chars = FNI_GetStringChars(env, src, nullptr);
-    for (int i = from; i < from + len; ++i) {
+    for (jint i = from; i < from + len; ++i) {
         auto c = *(chars + i);
         append(c);
     }
     return this;
 }
 
-UTF16String *UTF16String::insert(jchar c, int index) {
-    _string.insert(_string.begin() + (index << CODER), (jbyte) (c >> HI_BYTE_SHIFT));
-    _string.insert(_string.begin() + (index << CODER) + 1, (jbyte) (c >> LO_BYTE_SHIFT));
+UTF16String *UTF16String::insert(jint index, jbyte byte) {
+    _string.insert(_string.begin() + index, byte);
+}
+
+UTF16String *UTF16String::insert(jint index, jchar c) {
+    insert(index << CODER, (jbyte) (c >> HI_BYTE_SHIFT));
+    insert((index << CODER) + 1, (jbyte) (c >> LO_BYTE_SHIFT));
     return this;
 }
 
 UTF16String *UTF16String::insert(JNIEnv *env, jstring src, jint index) {
-    uint32_t len;
+    jint len;
     const jchar *chars = FNI_GetStringChars(env, src, &len);
     _string.reserve(byte_length() + len);
-    for (int i = 0; i < len; ++i) {
+    for (jint i = 0; i < len; ++i) {
         auto c = *(chars + i);
-        insert(c, index + i);
+        insert(index + i, c);
     }
 
     cout << endl;
     return this;
 }
 
-UTF16String *UTF16String::delete_chars(JNIEnv *env, jint start, jint end) {
-    return delete_bytes(env, start << CODER, end << CODER);
+UTF16String *UTF16String::delete_chars(jint start, jint end) {
+    return delete_bytes(start << CODER, end << CODER);
 }
 
-UTF16String *UTF16String::delete_bytes(JNIEnv *env, jint start, jint end) {
+UTF16String *UTF16String::delete_bytes(jint start, jint end) {
     const auto &iter = _string.begin();
     _string.erase(iter + start, iter + end);
+    return this;
+}
+
+UTF16String *UTF16String::replace_chars(JNIEnv *env, jint start, jint end, jstring str) {
+    return replace_bytes(env, start << CODER, end << CODER, str);
+}
+
+UTF16String *UTF16String::replace_bytes(JNIEnv *env, jint start, jint end, jstring str) {
+    jint len;
+    const jchar *chars = FNI_GetStringChars(env, str, &len);
+    jint blen = len << CODER;
+    jint last = blen < end ? blen : end;
+    const jbyte *bytes = to_bytes(chars, len);
+
+    jint i = start;
+    while(i < last) {
+        set_byte_at(i, *(bytes + i));
+        ++i;
+    }
+
+    if (blen > end) {
+        while(i < blen) {
+            insert(i, *(bytes + i));
+            ++i;
+        }
+    } else if (blen < end) {
+        delete_bytes(i, end);
+    }
+
     return this;
 }
 
@@ -113,10 +162,9 @@ jstring UTF16String::to_jstring(JNIEnv *env) {
 
 const char *UTF16String::to_cstring() {
     char *chars = new char[byte_length()];
-    for (int i = 0; i < byte_length(); ++i) {
+    for (jint i = 0; i < byte_length(); ++i) {
         *(chars + i) = _string.at(i);
     }
-    cout << chars << endl;
     return chars;
 }
 
@@ -132,6 +180,17 @@ bool UTF16String::operator!=(const UTF16String &rhs) const {
     return !(rhs == *this);
 }
 
-int vsize(const vector<jbyte> &vc) {
-    return static_cast<int>(vc.size());
+const jbyte *UTF16String::to_bytes(const jchar *chars, jint len) {
+    auto *bytes = new jbyte[len << CODER];
+    for (int i = 0; i < len; ++i) {
+        jint idx = i << CODER;
+        jchar c = *(chars + i);
+        *(bytes + idx++) = (jbyte) (c >> HI_BYTE_SHIFT);
+        *(bytes + idx) = (jbyte) (c >> LO_BYTE_SHIFT);
+    }
+    return bytes;
+}
+
+jint vsize(const vector<jbyte> &vc) {
+    return static_cast<jint>(vc.size());
 }

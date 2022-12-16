@@ -58,7 +58,7 @@ jsize FNI_GetStringLength(JNIEnv *env, jstring string) {
  *
  * Returns a pointer to a Unicode string, or NULL if the operation fails.
  */
-const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, uint32_t *length) {
+const jchar *FNI_GetStringChars(JNIEnv *env, jstring string, jint *length) {
     jclass strcls = env->FindClass("java/lang/String");
     jmethodID mid = env->GetMethodID(strcls, "toCharArray", "()[C");
     auto ca = (jcharArray) env->CallObjectMethod(string, mid);

@@ -61,11 +61,11 @@ public class UTF16String implements AutoCloseable {
   /**
    * Inserts the given string at the given index.
    *
+   * @param index  The index to insert at. This should be Java {@code char}-based index * in the
+   *               given string.
    * @param string The string to insert.
-   * @param index The index to insert at. This should be Java {@code char}-based index * in the
-   *     given string.
    */
-  public void insert(String string, int index) {
+  public void insert(int index, String string) {
     Native.insert(this.pointer, string, index);
   }
 
@@ -94,11 +94,24 @@ public class UTF16String implements AutoCloseable {
    * Replaces the contents of this {@link UTF16String} between the given indices with the given
    * string. The indices should be Java {@code char}-based indices in the given string.
    *
-   * @param str The string to replace with.
    * @param fromIndex The index to replace from.
-   * @param toIndex The index to replace to.
+   * @param toIndex   The index to replace to.
+   * @param str       The string to replace with.
    */
-  public void replace(String str, int fromIndex, int toIndex) {
+  public void replaceChars(int fromIndex, int toIndex, String str) {
+    Native.replaceChars(this.pointer, fromIndex, toIndex, str);
+  }
+
+  /**
+   * Replaces the contents of this {@link UTF16String} between the given indices with the given
+   * string. The indices should be Java {@code byte}-based indices in the given string.
+   *
+   * @param fromIndex The index to replace from.
+   * @param toIndex   The index to replace to.
+   * @param str       The string to replace with.
+   */
+  public void replaceBytes(int fromIndex, int toIndex, String str) {
+    Native.replaceBytes(this.pointer, fromIndex, toIndex, str);
   }
 
   public int length() {
@@ -144,6 +157,10 @@ public class UTF16String implements AutoCloseable {
     static native void deleteChars(long pointer, int start, int end);
 
     static native void deleteBytes(long pointer, int start, int end);
+
+    static native void replaceChars(long pointer, int start, int end, String str);
+
+    static native void replaceBytes(long pointer, int start, int end, String str);
 
     static native String toString(long pointer);
 
