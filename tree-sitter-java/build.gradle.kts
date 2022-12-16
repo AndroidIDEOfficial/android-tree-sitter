@@ -1,4 +1,5 @@
 import com.itsaky.androidide.treesitter.TreeSitterPlugin
+import com.itsaky.androidide.treesitter.TsGrammarPlugin
 
 plugins {
   id("com.android.library")
@@ -7,7 +8,7 @@ plugins {
 
 apply {
   plugin(TreeSitterPlugin::class.java)
-  plugin(com.itsaky.androidide.treesitter.TsGrammarPlugin::class.java)
+  plugin(TsGrammarPlugin::class.java)
 }
 
 val rootProjDir: String = rootProject.projectDir.absolutePath

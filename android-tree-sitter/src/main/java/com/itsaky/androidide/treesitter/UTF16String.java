@@ -1,12 +1,8 @@
 package com.itsaky.androidide.treesitter;
 
 import java.util.Objects;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Allows usage of <code>std::string</code> in Java.
- *
  * @author Akash Yadav
  */
 public class UTF16String implements AutoCloseable {

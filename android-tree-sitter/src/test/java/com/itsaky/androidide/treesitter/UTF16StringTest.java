@@ -56,7 +56,7 @@ public class UTF16StringTest extends TreeSitterTest {
   }
 
   @Test
-  public void testMultithreading() throws InterruptedException {
+  public void testMultithreadedUse() throws InterruptedException {
     final var threads = new Thread[20];
     for (int i = 0; i < threads.length; i++) {
       threads[i] =

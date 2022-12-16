@@ -1,4 +1,3 @@
-import com.itsaky.androidide.treesitter.BuildTsCliTask
 import com.itsaky.androidide.treesitter.TreeSitterPlugin
 
 plugins {
@@ -41,6 +40,3 @@ dependencies {
   testImplementation("com.google.truth:truth:1.1.3")
   testImplementation("junit:junit:4.13.2")
 }
-
-tasks.register<BuildTsCliTask>("buildTsCli")
-tasks.withType(JavaCompile::class.java) { dependsOn("buildTsCli") }

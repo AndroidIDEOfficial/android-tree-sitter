@@ -1,5 +1,4 @@
 import com.android.build.gradle.BaseExtension
-import com.itsaky.androidide.treesitter.BuildTsCliTask
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
