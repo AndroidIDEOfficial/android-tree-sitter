@@ -22,7 +22,7 @@ import java.util.Objects;
 /**
  * @author Akash Yadav
  */
-public class UTF16String implements AutoCloseable {
+public class UTF16String implements CharSequence, AutoCloseable {
   private final long pointer;
 
   public static UTF16String newInstance() {
@@ -62,7 +62,8 @@ public class UTF16String implements AutoCloseable {
    * @param index The index of the char.
    * @return The char.
    */
-  public char chatAt(int index) {
+  @Override
+  public char charAt(int index) {
     return Native.chatAt(this.pointer, index);
   }
 
@@ -243,6 +244,15 @@ public class UTF16String implements AutoCloseable {
    */
   public int length() {
     return Native.length(this.pointer);
+  }
+
+  @Override
+  public CharSequence subSequence(int start, int end) {
+    final var count = length();
+    if (end < start || start < 0 || end >= count) {
+      throw new IndexOutOfBoundsException("start: " + start + ", end: " + end + ", actual length: " + count);
+    }
+    return subseqChars(start, end);
   }
 
   /**
