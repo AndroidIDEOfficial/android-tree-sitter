@@ -69,6 +69,16 @@ public class UTF16StringTest extends TreeSitterTest {
     assertThat(str.length()).isEqualTo(15);
     assertThat(str.byteLength()).isEqualTo(30);
 
+    str.replaceBytes(0, 8, "\uD83D\uDE0D");
+    assertThat(str.toString()).isEqualTo("\uD83D\uDE0D AndroidIDE");
+    assertThat(str.length()).isEqualTo(13);
+    assertThat(str.byteLength()).isEqualTo(26);
+
+    str.replaceBytes(0, 4, "Love");
+    assertThat(str.toString()).isEqualTo("Love AndroidIDE");
+    assertThat(str.length()).isEqualTo(15);
+    assertThat(str.byteLength()).isEqualTo(30);
+
     str.close();
   }
 
