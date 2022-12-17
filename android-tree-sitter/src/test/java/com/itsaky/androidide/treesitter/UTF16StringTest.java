@@ -120,7 +120,7 @@ public class UTF16StringTest extends TreeSitterTest {
 
   @Test
   public void testEmoji() {
-    final var str = UTF16String.newInstance("😍");
+    final var str = UTF16StringFactory.newString("😍");
 
     str.append("\n\n");
     str.append("😍");
@@ -135,7 +135,7 @@ public class UTF16StringTest extends TreeSitterTest {
   public void testContinuousStringCreation() {
     final var arr = new UTF16String[100];
     for (int i = 0; i < arr.length; i++) {
-      arr[i] = UTF16String.newInstance("Item #" + i);
+      arr[i] = UTF16StringFactory.newString("Item #" + i);
     }
     for (UTF16String utf16String : arr) {
       utf16String.close();
@@ -152,7 +152,7 @@ public class UTF16StringTest extends TreeSitterTest {
                 final var strs = new UTF16String[100];
                 for (int j = 0; j < strs.length; j++) {
                   strs[j] =
-                      UTF16String.newInstance(
+                      UTF16StringFactory.newString(
                           "UTF16String from " + Thread.currentThread().getName());
                   try {
                     Thread.sleep(10);

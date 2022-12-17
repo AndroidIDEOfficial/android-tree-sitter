@@ -187,6 +187,7 @@ Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_chatAt(JNIE
                                                                             jint index) {
     return as_str(pointer)->char_at(index);
 }
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setCharAt(JNIEnv *env,
@@ -195,4 +196,12 @@ Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setCharAt(J
                                                                                jint index,
                                                                                jchar c) {
     as_str(pointer)->set_char_at(index, c);
+}
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_toString(JNIEnv *env,
+                                                                              jclass clazz,
+                                                                              jlong pointer) {
+    return as_str(pointer)->to_jstring(env);
 }
