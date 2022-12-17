@@ -1,18 +1,19 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of android-tree-sitter.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ *  android-tree-sitter library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  android-tree-sitter library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package com.itsaky.androidide.treesitter.string;
@@ -36,7 +37,8 @@ class Assertions {
 
   public static void checkStringRange(String str, int off, int len) {
     if (off < 0 || off + len > str.length()) {
-      throw new StringIndexOutOfBoundsException("offset: " + off + ", len: " + len + ", actual length: " + str.length());
+      throw new StringIndexOutOfBoundsException(
+          "offset: " + off + ", len: " + len + ", actual length: " + str.length());
     }
   }
 }
