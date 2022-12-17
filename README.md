@@ -33,7 +33,7 @@ Read [the documentation](https://github.com/tree-sitter/tree-sitter/tree/master/
 If you want to use a prebuilt `tree-sitter` binary (either manually installed or installed with `npm` or `cargo`), make sure it is accessible in the `PATH`, then set the `TS_CLI_BUILD_FROM_SOURCE` environment variable :
 
 ```bash
-export TS_CLI_BUILD_FROM_SOURCE=true
+export TS_CLI_BUILD_FROM_SOURCE=false
 ```
 
 > _IMPORTANT: Building on a Linux machine is recommended._
