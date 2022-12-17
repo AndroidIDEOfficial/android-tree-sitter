@@ -50,11 +50,11 @@ extern "C" JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_
     uint32_t count;
     TSRange *ranges = ts_tree_get_changed_ranges((TSTree*) oldTree, (TSTree*) tree, &count);
     if (count == 0) {
-      return NULL;
+      return nullptr;
     }
 
     jclass klass = env->FindClass("com/itsaky/androidide/treesitter/TSRange");
-    jobjectArray arr = env->NewObjectArray(count, klass, NULL);
+    jobjectArray arr = env->NewObjectArray(count, klass, nullptr);
     for (uint32_t i = 0; i < count; i++) {
       TSRange *r = (ranges + i);
       env->SetObjectArrayElement(arr, i, _marshalRange(env, *r));

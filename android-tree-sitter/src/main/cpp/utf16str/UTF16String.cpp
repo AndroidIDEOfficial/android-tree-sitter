@@ -90,6 +90,7 @@ UTF16String *UTF16String::append(JNIEnv *env, jstring src, jint from, jint len) 
         auto c = *(chars + i);
         append(c);
     }
+    FNI_ReleaseStringChars(chars);
     return this;
 }
 
@@ -113,7 +114,8 @@ UTF16String *UTF16String::insert(JNIEnv *env, jstring src, jint index) {
         insert(index + i, c);
     }
 
-    cout << endl;
+    FNI_ReleaseStringChars(chars);
+
     return this;
 }
 
@@ -152,6 +154,9 @@ UTF16String *UTF16String::replace_bytes(JNIEnv *env, jint start, jint end, jstri
     } else if (blen < end) {
         delete_bytes(i, end);
     }
+
+    FNI_ReleaseStringChars(chars);
+    delete [] bytes;
 
     return this;
 }
