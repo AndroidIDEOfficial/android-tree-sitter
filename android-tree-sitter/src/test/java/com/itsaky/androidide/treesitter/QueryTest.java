@@ -55,6 +55,14 @@ public class QueryTest extends TreeSitterTest {
         assertThat(match.getCaptures()).isNotNull();
         assertThat(match.getCaptures()).hasLength(1);
         assertThat(cursor.nextMatch()).isNull();
+
+        var captureNames = query.getCaptureNames();
+        assertThat(captureNames).hasLength(query.getCaptureCount());
+        captureNames = new String[query.getCaptureCount()];
+        for (int i = 0; i < captureNames.length; i++) {
+          captureNames[i] = query.getCaptureNameForId(0);
+        }
+
         query.close();
         cursor.close();
 
@@ -66,6 +74,7 @@ public class QueryTest extends TreeSitterTest {
         assertThat(match.getCaptures()).isNotNull();
         assertThat(match.getCaptures()).hasLength(1);
         assertThat(cursor.nextMatch()).isNull();
+
         query.close();
         cursor.close();
       } catch (Throwable err) {

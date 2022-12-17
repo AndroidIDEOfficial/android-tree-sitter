@@ -19,9 +19,10 @@ package com.itsaky.androidide.treesitter;
 
 public class TSQuery implements AutoCloseable {
   final long pointer;
-
   private int errorOffset;
   private int errorType;
+
+  private String[] captureNames = null;
 
   /**
    * Create a new query from a string containing one or more S-expression patterns. The query is
@@ -70,6 +71,16 @@ public class TSQuery implements AutoCloseable {
    */
   public int getStringCount() {
     return Native.stringCount(this.pointer);
+  }
+
+  public String[] getCaptureNames() {
+    if (captureNames == null) {
+      captureNames = new String[getCaptureCount()];
+      for (int i = 0; i < getCaptureCount(); i++) {
+        captureNames[i] = getCaptureNameForId(i);
+      }
+    }
+    return captureNames;
   }
 
   public int getStartByteForPattern(int pattern) {
