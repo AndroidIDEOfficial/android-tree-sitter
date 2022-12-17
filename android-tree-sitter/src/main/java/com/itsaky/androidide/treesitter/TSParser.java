@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.string.UTF16String;
+import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
+
 import java.io.UnsupportedEncodingException;
 
 public class TSParser implements AutoCloseable {
@@ -62,63 +65,38 @@ public class TSParser implements AutoCloseable {
    *
    * @param source The source code to parse.
    * @return The parsed tree.
-   * @throws UnsupportedEncodingException
    */
-  public TSTree parseString(String source) throws UnsupportedEncodingException {
-    return parseString(source, TSInputEncoding.TSInputEncodingUTF8);
+  public TSTree parseString(String source) {
+    try (final var str = UTF16StringFactory.newString(source)) {
+      return parseString(str);
+    }
   }
 
-  /**
-   * Parses the given String source with the given encoding.
-   *
-   * @param source The source code to parse.
-   * @param encoding The encoding to of the source.
-   * @return The parsed tree.
-   * @throws UnsupportedEncodingException
-   */
-  public TSTree parseString(String source, TSInputEncoding encoding)
-      throws UnsupportedEncodingException {
-    byte[] bytes = source.getBytes(encoding.getCharset());
-    final var tree = TSParser.Native.parseBytes(pointer, bytes, bytes.length, encoding.getFlag());
-    return createTree(tree);
+  public TSTree parseString(UTF16String source) {
+    return parseString(null, source);
   }
 
-  /**
-   * Parses the given bytes.
-   *
-   * @param bytes The bytes to parse.
-   * @param bytesLength The length of bytes to parse.
-   * @param encodingFlag The encoding of the source.
-   * @return The parsed tree.
-   */
-  public TSTree parseBytes(byte[] bytes, int bytesLength, int encodingFlag) {
-    return createTree(Native.parseBytes(pointer, bytes, bytesLength, encodingFlag));
+  public TSTree parseBytes(byte[] bytes) {
+    return parseBytes(bytes, 0, bytes.length);
   }
 
-  /**
-   * @see #parseString(TSTree, String, TSInputEncoding)
-   */
+  public TSTree parseBytes(byte[] bytes, int off, int len) {
+    try (final var source = UTF16StringFactory.newString(bytes, off, len)) {
+      return parseString(source);
+    }
+  }
+
   public TSTree parseString(TSTree oldTree, String source) throws UnsupportedEncodingException {
-    return parseString(oldTree, source, TSInputEncoding.TSInputEncodingUTF8);
+    try (final var str = UTF16StringFactory.newString(source)) {
+      return parseString(oldTree, str);
+    }
   }
 
-  /**
-   * Parses the given string source code.
-   *
-   * @param oldTree If earlier version of the same document has been parsed and you intend to do an
-   *     incremental parsing, then this should be the earlier parsed syntax tree. Otherwise <code>
-   *     null</code>.
-   * @param source The source code to parse.
-   * @param encoding The encoding of the source code.
-   * @return The parsed tree.
-   * @throws UnsupportedEncodingException
-   */
-  public TSTree parseString(TSTree oldTree, String source, TSInputEncoding encoding)
-      throws UnsupportedEncodingException {
-    byte[] bytes = source.getBytes(encoding.getCharset());
-    return createTree(
-        Native.incrementalParseBytes(
-            pointer, oldTree.getPointer(), bytes, bytes.length, encoding.getFlag()));
+  public TSTree parseString(TSTree oldTree, UTF16String source) {
+    final var strPointer = source.getPointer();
+    final var oldTreePointer = oldTree != null ? oldTree.getPointer() : 0;
+    final var tree = Native.parse(this.pointer, oldTreePointer, strPointer);
+    return createTree(tree);
   }
 
   /**
@@ -190,11 +168,6 @@ public class TSParser implements AutoCloseable {
 
     public static native long getLanguage(long parser);
 
-    public static native long parseBytes(long parser, byte[] source, int length, int encoding);
-
-    public static native long incrementalParseBytes(
-        long parser, long old_tree, byte[] source, int length, int encoding);
-
     public static native void reset(long parser);
 
     public static native void setTimeout(long parser, long timeout);
@@ -204,5 +177,7 @@ public class TSParser implements AutoCloseable {
     public static native boolean setIncludedRanges(long parser, TSRange[] ranges);
 
     public static native TSRange[] getIncludedRanges(long parser);
+
+    public static native long parse(long parser, long treePointer, long strPointer);
   }
 }

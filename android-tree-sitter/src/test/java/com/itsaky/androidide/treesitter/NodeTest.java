@@ -18,22 +18,20 @@
 package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.itsaky.androidide.treesitter.string.UTF16StringFactory.newString;
 
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-
 public class NodeTest extends TreeSitterTest {
 
   @Test
-  public void multiTest() throws UnsupportedEncodingException {
+  public void multiTest() {
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguagePython.newInstance());
-      final var sourceToParse = "def foo(bar, baz):\n  print(bar)\n  print(baz)";
-      try (TSTree tree = parser.parseString(sourceToParse, TSInputEncoding.TSInputEncodingUTF8)) {
+      final var sourceToParse = newString("def foo(bar, baz):\n  print(bar)\n  print(baz)");
+      try (TSTree tree = parser.parseString(sourceToParse)) {
         var root = tree.getRootNode();
         assertThat(root.getTree().getPointer()).isEqualTo(tree.getPointer());
 
@@ -45,9 +43,9 @@ public class NodeTest extends TreeSitterTest {
         assertThat(start.row).isEqualTo(0);
         assertThat(start.column).isEqualTo(0);
 
-//        var end = root.getEndPoint();
-//        assertThat(end.row).isEqualTo(2);
-//        assertThat(end.column).isEqualTo(12);
+        var end = root.getEndPoint();
+        assertThat(end.row).isEqualTo(2);
+        assertThat(end.column).isEqualTo(12);
 
         var type = root.getType();
         assertThat("module").isEqualTo(type);
@@ -56,8 +54,7 @@ public class NodeTest extends TreeSitterTest {
         assertThat(0).isEqualTo(startByte);
 
         var endByte = root.getEndByte();
-        assertThat(sourceToParse.getBytes(StandardCharsets.UTF_8))
-            .hasLength(endByte);
+        assertThat(sourceToParse.byteLength()).isEqualTo(endByte);
 
         var children = root.getChildCount();
         assertThat(children).isEqualTo(1);
@@ -90,9 +87,9 @@ public class NodeTest extends TreeSitterTest {
         assertThat(function.isEqualTo(function)).isTrue();
         assertThat(function.getFieldNameForChild(1)).isEqualTo("name");
 
-//        end = function.getEndPoint();
-//        assertThat(end.row).isEqualTo(2);
-//        assertThat(end.column).isEqualTo(12);
+        end = function.getEndPoint();
+        assertThat(end.row).isEqualTo(2);
+        assertThat(end.column).isEqualTo(12);
 
         type = function.getType();
         assertThat("function_definition").isEqualTo(type);
@@ -118,7 +115,7 @@ public class NodeTest extends TreeSitterTest {
                     .getType())
             .isEqualTo("parameters");
 
-        var body = function.getChildByFieldName("body");
+        function.getChildByFieldName("body");
 
         var parent = function.getParent();
         type = parent.getType();
