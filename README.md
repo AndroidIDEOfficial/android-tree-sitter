@@ -24,7 +24,17 @@ implementation 'io.github.itsaky:tree-sitter-python:<version>'
 - Android NDK
 - `JDK 11` or newer.
 - `gcc`, `make` and `cmake` - To build everything for the host OS (required for unit tests).
-- [`tree-sitter-cli`](https://github.com/tree-sitter/tree-sitter/tree/master/cli) - To build grammars. This can be installed either with `npm install tree-sitter-cli` or `cargo install tree-sitter-cli`. Read [this](https://github.com/tree-sitter/tree-sitter/tree/master/cli) for more details.
+- [`tree-sitter-cli`](https://github.com/tree-sitter/tree-sitter/tree/master/cli) - To build grammars.
+
+As tree-sitter is already included in the source (as a submodule), the `tree-sitter-cli` is built from source and then used to build the grammars.
+
+Read [the documentation](https://github.com/tree-sitter/tree-sitter/tree/master/cli) on how to install pre-built versions of `tree-sitter`.
+
+If you want to use a prebuilt `tree-sitter` binary (either manually installed or installed with `npm` or `cargo`), make sure it is accessible in the `PATH`, then set the `TS_CLI_BUILD_FROM_SOURCE` environment variable :
+
+```bash
+export TS_CLI_BUILD_FROM_SOURCE=true
+```
 
 > _IMPORTANT: Building on a Linux machine is recommended._
 
