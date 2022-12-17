@@ -25,15 +25,7 @@ import java.util.Objects;
 public class UTF16String implements CharSequence, AutoCloseable {
   private final long pointer;
 
-  public static UTF16String newInstance() {
-    return newInstance("");
-  }
-
-  public static UTF16String newInstance(String source) {
-    return new UTF16String(Native.newUtf16String(source));
-  }
-
-  private UTF16String(long pointer) {
+  UTF16String(long pointer) {
     this.pointer = pointer;
   }
 
@@ -250,7 +242,8 @@ public class UTF16String implements CharSequence, AutoCloseable {
   public CharSequence subSequence(int start, int end) {
     final var count = length();
     if (end < start || start < 0 || end >= count) {
-      throw new IndexOutOfBoundsException("start: " + start + ", end: " + end + ", actual length: " + count);
+      throw new IndexOutOfBoundsException(
+          "start: " + start + ", end: " + end + ", actual length: " + count);
     }
     return subseqChars(start, end);
   }
@@ -283,13 +276,21 @@ public class UTF16String implements CharSequence, AutoCloseable {
     return pointer == that.pointer;
   }
 
+  /**
+   * Get the pointer to the native UTF16String object.
+   *
+   * @return The pointer.
+   */
+  public long getPointer() {
+    return pointer;
+  }
+
   @Override
   public int hashCode() {
     return Objects.hash(pointer);
   }
 
   private static class Native {
-    static native long newUtf16String(String src);
 
     static native byte byteAt(long pointer, int index);
 

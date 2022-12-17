@@ -20,6 +20,7 @@ package com.itsaky.androidide.treesitter;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.itsaky.androidide.treesitter.string.UTF16String;
+import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +34,7 @@ public class UTF16StringTest extends TreeSitterTest {
 
   @Test
   public void testFunctionality() {
-    final var str = UTF16String.newInstance("Hello");
+    final var str = UTF16StringFactory.newString("Hello");
 
     assertThat(str.toString()).isEqualTo("Hello");
     assertThat(str.length()).isEqualTo(5);

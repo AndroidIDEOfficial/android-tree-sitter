@@ -24,6 +24,7 @@ add_library(android-tree-sitter SHARED
         ts_tree.cc
         cache/StrCache.cpp
         utf16str/JavaUTF16String.cpp
+        utf16str/JavaUTF16StringFactory.cpp
         utf16str/UTF16String.cpp
         utils/jni_string.cpp
         utils/jni_utils.cpp
