@@ -174,11 +174,17 @@ UTF16String *UTF16String::substring_bytes(jint start, jint end) {
 }
 
 jstring UTF16String::subjstring_chars(JNIEnv *env, jint start, jint end) {
-    return substring_chars(start, end)->to_jstring(env);
+    UTF16String *substr = substring_chars(start, end);
+    jstring jstr = substr->to_jstring(env);
+    cache.erase(substr);
+    return jstr;
 }
 
 jstring UTF16String::subjstring_bytes(JNIEnv *env, jint start, jint end) {
-    return substring_bytes(start, end)->to_jstring(env);
+    UTF16String *substr = substring_bytes(start, end);
+    jstring jstr = substr->to_jstring(env);
+    cache.erase(substr);
+    return jstr;
 }
 
 jint UTF16String::byte_length() {
