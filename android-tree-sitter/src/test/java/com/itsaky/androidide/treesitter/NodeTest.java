@@ -45,7 +45,7 @@ public class NodeTest extends TreeSitterTest {
 
         var end = root.getEndPoint();
         assertThat(end.row).isEqualTo(2);
-        assertThat(end.column).isEqualTo(12);
+        assertThat(end.column).isEqualTo(24);
 
         var type = root.getType();
         assertThat("module").isEqualTo(type);
@@ -89,7 +89,7 @@ public class NodeTest extends TreeSitterTest {
 
         end = function.getEndPoint();
         assertThat(end.row).isEqualTo(2);
-        assertThat(end.column).isEqualTo(12);
+        assertThat(end.column).isEqualTo(24);
 
         type = function.getType();
         assertThat("function_definition").isEqualTo(type);
