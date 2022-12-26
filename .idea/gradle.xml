@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/tree-sitter-java" />
             <option value="$PROJECT_DIR$/tree-sitter-python" />
+            <option value="$PROJECT_DIR$/tree-sitter-xml" />
           </set>
         </option>
       </GradleProjectSettings>

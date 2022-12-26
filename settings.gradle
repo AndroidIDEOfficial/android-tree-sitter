@@ -42,3 +42,4 @@ include ':android-tree-sitter'
 // =========== Grammars ============
 include ':tree-sitter-java'
 include ':tree-sitter-python'
+include ':tree-sitter-xml'

@@ -7,3 +7,6 @@
 [submodule "tree-sitter"]
 	path = tree-sitter-lib
 	url = https://github.com/tree-sitter/tree-sitter.git
+[submodule "tree-sitter-xml/src/main/cpp/grammar"]
+	path = tree-sitter-xml/src/main/cpp/grammar
+	url = https://github.com/AndroidIDEOfficial/tree-sitter-xml
