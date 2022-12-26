@@ -51,7 +51,11 @@ subprojects {
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<MavenPublishBaseExtension> {
       group = "io.github.itsaky"
-      version = project.findProperty("VERSION_NAME")!!
+      var versionName = project.findProperty("VERSION_NAME")!!
+      if (!hasProperty("publishRelease")) {
+        versionName = "$versionName-SNAPSHOT"
+      }
+      version = versionName
       pomFromGradleProperties()
       publishToMavenCentral(SonatypeHost.S01)
       signAllPublications()

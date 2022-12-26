@@ -37,13 +37,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build shared libraries + APK
+      - name: Build project
         shell: bash
         run: |
           chmod +x ./gradlew
           ./gradlew build
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+      - name: Publish snapshots
+        shell: bash
+        run: |
+          ./gradlew publishAllPublicationsToMavenCentralRepository
 
       - name: Upload sample app
         uses: actions/upload-artifact@v3
