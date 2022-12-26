@@ -174,4 +174,17 @@ public class UTF16StringTest extends TreeSitterTest {
       thread.join();
     }
   }
+
+  @Test
+  public void testInsertAtLength() {
+    final var str = UTF16StringFactory.newString("Hello");
+    assertThat(str).isNotNull();
+    assertThat(str.toString()).isEqualTo("Hello");
+    assertThat(str.length()).isEqualTo(5);
+
+    str.insert(5, " World!");
+    assertThat(str.length()).isEqualTo(12);
+    assertThat(str.toString()).isEqualTo("Hello World!");
+    str.close();
+  }
 }

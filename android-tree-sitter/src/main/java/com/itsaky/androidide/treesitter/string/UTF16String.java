@@ -105,6 +105,10 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * @param string The string to insert.
    */
   public void insert(int index, String string) {
+    if (index == length()) {
+      append(string);
+      return;
+    }
     checkIndex(index, length());
     Native.insert(this.pointer, string, index);
   }
