@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.itsaky.androidide.androidtreesitter",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 109,
+      "versionName": "1.0.9",
+      "outputFile": "app-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
