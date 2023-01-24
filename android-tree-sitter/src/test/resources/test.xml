@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/myText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Hello &amp; Welcome to &lt;AndroidIDE&gt;!" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This shows the &#x00A9; char reference."
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold" />
+
+    <!-- This is a comment -->
+    <!-- XML entity reference &amp; &#x00A9; in a comment? -->
+    <!-- The < in a comment should not mess up bracket pairs -->
+
+    <![CDATA[ This is a CDATA section ]]>
+
+</LinearLayout>

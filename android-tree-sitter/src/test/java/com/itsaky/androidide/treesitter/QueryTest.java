@@ -25,6 +25,7 @@ import static java.nio.file.Paths.get;
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
+import com.itsaky.androidide.treesitter.xml.TSLanguageXml;
 
 import org.junit.Test;
 
@@ -150,6 +151,50 @@ public class QueryTest extends TreeSitterTest {
         assertThat(root.getEndByte()).isEqualTo(source.byteLength());
 
         final var query = new TSQuery(parser.getLanguage(), readString(Paths.get("./src/test/resources/highlights-java.scm")));
+        final var cursor = new TSQueryCursor();
+        cursor.exec(query, root);
+
+        TSQueryMatch match;
+        while((match = cursor.nextMatch()) != null) {
+          assertThat(match.getCaptures()).isNotEmpty();
+          for (final var capture : match.getCaptures()) {
+            assertThat(capture).isNotNull();
+            assertThat(capture.getIndex()).isAtLeast(0);
+            assertThat(capture.getIndex()).isAtMost(query.getCaptureCount() - 1);
+
+            final var captureIndex = capture.getIndex();
+            final var name = query.getCaptureNameForId(captureIndex);
+            final var node = capture.getNode();
+
+            assertThat(name).isNotNull();
+            assertThat(name).isNotEmpty();
+
+            assertThat(node).isNotNull();
+            assertThat(node.getStartByte()).isAtLeast(0);
+            assertThat(node.getEndByte()).isAtMost(source.byteLength());
+
+            final var subseq = source.subseqBytes(node.getStartByte(), node.getEndByte());
+            assertThat(subseq).isNotNull();
+            assertThat(subseq.length()).isGreaterThan(0);
+          }
+        }
+
+        query.close();
+      }
+    }
+  }
+
+  @Test
+  public void testXmlBlocksQuery() throws Exception {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguageXml.newInstance());
+      final var source = UTF16StringFactory.newString(readString(Paths.get("./src/test/resources/test.xml")));
+      try (final var tree = parser.parseString(source)) {
+        final var root = tree.getRootNode();
+        assertThat(root.getStartByte()).isEqualTo(0);
+        assertThat(root.getEndByte()).isEqualTo(source.byteLength());
+
+        final var query = new TSQuery(parser.getLanguage(), readString(Paths.get("./src/test/resources/blocks-xml.scm")));
         final var cursor = new TSQueryCursor();
         cursor.exec(query, root);
 
