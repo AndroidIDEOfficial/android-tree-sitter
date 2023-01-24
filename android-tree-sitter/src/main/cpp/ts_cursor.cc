@@ -55,6 +55,7 @@ Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_currentNode(JNIEn
 
 extern "C" JNIEXPORT void JNICALL Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_delete(
   JNIEnv* env, jclass self, jlong cursor) {
+  ts_tree_cursor_delete((TSTreeCursor*)cursor);
   delete (TSTreeCursor*)cursor;
 }
 
