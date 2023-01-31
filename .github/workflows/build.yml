@@ -20,6 +20,7 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: true
 
       - name: Setup NDK
