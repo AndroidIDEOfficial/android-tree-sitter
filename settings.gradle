@@ -15,6 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/\>.
  */
 
+import com.mooltiverse.oss.nyx.gradle.NyxExtension
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -22,6 +24,19 @@ pluginManagement {
         mavenCentral()
     }
 }
+
+plugins { id("com.mooltiverse.oss.nyx") version "1.3.3" }
+
+nyx {
+  git {
+    remotes.register("origin") {
+      user.set("{{#environment.variable}}GH_TOKEN{{/environment.variable}}")
+      password.set("")
+    }
+  }
+  configurationFile.set(".nyx.yml")
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {

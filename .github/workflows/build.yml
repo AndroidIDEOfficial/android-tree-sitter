@@ -38,6 +38,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Build project
+        id: build
         shell: bash
         run: |
           chmod +x ./gradlew
@@ -45,16 +46,18 @@ jobs:
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
-      - name: Publish snapshots
+      - name: Publish packages
+        if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.build.outcome == 'success' }}
         shell: bash
-        run: |
-          ./gradlew publishAllPublicationsToMavenCentralRepository
+        run: ./gradlew nyxMake nyxMark nyxPublish release --stacktrace
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MVN_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MVN_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.MVN_SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.MVN_SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.MVN_SIGNING_KEY_PASSWORD }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Upload sample app
         uses: actions/upload-artifact@v3
@@ -62,15 +65,5 @@ jobs:
         with:
           name: sample-app
           path: |
-            app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Upload shared libraries
-        uses: actions/upload-artifact@v3
-        if: ${{ !github.head_ref }}
-        with:
-          name: shared-libraries
-          path: |
-            output/aarch64-linux-android21/libts.so
-            output/armv7a-linux-android21/libts.so
-            output/x86_64-linux-android21/libts.so
-            output/i686-linux-android21/libts.so
+            app/build/outputs/apk/release/app-release.apk
+            

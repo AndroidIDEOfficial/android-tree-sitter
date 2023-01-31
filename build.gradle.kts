@@ -26,6 +26,18 @@ plugins {
   id("com.vanniktech.maven.publish.base") version "0.23.0" apply false
 }
 
+val Project.projectVersionCode by lazy {
+  val version = rootProject.version.toString()
+  val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+")
+
+  return@lazy regex.find(version)?.value?.substring(1)?.replace(".", "")?.toInt()?.also {
+    logger.warn("Version code is '$it' (from version ${rootProject.version}).")
+  }
+    ?: throw IllegalStateException(
+      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+    )
+}
+
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
     compileSdkVersion(33)
@@ -33,8 +45,8 @@ fun Project.configureBaseExtension() {
     defaultConfig {
       minSdk = 21
       targetSdk = 33
-      versionCode = project.findProperty("VERSION_CODE")!!.toString().toInt()
-      versionName = project.findProperty("VERSION_NAME")!!.toString()
+      versionCode = project.projectVersionCode
+      versionName = rootProject.version.toString()
     }
 
     compileOptions {
@@ -51,7 +63,7 @@ subprojects {
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<MavenPublishBaseExtension> {
       group = "io.github.itsaky"
-      var versionName = project.findProperty("VERSION_NAME")!!
+      var versionName = rootProject.version.toString()
       if (!hasProperty("publishRelease")) {
         versionName = "$versionName-SNAPSHOT"
       }
