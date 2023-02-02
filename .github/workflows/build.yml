@@ -46,6 +46,7 @@ jobs:
           ./gradlew build
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Publish packages
         if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.build.outcome == 'success' }}
