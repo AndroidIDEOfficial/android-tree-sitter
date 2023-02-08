@@ -4,6 +4,7 @@ name: Build shared libraries
 on:
   push:
     branches:
+      - dev
       - main
   workflow_dispatch: {}
 
