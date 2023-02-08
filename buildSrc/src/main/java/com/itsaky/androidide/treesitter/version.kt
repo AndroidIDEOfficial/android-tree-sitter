@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.treesitter
 
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.provideDelegate
 
@@ -25,21 +24,19 @@ import org.gradle.kotlin.dsl.provideDelegate
  * @author Akash Yadav
  */
 
-const val ENV_TS_CLI_BUILD_FROM_SOURCE = "TS_CLI_BUILD_FROM_SOURCE"
+private var _versionCode: Int? = null
 
-val BUILD_TS_CLI_FROM_SOURCE by lazy {
-  System.getenv(ENV_TS_CLI_BUILD_FROM_SOURCE)?.toBoolean() ?: true
-}
+val Project.projectVersionCode : Int
+  get() = _versionCode ?: findVersionCode().also { _versionCode = it }
 
-fun Project.executeCommand(workingDir: String, vararg command: String) {
-  val result = exec {
-    workingDir(workingDir)
-    commandLine(*command)
-    standardOutput = System.out
-    errorOutput = System.err
+private fun Project.findVersionCode() : Int {
+  val version = rootProject.version.toString()
+  val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+")
+
+  return regex.find(version)?.value?.substring(1)?.replace(".", "")?.toInt()?.also {
+    logger.warn("Version code is '$it' (from version ${rootProject.version}).")
   }
-
-  if (result.exitValue != 0) {
-    throw GradleException("Failed to execute '${command.joinToString(" ")}'")
-  }
+    ?: throw IllegalStateException(
+      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+    )
 }

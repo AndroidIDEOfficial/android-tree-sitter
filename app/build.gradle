@@ -24,11 +24,6 @@ android {
 
     defaultConfig {
         applicationId "com.itsaky.androidide.androidtreesitter"
-        minSdk 21
-        targetSdk 33
-        versionName project.findProperty("VERSION_NAME")
-        versionCode Integer.valueOf(project.findProperty("VERSION_CODE"))
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

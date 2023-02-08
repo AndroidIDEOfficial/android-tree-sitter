@@ -16,6 +16,7 @@
  */
 
 import com.android.build.gradle.BaseExtension
+import com.itsaky.androidide.treesitter.projectVersionCode
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
@@ -24,18 +25,6 @@ plugins {
   id("com.android.application") version "7.4.0" apply false
   id("com.android.library") version "7.4.0" apply false
   id("com.vanniktech.maven.publish.base") version "0.23.0" apply false
-}
-
-val Project.projectVersionCode by lazy {
-  val version = rootProject.version.toString()
-  val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+")
-
-  return@lazy regex.find(version)?.value?.substring(1)?.replace(".", "")?.toInt()?.also {
-    logger.warn("Version code is '$it' (from version ${rootProject.version}).")
-  }
-    ?: throw IllegalStateException(
-      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
-    )
 }
 
 fun Project.configureBaseExtension() {
@@ -64,11 +53,11 @@ subprojects {
     configure<MavenPublishBaseExtension> {
       group = "io.github.itsaky"
       var versionName = rootProject.version.toString()
-      if (!hasProperty("publishRelease")) {
+      if (System.getenv("PublishToMaven").isNullOrBlank()) {
         versionName = "$versionName-SNAPSHOT"
       }
-      version = versionName
       pomFromGradleProperties()
+      coordinates("io.github.itsaky", "android-tree-sitter", versionName)
       publishToMavenCentral(SonatypeHost.S01)
       signAllPublications()
       configure(AndroidSingleVariantLibrary(publishJavadocJar = false))

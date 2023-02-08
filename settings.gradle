@@ -15,8 +15,6 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/\>.
  */
 
-import com.mooltiverse.oss.nyx.gradle.NyxExtension
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
