@@ -56,8 +56,9 @@ subprojects {
       if (System.getenv("PublishToMaven").isNullOrBlank()) {
         versionName = "$versionName-SNAPSHOT"
       }
+      versionName = versionName.substring(1) // remove 'v' prefix
       pomFromGradleProperties()
-      coordinates("io.github.itsaky", "android-tree-sitter", versionName)
+      coordinates("io.github.itsaky", project.name, versionName)
       publishToMavenCentral(SonatypeHost.S01)
       signAllPublications()
       configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
