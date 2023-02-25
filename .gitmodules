@@ -13,3 +13,6 @@
 [submodule "tree-sitter-json/src/main/cpp/grammar"]
 	path = tree-sitter-json/src/main/cpp/grammar
 	url = https://github.com/tree-sitter/tree-sitter-json.git
+[submodule "tree-sitter-kotlin/src/main/cpp/grammar"]
+	path = tree-sitter-kotlin/src/main/cpp/grammar
+	url = https://github.com/fwcd/tree-sitter-kotlin.git

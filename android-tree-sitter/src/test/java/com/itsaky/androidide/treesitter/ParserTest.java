@@ -22,6 +22,7 @@ import static com.itsaky.androidide.treesitter.TestUtils.readString;
 
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.treesitter.json.TSLanguageJson;
+import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 
 import org.junit.Test;
@@ -137,6 +138,26 @@ public class ParserTest extends TreeSitterTest {
         final var rootNode = tree.getRootNode();
         assertThat(rootNode).isNotNull();
         assertThat(rootNode.getChildCount()).isGreaterThan(0);
+      }
+    }
+  }
+
+  @Test
+  public void testKotlinGrammar() {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguageKotlin.newInstance());
+
+      final var source = "class Main {\n" +
+        "    fun main() {\n" +
+        "        println(\"Hello World\")\n" +
+        "    }\n" +
+        "}";
+
+      try (final var tree = parser.parseString(source)) {
+        final var rootNode = tree.getRootNode();
+        assertThat(rootNode).isNotNull();
+        assertThat(rootNode.getChildCount()).isGreaterThan(0);
+        assertThat(rootNode.getNodeString()).isEqualTo("(source_file (class_declaration (type_identifier) (class_body (function_declaration (simple_identifier) (function_body (statements (call_expression (simple_identifier) (call_suffix (value_arguments (value_argument (line_string_literal)))))))))))");
       }
     }
   }

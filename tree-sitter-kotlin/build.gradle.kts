@@ -16,20 +16,23 @@
  */
 
 import com.itsaky.androidide.treesitter.TreeSitterPlugin
+import com.itsaky.androidide.treesitter.TsGrammarPlugin
 
 plugins {
   id("com.android.library")
   id("com.vanniktech.maven.publish.base")
 }
 
-apply { plugin(TreeSitterPlugin::class.java) }
+apply {
+  plugin(TreeSitterPlugin::class.java)
+  plugin(TsGrammarPlugin::class.java)
+}
 
 val rootProjDir: String = rootProject.projectDir.absolutePath
 val tsDir = "${rootProjDir}/tree-sitter-lib"
-val cppDir = project.file("src/main/cpp")
 
 android {
-  namespace = "com.itsaky.androidide.treesitter"
+  namespace = "com.itsaky.androidide.treesitter.kotlin"
   ndkVersion = "24.0.8215888"
 
   defaultConfig {
@@ -51,12 +54,4 @@ android {
   }
 }
 
-dependencies {
-  testImplementation(project(path = ":tree-sitter-java"))
-  testImplementation(project(path = ":tree-sitter-json"))
-  testImplementation(project(path = ":tree-sitter-kotlin"))
-  testImplementation(project(path = ":tree-sitter-xml"))
-  testImplementation(project(path = ":tree-sitter-python"))
-  testImplementation("com.google.truth:truth:1.1.3")
-  testImplementation("junit:junit:4.13.2")
-}
+dependencies { implementation(project(":android-tree-sitter")) }
