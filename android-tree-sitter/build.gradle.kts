@@ -53,6 +53,7 @@ android {
 
 dependencies {
   testImplementation(project(path = ":tree-sitter-java"))
+  testImplementation(project(path = ":tree-sitter-json"))
   testImplementation(project(path = ":tree-sitter-xml"))
   testImplementation(project(path = ":tree-sitter-python"))
   testImplementation("com.google.truth:truth:1.1.3")

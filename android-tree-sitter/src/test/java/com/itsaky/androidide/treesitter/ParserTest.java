@@ -21,6 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.itsaky.androidide.treesitter.TestUtils.readString;
 
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
+import com.itsaky.androidide.treesitter.json.TSLanguageJson;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 
 import org.junit.Test;
@@ -108,6 +109,34 @@ public class ParserTest extends TreeSitterTest {
 
         // errorneous type
         assertThat(root.getChild(0).getType()).isEqualTo("ERROR");
+      }
+    }
+  }
+
+  @Test
+  public void testJsonGrammar() {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguageJson.newInstance());
+
+      final var source = "{\n" +
+        "    \"string\": \"value\",\n" +
+        "    \"boolean\": true,\n" +
+        "    \"number\": 1234,\n" +
+        "    \"null\": null,\n" +
+        "\n" +
+        "    \"object\": {\n" +
+        "\n" +
+        "    },\n" +
+        "\n" +
+        "    \"array\": [\n" +
+        "        \"array_element\"\n" +
+        "    ]\n" +
+        "}";
+
+      try (final var tree = parser.parseString(source)) {
+        final var rootNode = tree.getRootNode();
+        assertThat(rootNode).isNotNull();
+        assertThat(rootNode.getChildCount()).isGreaterThan(0);
       }
     }
   }
