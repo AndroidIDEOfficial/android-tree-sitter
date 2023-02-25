@@ -28,7 +28,6 @@
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
-        android:entries="@array/languages"
         app:layout_constraintEnd_toEndOf="@id/textInputLayout"
         app:layout_constraintStart_toStartOf="@id/textInputLayout"
         app:layout_constraintTop_toBottomOf="@id/textInputLayout" />

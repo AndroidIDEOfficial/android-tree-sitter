@@ -21,48 +21,66 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-
+import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding;
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding;
 import com.itsaky.androidide.treesitter.TSLanguage;
 import com.itsaky.androidide.treesitter.TSParser;
 import com.itsaky.androidide.treesitter.TSTreeCursor;
-import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
+import com.itsaky.androidide.treesitter.json.TSLanguageJson;
+import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
-
+import com.itsaky.androidide.treesitter.xml.TSLanguageXml;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Akash Yadav
  */
 public class MainActivity extends AppCompatActivity {
 
+  private static final Map<String, TSLanguage> languageMap;
+
   static {
     System.loadLibrary("android-tree-sitter");
     System.loadLibrary("tree-sitter-java");
+    System.loadLibrary("tree-sitter-json");
+    System.loadLibrary("tree-sitter-kotlin");
     System.loadLibrary("tree-sitter-python");
+    System.loadLibrary("tree-sitter-xml");
+
+    languageMap = new HashMap<>();
+    languageMap.put("Java", TSLanguageJava.newInstance());
+    languageMap.put("JSON", TSLanguageJson.newInstance());
+    languageMap.put("Kotlin", TSLanguageKotlin.newInstance());
+    languageMap.put("Python", TSLanguagePython.newInstance());
+    languageMap.put("XML", TSLanguageXml.newInstance());
   }
 
-  private final TSLanguage[] langs = {TSLanguageJava.newInstance(), TSLanguagePython.newInstance()};
-  private ActivityMainBinding binding;
   private ContentMainBinding content;
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    binding = ActivityMainBinding.inflate(getLayoutInflater());
+    com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(
+        getLayoutInflater());
     content = binding.content;
 
     setContentView(binding.getRoot());
     setSupportActionBar(binding.toolbar);
+
+    content.languageChooser.setAdapter(
+        new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+            languageMap.keySet().toArray(new String[0])));
 
     // new String(byte[], String) is not supported on Android)
     // so we use ByteBuffer to decode the string
@@ -71,19 +89,19 @@ public class MainActivity extends AppCompatActivity {
     Log.d("MainActivity", "UTF16Str: " + utf16String);
     utf16String.close();
 
-    content.code.addTextChangedListener(
-        new Watcher() {
-          @Override
-          public void afterTextChanged(Editable editable) {
-            afterInputChanged(editable);
-          }
-        });
+    content.code.addTextChangedListener(new Watcher() {
+      @Override
+      public void afterTextChanged(Editable editable) {
+        afterInputChanged(editable);
+      }
+    });
   }
 
   private void afterInputChanged(Editable editable) {
     final var start = System.currentTimeMillis();
     try (final var parser = new TSParser()) {
-      parser.setLanguage(langs[content.languageChooser.getSelectedItemPosition()]);
+      parser.setLanguage(Objects.requireNonNull(
+          languageMap.get((String) content.languageChooser.getSelectedItem())));
       try (final var tree = parser.parseString(editable.toString())) {
         try (final var cursor = tree.getRootNode().walk()) {
           final var duration = System.currentTimeMillis() - start;
@@ -134,10 +152,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private abstract static class Watcher implements TextWatcher {
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    }
   }
 }
