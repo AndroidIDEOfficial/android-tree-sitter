@@ -90,6 +90,13 @@ Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternRooted(
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternNonLocal(
+        JNIEnv* env, jclass self, jlong query, jint pattern_index) {
+  return (jboolean)ts_query_is_pattern_non_local((TSQuery*)query,
+                                                          pattern_index);
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_patternGuaranteedAtStep(
     JNIEnv* env, jclass self, jlong query, jint offset) {
   return (jboolean)ts_query_is_pattern_guaranteed_at_step((TSQuery*)query,

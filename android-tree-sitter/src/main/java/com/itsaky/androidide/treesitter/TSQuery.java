@@ -98,6 +98,11 @@ public class TSQuery implements AutoCloseable {
     return Native.patternRooted(this.pointer, pattern);
   }
 
+  public boolean isPatternNonLocal(int pattern) {
+    validatePatternIndex(pattern);
+    return Native.patternNonLocal(this.pointer, pattern);
+  }
+
   public boolean isPatternGuaranteedAtStep(int offset) {
     return Native.patternGuaranteedAtStep(this.pointer, offset);
   }
@@ -139,7 +144,9 @@ public class TSQuery implements AutoCloseable {
 
     public static native boolean patternRooted(long query, int pattern);
 
-    public static native boolean patternGuaranteedAtStep(long query, int offset);
+    public static native boolean patternNonLocal(long query, int pattern);
+
+    public static native boolean patternGuaranteedAtStep(long query, int byteOffset);
 
     public static native String captureNameForId(long query, int id);
 
