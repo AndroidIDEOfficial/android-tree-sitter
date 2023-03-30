@@ -42,7 +42,7 @@ public class ParserTest extends TreeSitterTest {
       try (TSTree tree = parser.parseString("print(\"hi\")")) {
         assertThat(tree.getRootNode().getNodeString())
             .isEqualTo(
-                "(module (expression_statement (call function: (identifier) arguments: (argument_list (string)))))");
+                "(module (expression_statement (call function: (identifier) arguments: (argument_list (string string_content: (string_content))))))");
       }
     }
   }
@@ -157,7 +157,7 @@ public class ParserTest extends TreeSitterTest {
         final var rootNode = tree.getRootNode();
         assertThat(rootNode).isNotNull();
         assertThat(rootNode.getChildCount()).isGreaterThan(0);
-        assertThat(rootNode.getNodeString()).isEqualTo("(source_file (class_declaration (type_identifier) (class_body (function_declaration (simple_identifier) (function_body (statements (call_expression (simple_identifier) (call_suffix (value_arguments (value_argument (line_string_literal)))))))))))");
+        assertThat(rootNode.getNodeString()).isEqualTo("(source_file (class_declaration (type_identifier) (class_body (function_declaration (simple_identifier) (function_body (statements (call_expression (simple_identifier) (call_suffix (value_arguments (value_argument (string_literal)))))))))))");
       }
     }
   }
