@@ -15,18 +15,18 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter.json;
+package com.itsaky.androidide.treesitter.log;
 
 import com.itsaky.androidide.treesitter.TSLanguage;
 
 /**
- * Tree Sitter for JSON.
+ * Tree Sitter for logs.
  *
  * @author Akash Yadav
  */
-public class TSLanguageJson {
+public class TSLanguageLog {
 
-  private TSLanguageJson() {
+  private TSLanguageLog() {
     throw new UnsupportedOperationException();
   }
 

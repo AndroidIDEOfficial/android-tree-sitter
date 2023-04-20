@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/tree-sitter-java" />
             <option value="$PROJECT_DIR$/tree-sitter-json" />
             <option value="$PROJECT_DIR$/tree-sitter-kotlin" />
+            <option value="$PROJECT_DIR$/tree-sitter-log" />
             <option value="$PROJECT_DIR$/tree-sitter-python" />
             <option value="$PROJECT_DIR$/tree-sitter-xml" />
           </set>

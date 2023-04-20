@@ -20,7 +20,7 @@ package com.itsaky.androidide.treesitter.java;
 import com.itsaky.androidide.treesitter.TSLanguage;
 
 /**
- * Tree Sitter Java language.
+ * Tree Sitter for Java.
  *
  * @author Akash Yadav
  */

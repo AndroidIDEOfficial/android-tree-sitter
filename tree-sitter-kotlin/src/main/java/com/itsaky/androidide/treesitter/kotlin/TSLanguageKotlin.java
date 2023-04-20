@@ -20,7 +20,7 @@ package com.itsaky.androidide.treesitter.kotlin;
 import com.itsaky.androidide.treesitter.TSLanguage;
 
 /**
- * Tree Sitter XML language.
+ * Tree Sitter for Kotlin.
  *
  * @author Akash Yadav
  */

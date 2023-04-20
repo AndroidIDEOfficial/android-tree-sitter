@@ -20,7 +20,7 @@ package com.itsaky.androidide.treesitter.python;
 import com.itsaky.androidide.treesitter.TSLanguage;
 
 /**
- * Tree Sitter Python language.
+ * Tree Sitter for Python.
  *
  * @author Akash Yadav
  */

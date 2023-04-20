@@ -15,26 +15,14 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter.json;
+#include <jni.h>
+#include <tree_sitter/api.h>
 
-import com.itsaky.androidide.treesitter.TSLanguage;
+extern "C" TSLanguage *tree_sitter_log();
 
-/**
- * Tree Sitter for JSON.
- *
- * @author Akash Yadav
- */
-public class TSLanguageJson {
-
-  private TSLanguageJson() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static TSLanguage newInstance() {
-    return new TSLanguage(Native.newInstance());
-  }
-
-  public static class Native {
-    public static native long newInstance();
-  }
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_itsaky_androidide_treesitter_log_TSLanguageLog_00024Native_newInstance(JNIEnv *env,
+                                                                                  jclass clazz) {
+    return (jlong) tree_sitter_log();
 }

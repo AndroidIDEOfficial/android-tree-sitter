@@ -16,3 +16,6 @@
 [submodule "tree-sitter-kotlin/src/main/cpp/grammar"]
 	path = tree-sitter-kotlin/src/main/cpp/grammar
 	url = https://github.com/AndroidIDEOfficial/tree-sitter-kotlin
+[submodule "tree-sitter-log/src/main/cpp/grammar"]
+	path = tree-sitter-log/src/main/cpp/grammar
+	url = https://github.com/AndroidIDEOfficial/tree-sitter-log

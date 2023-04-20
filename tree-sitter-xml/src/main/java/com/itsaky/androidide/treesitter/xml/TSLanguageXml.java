@@ -20,7 +20,7 @@ package com.itsaky.androidide.treesitter.xml;
 import com.itsaky.androidide.treesitter.TSLanguage;
 
 /**
- * Tree Sitter XML language.
+ * Tree Sitter for XML.
  *
  * @author Akash Yadav
  */
