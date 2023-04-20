@@ -4,17 +4,17 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 
 ## Add to your project
 
-![Latest maven release](https://img.shields.io/maven-central/v/io.github.itsaky/android-tree-sitter)
+![Latest maven release](https://img.shields.io/maven-central/v/com.itsaky.androidide/android-tree-sitter)
 
 ```gradle
 // main library
-implementation 'io.github.itsaky:android-tree-sitter:<version>'
+implementation 'com.itsaky.androidide:android-tree-sitter:<version>'
 
 // tree-sitter-java
-implementation 'io.github.itsaky:tree-sitter-java:<version>'
+implementation 'com.itsaky.androidide:tree-sitter-java:<version>'
 
 // tree-sitter-python
-implementation 'io.github.itsaky:tree-sitter-python:<version>'
+implementation 'com.itsaky.androidide:tree-sitter-python:<version>'
 ```
 
 ## Building

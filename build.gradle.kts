@@ -51,14 +51,14 @@ subprojects {
 
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<MavenPublishBaseExtension> {
-      group = "io.github.itsaky"
+      group = "com.itsaky.androidide"
       var versionName = rootProject.version.toString()
       if (System.getenv("PublishToMaven").isNullOrBlank()) {
         versionName = "$versionName-SNAPSHOT"
       }
       versionName = versionName.substring(1) // remove 'v' prefix
       pomFromGradleProperties()
-      coordinates("io.github.itsaky", project.name, versionName)
+      coordinates(project.group.toString(), project.name, versionName)
       publishToMavenCentral(SonatypeHost.S01)
       signAllPublications()
       configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
