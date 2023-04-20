@@ -22,8 +22,8 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-  id("com.android.application") version "7.4.0" apply false
-  id("com.android.library") version "7.4.0" apply false
+  id("com.android.application") version "8.0.0" apply false
+  id("com.android.library") version "8.0.0" apply false
   id("com.vanniktech.maven.publish.base") version "0.23.0" apply false
 }
 
