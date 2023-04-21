@@ -24,6 +24,8 @@ plugins {
 
 apply { plugin(TreeSitterPlugin::class.java) }
 
+description = "Android Java bindings for Tree Sitter."
+
 val rootProjDir: String = rootProject.projectDir.absolutePath
 val tsDir = "${rootProjDir}/tree-sitter-lib"
 val cppDir = project.file("src/main/cpp")

@@ -32,6 +32,7 @@ class TsGrammarPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
+
       tasks.register("generateTreeSitterGrammar") {
         doLast {
           generateGrammar(project = project)

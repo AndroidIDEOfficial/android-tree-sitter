@@ -15,6 +15,8 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.treesitter.BuildTreeSitterTask
 import com.itsaky.androidide.treesitter.CleanTreeSitterBuildTask
@@ -26,7 +28,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 plugins {
   id("com.android.application") version "8.0.0" apply false
   id("com.android.library") version "8.0.0" apply false
-  id("com.vanniktech.maven.publish.base") version "0.23.0" apply false
+  id("com.vanniktech.maven.publish.base") version "0.25.2" apply false
 }
 
 fun Project.configureBaseExtension() {
@@ -59,9 +61,43 @@ subprojects {
         versionName = "$versionName-SNAPSHOT"
       }
       versionName = versionName.substring(1) // remove 'v' prefix
-      pomFromGradleProperties()
+
+      pom {
+        name.set(project.name)
+
+        description.set(
+            if (project.description.isNullOrBlank())
+                "${project.name} grammar for android-tree-sitter."
+            else project.description)
+
+        inceptionYear.set("2022")
+        url.set("https://github.com/itsaky/android-tree-sitter/")
+
+        licenses {
+          license {
+            name.set("LGPL-v2.1")
+            url.set("https://github.com/itsaky/android-tree-sitter/blob/main/LICENSE")
+            distribution.set("repo")
+          }
+        }
+
+        scm {
+          url.set("https://github.com/itsaky/android-tree-sitter/")
+          connection.set("scm:git:git://github.com/itsaky/android-tree-sitter.git")
+          developerConnection.set("scm:git:ssh://git@github.com/itsaky/android-tree-sitter.git")
+        }
+
+        developers {
+          developer {
+            id.set("androidide")
+            name.set("AndroidIDE")
+            url.set("https://androidide.com")
+          }
+        }
+      }
+
       coordinates(project.group.toString(), project.name, versionName)
-      publishToMavenCentral(SonatypeHost.S01)
+      publishToMavenCentral(host = SonatypeHost.S01)
       signAllPublications()
       configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
     }
