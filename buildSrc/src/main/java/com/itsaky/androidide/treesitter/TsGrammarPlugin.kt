@@ -21,6 +21,7 @@ import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel.LIFECYCLE
+import org.gradle.api.tasks.compile.JavaCompile
 
 /**
  * Plugin applied to grammar modules.
@@ -30,7 +31,17 @@ import org.gradle.api.logging.LogLevel.LIFECYCLE
 class TsGrammarPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
-    generateGrammar(target)
+    target.run {
+      tasks.register("generateTreeSitterGrammar") {
+        doLast {
+          generateGrammar(project = project)
+        }
+      }
+
+      tasks.withType(JavaCompile::class.java) {
+        dependsOn("generateTreeSitterGrammar")
+      }
+    }
   }
 
   fun generateGrammar(project: Project) {
@@ -59,7 +70,8 @@ class TsGrammarPlugin : Plugin<Project> {
     if (buildTimestamp.exists()) {
       buildTimestamp.setLastModified(System.currentTimeMillis())
     } else {
-      buildTimestamp.createNewFile()
+      buildTimestamp.parentFile.mkdirs()
+      buildTimestamp.bufferedWriter().use { it.write("Tree Siter ${project.name} build timestamp") }
     }
   }
 }

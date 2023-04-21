@@ -17,33 +17,33 @@
 
 package com.itsaky.androidide.treesitter
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.compile.JavaCompile
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.maybeCreate
 import java.io.File
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 /**
- * Marker plugin.
+ * Task for building the tree-sitter lib.
  *
  * @author Akash Yadav
  */
-class TreeSitterPlugin : Plugin<Project> {
-  override fun apply(target: Project) {
-    target.run {
-      tasks.register("buildForHost", BuildForHostTask::class.java) {
-        dependsOn(rootProject.tasks.getByName("buildTreeSitter"))
-        libName = project.name
-      }
+abstract class BuildTreeSitterTask : DefaultTask() {
 
-      tasks.create("cleanHostBuild", type = Delete::class) {
-        delete("src/main/cpp/host-build")
-      }
-
-      tasks.named("clean").configure { dependsOn("cleanHostBuild") }
-      tasks.named("preBuild") { dependsOn("buildForHost") }
+  @TaskAction
+  fun buildTsCli() {
+    if (!BUILD_TS_CLI_FROM_SOURCE) {
+      project.logger.warn(
+        "Skipping tree-sitter-cli build as $ENV_TS_CLI_BUILD_FROM_SOURCE is set to 'false'")
+      return
     }
+
+    var cliDir = project.rootProject.file("tree-sitter-lib/cli")
+    var buildDir = File(cliDir, "build")
+
+    val cmd = arrayOf("cargo", "b", "--target-dir", buildDir.absolutePath, "--release")
+
+    project.logger.info(
+      "Building tree-sitter-cli with command ${cmd.joinToString(separator = " ")}")
+
+    project.executeCommand(cliDir.absolutePath, command = cmd)
   }
 }

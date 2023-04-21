@@ -15,17 +15,21 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins { `kotlin-dsl` }
+package com.itsaky.androidide.treesitter
 
-repositories {
-  google()
-  gradlePluginPortal()
-  mavenCentral()
-}
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Delete
+import org.gradle.api.tasks.TaskAction
 
-dependencies {
-  implementation(gradleApi())
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+/**
+ * Task for cleaning tree-sitter lib build.
+ *
+ * @author Akash Yadav
+ */
+abstract class CleanTreeSitterBuildTask : Delete() {
 
-  compileOnly("com.android.tools.build:gradle:8.0.0")
+  @TaskAction
+  fun doClean() {
+    delete(project.rootProject.file("tree-sitter-lib/cli/build"))
+  }
 }

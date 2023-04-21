@@ -16,6 +16,8 @@
  */
 
 import com.android.build.gradle.BaseExtension
+import com.itsaky.androidide.treesitter.BuildTreeSitterTask
+import com.itsaky.androidide.treesitter.CleanTreeSitterBuildTask
 import com.itsaky.androidide.treesitter.projectVersionCode
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -66,7 +68,12 @@ subprojects {
   }
 }
 
+tasks.register<BuildTreeSitterTask>("buildTreeSitter")
+
+tasks.register<CleanTreeSitterBuildTask>("cleanTreeSitterBuild")
+
 tasks.register<Delete>("clean").configure {
+  dependsOn("cleanTreeSitterBuild")
   delete(rootProject.buildDir)
   delete(rootProject.file("build/host"))
   delete(rootProject.file("tree-sitter-lib/cli/build"))
