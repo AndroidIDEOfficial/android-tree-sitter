@@ -28,6 +28,7 @@ public class TreeSitterTest {
     System.load(hostDir + "/libtree-sitter-java.so");
     System.load(hostDir + "/libtree-sitter-json.so");
     System.load(hostDir + "/libtree-sitter-kotlin.so");
+    System.load(hostDir + "/libtree-sitter-log.so");
     System.load(hostDir + "/libtree-sitter-xml.so");
     System.load(hostDir + "/libtree-sitter-python.so");
   }

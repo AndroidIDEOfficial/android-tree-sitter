@@ -33,6 +33,7 @@ import com.itsaky.androidide.treesitter.TSTreeCursor;
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.treesitter.json.TSLanguageJson;
 import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin;
+import com.itsaky.androidide.treesitter.log.TSLanguageLog;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.xml.TSLanguageXml;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     languageMap.put("Java", TSLanguageJava.newInstance());
     languageMap.put("JSON", TSLanguageJson.newInstance());
     languageMap.put("Kotlin", TSLanguageKotlin.newInstance());
+    languageMap.put("Log", TSLanguageLog.newInstance());
     languageMap.put("Python", TSLanguagePython.newInstance());
     languageMap.put("XML", TSLanguageXml.newInstance());
   }
@@ -72,15 +74,14 @@ public class MainActivity extends AppCompatActivity {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(
-        getLayoutInflater());
+      getLayoutInflater());
     content = binding.content;
 
     setContentView(binding.getRoot());
     setSupportActionBar(binding.toolbar);
 
-    content.languageChooser.setAdapter(
-        new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
-            languageMap.keySet().toArray(new String[0])));
+    content.languageChooser.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+      languageMap.keySet().toArray(new String[0])));
 
     // new String(byte[], String) is not supported on Android)
     // so we use ByteBuffer to decode the string
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     final var start = System.currentTimeMillis();
     try (final var parser = new TSParser()) {
       parser.setLanguage(Objects.requireNonNull(
-          languageMap.get((String) content.languageChooser.getSelectedItem())));
+        languageMap.get((String) content.languageChooser.getSelectedItem())));
       try (final var tree = parser.parseString(editable.toString())) {
         try (final var cursor = tree.getRootNode().walk()) {
           final var duration = System.currentTimeMillis() - start;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     final var node = cursor.getCurrentNode();
     sb.append(node.getType());
     sb.append(
-        String.format(Locale.getDefault(), "[%d, %d]", node.getStartByte(), node.getEndByte()));
+      String.format(Locale.getDefault(), "[%d, %d]", node.getStartByte(), node.getEndByte()));
     sb.append("\n");
     repeatSpaces(sb, indentLevel * 2);
 

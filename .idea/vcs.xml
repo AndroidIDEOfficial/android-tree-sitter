@@ -6,7 +6,10 @@
     <mapping directory="$PROJECT_DIR$/grammars/tree-sitter-python" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter-java/src/main/cpp/grammar" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tree-sitter-json/src/main/cpp/grammar" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tree-sitter-kotlin/src/main/cpp/grammar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter-lib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tree-sitter-log/src/main/cpp/grammar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter-python/src/main/cpp/grammar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter-xml/src/main/cpp/grammar" vcs="Git" />
   </component>
