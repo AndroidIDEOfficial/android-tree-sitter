@@ -17,10 +17,10 @@
 
 package com.itsaky.androidide.treesitter
 
+import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel.LIFECYCLE
-import org.gradle.api.tasks.compile.JavaCompile
 
 /**
  * Plugin applied to grammar modules.
@@ -35,13 +35,31 @@ class TsGrammarPlugin : Plugin<Project> {
 
   fun generateGrammar(project: Project) {
     val grammarDir = project.file("src/main/cpp/grammar").absolutePath
-    var tsCmd = project.rootProject.file("tree-sitter-lib/cli/build/release/tree-sitter").absolutePath
+    var tsCmd =
+        project.rootProject.file("tree-sitter-lib/cli/build/release/tree-sitter").absolutePath
     if (!BUILD_TS_CLI_FROM_SOURCE) {
       tsCmd = "tree-sitter"
     }
 
-    project.logger.log(LIFECYCLE, "Using '$tsCmd' to generate '${project.name}' grammar")
+    val buildTimestamp = File(project.buildDir, ".grammar_build")
+    val parser_c = File(grammarDir, "src/parser.c")
+    val alreadyBuilt =
+        buildTimestamp.exists() &&
+            parser_c.exists() &&
+            buildTimestamp.lastModified() >= parser_c.lastModified()
 
+    if (alreadyBuilt) {
+      project.logger.log(
+          LIFECYCLE, "Skipping grammar build for '${project.name}' as it is already built")
+      return
+    }
+
+    project.logger.log(LIFECYCLE, "Using '$tsCmd' to generate '${project.name}' grammar")
     project.executeCommand(grammarDir, tsCmd, "generate")
+    if (buildTimestamp.exists()) {
+      buildTimestamp.setLastModified(System.currentTimeMillis())
+    } else {
+      buildTimestamp.createNewFile()
+    }
   }
 }
