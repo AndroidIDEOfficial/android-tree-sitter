@@ -227,4 +227,32 @@ public class QueryTest extends TreeSitterTest {
       }
     }
   }
+
+  @Test
+  public void testEmptyQuery() throws Exception {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguageJava.newInstance());
+      final var source = UTF16StringFactory.newString(readString(Paths.get("./src/test/resources/CodeEditor.java.txt")));
+      try (final var tree = parser.parseString(source)) {
+        final var root = tree.getRootNode();
+        assertThat(root.getStartByte()).isEqualTo(0);
+        assertThat(root.getEndByte()).isEqualTo(source.byteLength());
+
+        final var query = new TSQuery(parser.getLanguage(), "");
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        final var cursor = new TSQueryCursor();
+        cursor.exec(query, root);
+
+        int count = 0;
+        while(cursor.nextMatch() != null) {
+          ++count;
+        }
+        
+        assertThat(count).isEqualTo(0);
+
+        query.close();
+      }
+    }
+  }
 }
