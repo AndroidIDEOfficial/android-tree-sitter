@@ -248,7 +248,7 @@ public class QueryTest extends TreeSitterTest {
         while(cursor.nextMatch() != null) {
           ++count;
         }
-        
+
         assertThat(count).isEqualTo(0);
 
         query.close();

@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     System.loadLibrary("tree-sitter-java");
     System.loadLibrary("tree-sitter-json");
     System.loadLibrary("tree-sitter-kotlin");
+    System.loadLibrary("tree-sitter-log");
     System.loadLibrary("tree-sitter-python");
     System.loadLibrary("tree-sitter-xml");
 
