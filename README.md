@@ -23,7 +23,10 @@ implementation 'com.itsaky.androidide:tree-sitter-python:<version>'
 
 - Android NDK
 - `JDK 11` or newer.
-- `gcc`, `make` and `cmake` - To build everything for the host OS (required for unit tests).
+- `build-essential`, `cargo`, `nodejs`, `cmake` and `ninja-build` packages are required for builds. Install them with :
+  ```
+  sudo apt install build-essential cargo nodejs cmake ninja-build
+  ```
 - [`tree-sitter-cli`](https://github.com/tree-sitter/tree-sitter/tree/master/cli) - To build grammars.
 
 As tree-sitter is already included in the source (as a submodule), the `tree-sitter-cli` is built from source and then used to build the grammars.
