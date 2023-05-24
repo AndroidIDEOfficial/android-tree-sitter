@@ -27,5 +27,5 @@ dependencies {
   implementation(gradleApi())
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-  compileOnly("com.android.tools.build:gradle:8.0.0")
+  compileOnly("com.android.tools.build:gradle:8.0.2")
 }
