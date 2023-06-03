@@ -1,21 +1,21 @@
-[submodule "grammars/tree-sitter-python"]
-	path = tree-sitter-python/src/main/cpp/grammar
-	url = https://github.com/tree-sitter/tree-sitter-python.git
-[submodule "grammars/tree-sitter-java"]
-	path = tree-sitter-java/src/main/cpp/grammar
-	url = https://github.com/AndroidIDEOfficial/tree-sitter-java.git
 [submodule "tree-sitter"]
 	path = tree-sitter-lib
 	url = https://github.com/tree-sitter/tree-sitter.git
-[submodule "tree-sitter-xml/src/main/cpp/grammar"]
-	path = tree-sitter-xml/src/main/cpp/grammar
-	url = https://github.com/AndroidIDEOfficial/tree-sitter-xml
-[submodule "tree-sitter-json/src/main/cpp/grammar"]
-	path = tree-sitter-json/src/main/cpp/grammar
+[submodule "grammars/java"]
+	path = grammars/java
+	url = https://github.com/AndroidIDEOfficial/tree-sitter-java.git
+[submodule "grammars/json"]
+	path = grammars/json
 	url = https://github.com/tree-sitter/tree-sitter-json.git
-[submodule "tree-sitter-kotlin/src/main/cpp/grammar"]
-	path = tree-sitter-kotlin/src/main/cpp/grammar
+[submodule "grammars/kotlin"]
+	path = grammars/kotlin
 	url = https://github.com/AndroidIDEOfficial/tree-sitter-kotlin
-[submodule "tree-sitter-log/src/main/cpp/grammar"]
-	path = tree-sitter-log/src/main/cpp/grammar
+[submodule "grammars/log"]
+	path = grammars/log
 	url = https://github.com/AndroidIDEOfficial/tree-sitter-log
+[submodule "grammars/python"]
+	path = grammars/python
+	url = https://github.com/tree-sitter/tree-sitter-python.git
+[submodule "grammars/xml"]
+	path = grammars/xml
+	url = https://github.com/AndroidIDEOfficial/tree-sitter-xml

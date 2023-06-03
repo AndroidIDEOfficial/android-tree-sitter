@@ -1,0 +1,30 @@
+[
+  {
+    "name": "java",
+    "src.extra": []
+  },
+  {
+    "name": "json",
+    "src.extra": []
+  },
+  {
+    "name": "kotlin",
+    "src.extra": [
+      "src/scanner.c"
+    ]
+  },
+  {
+    "name": "log",
+    "src.extra": []
+  },
+  {
+    "name": "python",
+    "src.extra": [
+      "src/scanner.cc"
+    ]
+  },
+  {
+    "name": "xml",
+    "src.extra": []
+  }
+]

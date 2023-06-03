@@ -6,6 +6,7 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4"}
 
 google-material = { module = "com.google.android.material:material", version = "1.9.0"}
+google-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
 
 tests-junit = { module = "junit:junit", version = "4.13.2" }
 tests-google-truth = { module = "com.google.truth:truth", version = "1.1.4" }

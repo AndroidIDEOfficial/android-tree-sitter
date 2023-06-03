@@ -46,7 +46,7 @@ class TsGrammarPlugin : Plugin<Project> {
   }
 
   fun generateGrammar(project: Project) {
-    val grammarDir = project.file("src/main/cpp/grammar").absolutePath
+    val grammarDir = project.rootProject.file("grammars/${project.name.substringAfterLast('-')}").absolutePath
     var tsCmd =
         project.rootProject.file("tree-sitter-lib/cli/build/release/tree-sitter").absolutePath
     if (!BUILD_TS_CLI_FROM_SOURCE) {
@@ -54,11 +54,11 @@ class TsGrammarPlugin : Plugin<Project> {
     }
 
     val buildTimestamp = File(project.buildDir, ".grammar_build")
-    val parser_c = File(grammarDir, "src/parser.c")
+    val parserC = File(grammarDir, "src/parser.c")
     val alreadyBuilt =
         buildTimestamp.exists() &&
-            parser_c.exists() &&
-            buildTimestamp.lastModified() >= parser_c.lastModified()
+            parserC.exists() &&
+            buildTimestamp.lastModified() >= parserC.lastModified()
 
     if (alreadyBuilt) {
       project.logger.log(

@@ -25,21 +25,13 @@ import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id("build-logic.root-project")
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.android.library) apply false
     alias(libs.plugins.maven.publish) apply false
 }
 
 fun Project.configureBaseExtension() {
     extensions.configure<BaseExtension> {
-
-        if (name != "app") {
-            configureTsModule(this)
-        }
-
         compileSdkVersion(33)
 
         defaultConfig {
@@ -68,6 +60,9 @@ fun Project.configureBaseExtension() {
 subprojects {
     plugins.withId("com.android.application") { configureBaseExtension() }
     plugins.withId("com.android.library") { configureBaseExtension() }
+    plugins.withId("android-tree-sitter.ts") {
+        configureTsModule()
+    }
 
     plugins.withId("com.vanniktech.maven.publish.base") {
         configure<MavenPublishBaseExtension> {
@@ -129,13 +124,13 @@ tasks.register<CleanTreeSitterBuildTask>("cleanTreeSitterBuild")
 tasks.register<Delete>("clean").configure {
     dependsOn("cleanTreeSitterBuild")
     delete(rootProject.buildDir)
-    delete(rootProject.file("build/host"))
     delete(rootProject.file("tree-sitter-lib/cli/build"))
 }
 
-fun Project.configureTsModule(extension: BaseExtension) {
-    extension.apply {
-        val grammarName = project.project.name.substringAfter("tree-sitter-", "")
+fun Project.configureTsModule() {
+    extensions.configure<BaseExtension> {
+        val grammarName =
+            project.project.name.substringAfter("tree-sitter-", "")
         if (grammarName.isNotBlank()) {
             namespace = "com.itsaky.androidide.treesitter.$grammarName"
             logger.lifecycle("Set namespace '$namespace' to $project")
@@ -163,6 +158,9 @@ fun Project.configureTsModule(extension: BaseExtension) {
         }
     }
 
-    configurations.getByName("api").dependencies.add(
-        project.projects.androidTreeSitter)
+    // avoid circular dependency
+    if (project.projects.androidTreeSitter.name != project.name) {
+        configurations.getByName("api").dependencies.add(
+            project.projects.androidTreeSitter)
+    }
 }

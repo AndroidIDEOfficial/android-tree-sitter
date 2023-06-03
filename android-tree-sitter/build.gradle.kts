@@ -18,9 +18,8 @@
 plugins {
   id("com.android.library")
   id("com.vanniktech.maven.publish.base")
+  id("android-tree-sitter.ts")
 }
-
-apply { plugin(com.itsaky.androidide.treesitter.TreeSitterPlugin::class.java) }
 
 description = "Android Java bindings for Tree Sitter."
 

@@ -10,11 +10,6 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android)
     include_directories(${JAVA_INCLUDE_PATH2})
 endif ()
 
-# If not building with Gradle, these variables won't be set
-if (NOT DEFINED PROJECT_DIR)
-    set(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
-endif ()
-
 if (NOT DEFINED PROJECT_CMAKE_DIR)
     set(PROJECT_CMAKE_DIR "${PROJECT_DIR}/cmake")
 endif ()

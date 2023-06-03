@@ -20,6 +20,8 @@ cmake_minimum_required(VERSION 3.22.1)
 # Project name
 project("android-tree-sitter")
 
+set(PROJECT_DIR ../../../..)
+
 # Include common configuration
 include(../../../../cmake/common-config.cmake)
 

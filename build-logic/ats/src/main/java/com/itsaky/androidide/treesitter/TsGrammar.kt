@@ -15,26 +15,18 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter.json;
+package com.itsaky.androidide.treesitter
 
-import com.itsaky.androidide.treesitter.TSLanguage;
+import com.google.gson.annotations.SerializedName
 
 /**
- * Tree Sitter for JSON.
+ * Model for grammar entries in `grammars.json` file.
  *
  * @author Akash Yadav
  */
-public class TSLanguageJson {
+data class TsGrammar(@SerializedName("name") val name: String,
+                     @SerializedName("src.extra") val srcExtra: List<String>
+) {
 
-  private TSLanguageJson() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static TSLanguage newInstance() {
-    return new TSLanguage(Native.newInstance());
-  }
-
-  public static class Native {
-    public static native long newInstance();
-  }
+    fun capitalizedName() = name.replaceFirstChar { it.titlecaseChar() }
 }

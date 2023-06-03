@@ -2,8 +2,14 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/grammars/java" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/grammars/json" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/grammars/kotlin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/grammars/log" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/grammars/python" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/grammars/tree-sitter-java" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/grammars/tree-sitter-python" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/grammars/xml" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter-java/src/main/cpp/grammar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tree-sitter-json/src/main/cpp/grammar" vcs="Git" />

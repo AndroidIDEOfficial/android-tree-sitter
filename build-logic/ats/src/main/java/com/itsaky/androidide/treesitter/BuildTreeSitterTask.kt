@@ -36,8 +36,8 @@ abstract class BuildTreeSitterTask : DefaultTask() {
       return
     }
 
-    var cliDir = project.rootProject.file("tree-sitter-lib/cli")
-    var buildDir = File(cliDir, "build")
+    val cliDir = project.rootProject.file("tree-sitter-lib/cli")
+    val buildDir = File(cliDir, "build")
 
     val cmd = arrayOf("cargo", "b", "--target-dir", buildDir.absolutePath, "--release")
 
