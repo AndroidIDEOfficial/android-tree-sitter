@@ -60,12 +60,11 @@ First, load the shared libraries somewhere in your application:
 ```java
     public class App {
       static {
-        // main library
-        System.loadLibrary("android-tree-sitter");
-
-        // languages
-        System.loadLibrary("tree-sitter-java");
-        System.loadLibrary("tree-sitter-python");
+        // load the tree sitter library
+        TreeSitter.loadLibrary();
+        
+        // native libraries for languages are automatically loaded
+        // no need to load them manually
       }
     }
 ```
