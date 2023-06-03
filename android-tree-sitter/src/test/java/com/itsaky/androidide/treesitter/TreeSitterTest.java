@@ -22,15 +22,9 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
 
 public class TreeSitterTest {
+
   static {
-    String hostDir = System.getProperty("user.dir") + "/../build/host";
-    System.load(hostDir + "/libandroid-tree-sitter.so");
-    System.load(hostDir + "/libtree-sitter-java.so");
-    System.load(hostDir + "/libtree-sitter-json.so");
-    System.load(hostDir + "/libtree-sitter-kotlin.so");
-    System.load(hostDir + "/libtree-sitter-log.so");
-    System.load(hostDir + "/libtree-sitter-xml.so");
-    System.load(hostDir + "/libtree-sitter-python.so");
+    TreeSitter.loadLibrary();
   }
 
   @Test

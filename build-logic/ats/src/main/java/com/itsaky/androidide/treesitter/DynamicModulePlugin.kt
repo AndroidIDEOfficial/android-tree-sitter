@@ -166,6 +166,10 @@ import com.itsaky.androidide.treesitter.TSLanguage;
  */
 public final class TSLanguage${capitalizedName()} {
 
+  static {
+    System.loadLibrary("tree-sitter-$name");
+  }
+
   private TSLanguage${capitalizedName()}() {
     throw new UnsupportedOperationException();
   }

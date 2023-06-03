@@ -26,12 +26,12 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/ats" />
-            <option value="$PROJECT_DIR$/build/grammars/java" />
-            <option value="$PROJECT_DIR$/build/grammars/json" />
-            <option value="$PROJECT_DIR$/build/grammars/kotlin" />
-            <option value="$PROJECT_DIR$/build/grammars/log" />
-            <option value="$PROJECT_DIR$/build/grammars/python" />
-            <option value="$PROJECT_DIR$/build/grammars/xml" />
+            <option value="$PROJECT_DIR$/grammar-modules/java" />
+            <option value="$PROJECT_DIR$/grammar-modules/json" />
+            <option value="$PROJECT_DIR$/grammar-modules/kotlin" />
+            <option value="$PROJECT_DIR$/grammar-modules/log" />
+            <option value="$PROJECT_DIR$/grammar-modules/python" />
+            <option value="$PROJECT_DIR$/grammar-modules/xml" />
           </set>
         </option>
       </GradleProjectSettings>

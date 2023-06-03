@@ -1,3 +1,5 @@
+import org.gradle.internal.classpath.Instrumented.systemProperty
+
 /*
  *  This file is part of android-tree-sitter.
  *

@@ -62,6 +62,12 @@ subprojects {
     plugins.withId("com.android.library") { configureBaseExtension() }
     plugins.withId("android-tree-sitter.ts") {
         configureTsModule()
+
+        // set java library path for tests
+        tasks.withType<Test> {
+            systemProperty("java.library.path",
+                rootProject.buildDir.resolve("host").absolutePath)
+        }
     }
 
     plugins.withId("com.vanniktech.maven.publish.base") {
