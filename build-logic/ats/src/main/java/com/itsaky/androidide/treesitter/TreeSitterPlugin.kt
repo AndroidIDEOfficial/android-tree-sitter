@@ -20,10 +20,7 @@ package com.itsaky.androidide.treesitter
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.maybeCreate
-import java.io.File
 
 /**
  * Marker plugin.

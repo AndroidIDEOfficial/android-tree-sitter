@@ -15,26 +15,6 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-  id("com.android.library")
-  id("com.vanniktech.maven.publish.base")
-}
-
-apply { plugin(com.itsaky.androidide.treesitter.TreeSitterPlugin::class.java) }
-
-description = "Android Java bindings for Tree Sitter."
-
-android {
-  namespace = "com.itsaky.androidide.treesitter"
-}
-
-dependencies {
-  testImplementation(projects.treeSitterJava)
-  testImplementation(projects.treeSitterJson)
-  testImplementation(projects.treeSitterKotlin)
-  testImplementation(projects.treeSitterLog)
-  testImplementation(projects.treeSitterXml)
-  testImplementation(projects.treeSitterPython)
-  testImplementation(libs.tests.google.truth)
-  testImplementation(libs.tests.junit)
+require(project == rootProject) {
+    "This script must be apply to the root project."
 }

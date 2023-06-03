@@ -16,25 +16,21 @@
  */
 
 plugins {
-  id("com.android.library")
-  id("com.vanniktech.maven.publish.base")
+    `kotlin-dsl`
 }
 
-apply { plugin(com.itsaky.androidide.treesitter.TreeSitterPlugin::class.java) }
+repositories {
+    google()
+    gradlePluginPortal()
+    mavenCentral()
+}
 
-description = "Android Java bindings for Tree Sitter."
-
-android {
-  namespace = "com.itsaky.androidide.treesitter"
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
-  testImplementation(projects.treeSitterJava)
-  testImplementation(projects.treeSitterJson)
-  testImplementation(projects.treeSitterKotlin)
-  testImplementation(projects.treeSitterLog)
-  testImplementation(projects.treeSitterXml)
-  testImplementation(projects.treeSitterPython)
-  testImplementation(libs.tests.google.truth)
-  testImplementation(libs.tests.junit)
+    implementation(gradleApi())
+    implementation(libs.gradle.android)
 }

@@ -15,17 +15,27 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins { `kotlin-dsl` }
+package com.itsaky.androidide.treesitter
 
-repositories {
-  google()
-  gradlePluginPortal()
-  mavenCentral()
-}
+import org.gradle.api.Project
 
-dependencies {
-  implementation(gradleApi())
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+/**
+ * @author Akash Yadav
+ */
 
-  compileOnly("com.android.tools.build:gradle:8.0.0")
+private var _versionCode: Int? = null
+
+val Project.projectVersionCode : Int
+  get() = _versionCode ?: findVersionCode().also { _versionCode = it }
+
+private fun Project.findVersionCode() : Int {
+  val version = rootProject.version.toString()
+  val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+")
+
+  return regex.find(version)?.value?.substring(1)?.replace(".", "")?.toInt()?.also {
+    logger.warn("Version code is '$it' (from version ${rootProject.version}).")
+  }
+    ?: throw IllegalStateException(
+      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+    )
 }

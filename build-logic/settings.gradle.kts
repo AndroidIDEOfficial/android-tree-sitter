@@ -15,28 +15,22 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.provideDelegate
-
-/**
- * @author Akash Yadav
- */
-
-private var _versionCode: Int? = null
-
-val Project.projectVersionCode : Int
-  get() = _versionCode ?: findVersionCode().also { _versionCode = it }
-
-private fun Project.findVersionCode() : Int {
-  val version = rootProject.version.toString()
-  val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+")
-
-  return regex.find(version)?.value?.substring(1)?.replace(".", "")?.toInt()?.also {
-    logger.warn("Version code is '$it' (from version ${rootProject.version}).")
-  }
-    ?: throw IllegalStateException(
-      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
-    )
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
 }
+
+include(
+    ":ats"
+)
+
+rootProject.name = "build-logic"
