@@ -54,12 +54,12 @@ android {
 }
 
 dependencies {
-  testImplementation(project(path = ":tree-sitter-java"))
-  testImplementation(project(path = ":tree-sitter-json"))
-  testImplementation(project(path = ":tree-sitter-kotlin"))
-  testImplementation(project(path = ":tree-sitter-log"))
-  testImplementation(project(path = ":tree-sitter-xml"))
-  testImplementation(project(path = ":tree-sitter-python"))
-  testImplementation("com.google.truth:truth:1.1.4")
-  testImplementation("junit:junit:4.13.2")
+  testImplementation(projects.treeSitterJava)
+  testImplementation(projects.treeSitterJson)
+  testImplementation(projects.treeSitterKotlin)
+  testImplementation(projects.treeSitterLog)
+  testImplementation(projects.treeSitterXml)
+  testImplementation(projects.treeSitterPython)
+  testImplementation(libs.tests.google.truth)
+  testImplementation(libs.tests.junit)
 }

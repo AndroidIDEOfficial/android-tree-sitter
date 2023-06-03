@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/\>.
  */
 
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -24,6 +25,8 @@ pluginManagement {
 }
 
 plugins { id("com.mooltiverse.oss.nyx") version "2.4.3" }
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 nyx {
   git {
@@ -43,7 +46,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AndroidTreeSitter"
+rootProject.name = "ATS"
 
 // Test application
 include ':app'
