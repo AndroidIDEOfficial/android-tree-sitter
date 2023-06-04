@@ -30,6 +30,9 @@ public class TSQueryCursor implements AutoCloseable {
 
   /** Start running the given query on the given node. */
   public void exec(TSQuery query, TSNode node) {
+    if (query == null || !query.isValid()) {
+      throw new IllegalArgumentException("Cannot execute invalid query");
+    }
     Native.exec(this.pointer, query.pointer, node);
   }
 
