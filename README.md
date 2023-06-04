@@ -11,7 +11,7 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 implementation 'com.itsaky.androidide:android-tree-sitter:<version>'
 
 // grammar libraries
-// <language> is the name of the grammar language. e.g. 'java', 'python', 'xml', etc.
+// <language> is the name of the language grammar. e.g. 'java', 'python', 'xml', etc.
 implementation 'com.itsaky.androidide:tree-sitter-<language>:<version>'
 ```
 
