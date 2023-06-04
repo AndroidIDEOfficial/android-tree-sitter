@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import android.text.TextUtils;
 import java.util.Objects;
 
 public class TSQuery implements AutoCloseable {
@@ -155,6 +156,21 @@ public class TSQuery implements AutoCloseable {
             throw new IndexOutOfBoundsException(
                 "pattern count: " + getPatternCount() + ", pattern: " + pattern);
         }
+    }
+
+    /**
+     * Creates a new {@link TSQuery} with the given {@link TSLanguage} and query source. If the
+     * language or the query source is invalid, {@link TSQuery#EMPTY} is returned.
+     *
+     * @param language The {@link TSLanguage} for the query.
+     * @param query    The query source.
+     * @return The {@link TSQuery} object.
+     */
+    public static TSQuery create(TSLanguage language, String query) {
+        if (language == null || query == null || TextUtils.getTrimmedLength(query) == 0) {
+            return EMPTY;
+        }
+        return new TSQuery(language, query);
     }
 
     /**
