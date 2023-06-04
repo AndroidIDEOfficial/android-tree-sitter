@@ -20,143 +20,229 @@ package com.itsaky.androidide.treesitter;
 import java.util.Objects;
 
 public class TSQuery implements AutoCloseable {
-  final long pointer;
-  private int errorOffset;
-  private int errorType;
 
-  private String[] captureNames = null;
+    /**
+     * An empty query.
+     */
+    public static final TSQuery EMPTY = new EmptyQuery();
 
-  /**
-   * Create a new query from a string containing one or more S-expression patterns. The query is
-   * associated with a particular language, and can only be run on syntax nodes parsed with that
-   * language.
-   *
-   * <p>If all of the given patterns are valid, this returns a `TSQuery`. If a pattern is invalid,
-   * this returns `NULL`, and provides two pieces of information about the problem: 1. The byte
-   * offset of the error is written to the `error_offset` parameter. 2. The type of error is written
-   * to the `error_type` parameter.
-   */
-  public TSQuery(TSLanguage language, String source) {
-    Objects.requireNonNull(language, "Language cannot be null");
-    if (source == null || source.isEmpty()) {
-      throw new IllegalArgumentException("Query source cannot be null");
+    final long pointer;
+    protected int errorOffset;
+    protected int errorType;
+
+    private String[] captureNames = null;
+
+    /**
+     * Create a new query from a string containing one or more S-expression patterns. The query is
+     * associated with a particular language, and can only be run on syntax nodes parsed with that
+     * language.
+     *
+     * <p>If all of the given patterns are valid, this returns a `TSQuery`. If a pattern is
+     * invalid, this returns `NULL`, and provides two pieces of information about the problem: 1.
+     * The byte offset of the error is written to the `error_offset` parameter. 2. The type of error
+     * is written to the `error_type` parameter.
+     */
+    public TSQuery(TSLanguage language, String source) {
+        Objects.requireNonNull(language, "Language cannot be null");
+        if (source == null || source.isEmpty()) {
+            throw new IllegalArgumentException("Query source cannot be null");
+        }
+
+        this.pointer = Native.newQuery(this, language.pointer, source);
     }
-    
-    this.pointer = Native.newQuery(this, language.pointer, source);
-  }
 
-  public int getErrorOffset() {
-    return this.errorOffset;
-  }
-
-  public TSQueryError getErrorType() {
-    return TSQueryError.valueOf(this.errorType);
-  }
-
-  /**
-   * Get the number of captures in the query.
-   *
-   * @return The count.
-   */
-  public int getCaptureCount() {
-    return Native.captureCount(this.pointer);
-  }
-
-  /**
-   * Get the number of patterns in the query.
-   *
-   * @return The count.
-   */
-  public int getPatternCount() {
-    return Native.patternCount(this.pointer);
-  }
-
-  /**
-   * Get the number of string literals in the query.
-   *
-   * @return The count.
-   */
-  public int getStringCount() {
-    return Native.stringCount(this.pointer);
-  }
-
-  public String[] getCaptureNames() {
-    if (captureNames == null) {
-      captureNames = new String[getCaptureCount()];
-      for (int i = 0; i < getCaptureCount(); i++) {
-        captureNames[i] = getCaptureNameForId(i);
-      }
+    /**
+     * For subclasses only!
+     * <p>
+     * Constructs an invalid query.
+     */
+    protected TSQuery() {
+        this.pointer = 0;
     }
-    return captureNames;
-  }
 
-  public int getStartByteForPattern(int pattern) {
-    validatePatternIndex(pattern);
-    return Native.startByteForPattern(this.pointer, pattern);
-  }
-
-  public TSQueryPredicateStep[] getPredicatesForPattern(int pattern) {
-    validatePatternIndex(pattern);
-    return Native.predicatesForPattern(this.pointer, pattern);
-  }
-
-  public boolean isPatternRooted(int pattern) {
-    validatePatternIndex(pattern);
-    return Native.patternRooted(this.pointer, pattern);
-  }
-
-  public boolean isPatternNonLocal(int pattern) {
-    validatePatternIndex(pattern);
-    return Native.patternNonLocal(this.pointer, pattern);
-  }
-
-  public boolean isPatternGuaranteedAtStep(int offset) {
-    return Native.patternGuaranteedAtStep(this.pointer, offset);
-  }
-
-  public String getCaptureNameForId(int id) {
-    return Native.captureNameForId(this.pointer, id);
-  }
-
-  public String getStringValueForId(int id) {
-    return Native.stringValueForId(this.pointer, id);
-  }
-
-  @Override
-  public void close() throws Exception {
-    Native.delete(this.pointer);
-  }
-
-  private void validatePatternIndex(int pattern) {
-    if (pattern < 0 || pattern >= getPatternCount()) {
-      throw new IndexOutOfBoundsException(
-          "pattern count: " + getPatternCount() + ", pattern: " + pattern);
+    /**
+     * @return Whether the query is valid or not. A {@link TSQuery} is valid if it has a valid
+     * pointer to a native object.
+     */
+    public boolean isValid() {
+        return this.pointer != 0;
     }
-  }
 
-  private static class Native {
-    public static native long newQuery(TSQuery query, long pointer, String source);
+    public int getErrorOffset() {
+        return this.errorOffset;
+    }
 
-    public static native void delete(long query);
+    public TSQueryError getErrorType() {
+        return TSQueryError.valueOf(this.errorType);
+    }
 
-    public static native int captureCount(long query);
+    /**
+     * Get the number of captures in the query.
+     *
+     * @return The count.
+     */
+    public int getCaptureCount() {
+        return Native.captureCount(this.pointer);
+    }
 
-    public static native int patternCount(long query);
+    /**
+     * Get the number of patterns in the query.
+     *
+     * @return The count.
+     */
+    public int getPatternCount() {
+        return Native.patternCount(this.pointer);
+    }
 
-    public static native int stringCount(long query);
+    /**
+     * Get the number of string literals in the query.
+     *
+     * @return The count.
+     */
+    public int getStringCount() {
+        return Native.stringCount(this.pointer);
+    }
 
-    public static native int startByteForPattern(long query, int pattern);
+    public String[] getCaptureNames() {
+        if (captureNames == null) {
+            captureNames = new String[getCaptureCount()];
+            for (int i = 0; i < getCaptureCount(); i++) {
+                captureNames[i] = getCaptureNameForId(i);
+            }
+        }
+        return captureNames;
+    }
 
-    public static native TSQueryPredicateStep[] predicatesForPattern(long query, int pattern);
+    public int getStartByteForPattern(int pattern) {
+        validatePatternIndex(pattern);
+        return Native.startByteForPattern(this.pointer, pattern);
+    }
 
-    public static native boolean patternRooted(long query, int pattern);
+    public TSQueryPredicateStep[] getPredicatesForPattern(int pattern) {
+        validatePatternIndex(pattern);
+        return Native.predicatesForPattern(this.pointer, pattern);
+    }
 
-    public static native boolean patternNonLocal(long query, int pattern);
+    public boolean isPatternRooted(int pattern) {
+        validatePatternIndex(pattern);
+        return Native.patternRooted(this.pointer, pattern);
+    }
 
-    public static native boolean patternGuaranteedAtStep(long query, int byteOffset);
+    public boolean isPatternNonLocal(int pattern) {
+        validatePatternIndex(pattern);
+        return Native.patternNonLocal(this.pointer, pattern);
+    }
 
-    public static native String captureNameForId(long query, int id);
+    public boolean isPatternGuaranteedAtStep(int offset) {
+        return Native.patternGuaranteedAtStep(this.pointer, offset);
+    }
 
-    public static native String stringValueForId(long query, int id);
-  }
+    public String getCaptureNameForId(int id) {
+        return Native.captureNameForId(this.pointer, id);
+    }
+
+    public String getStringValueForId(int id) {
+        return Native.stringValueForId(this.pointer, id);
+    }
+
+    @Override
+    public void close() throws Exception {
+        Native.delete(this.pointer);
+    }
+
+    private void validatePatternIndex(int pattern) {
+        if (pattern < 0 || pattern >= getPatternCount()) {
+            throw new IndexOutOfBoundsException(
+                "pattern count: " + getPatternCount() + ", pattern: " + pattern);
+        }
+    }
+
+    /**
+     * An empty query. Instances of this class are invalid queries and does not have any patterns,
+     * capture names, etc. The <code>get*Count()</code> methods always return <code>0</code>, the
+     * <code>get*(int index)</code> methods always throw an {@link IndexOutOfBoundsException} and
+     * the <code>get*ForId(int id)</code> methods always throw
+     * {@link UnsupportedOperationException}.
+     */
+    private static final class EmptyQuery extends TSQuery {
+
+        private EmptyQuery() {
+        }
+
+        @Override
+        public int getCaptureCount() {
+            return 0;
+        }
+
+        @Override
+        public int getPatternCount() {
+            return 0;
+        }
+
+        @Override
+        public int getStringCount() {
+            return 0;
+        }
+
+        @Override
+        public int getErrorOffset() {
+            return -1;
+        }
+
+        @Override
+        public String[] getCaptureNames() {
+            return new String[0];
+        }
+
+        @Override
+        public TSQueryError getErrorType() {
+            return TSQueryError.None;
+        }
+
+        @Override
+        public boolean isPatternGuaranteedAtStep(int offset) {
+            return false;
+        }
+
+        @Override
+        public String getCaptureNameForId(int id) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getStringValueForId(int id) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void close() {
+        }
+    }
+
+    private static class Native {
+
+        public static native long newQuery(TSQuery query, long pointer, String source);
+
+        public static native void delete(long query);
+
+        public static native int captureCount(long query);
+
+        public static native int patternCount(long query);
+
+        public static native int stringCount(long query);
+
+        public static native int startByteForPattern(long query, int pattern);
+
+        public static native TSQueryPredicateStep[] predicatesForPattern(long query, int pattern);
+
+        public static native boolean patternRooted(long query, int pattern);
+
+        public static native boolean patternNonLocal(long query, int pattern);
+
+        public static native boolean patternGuaranteedAtStep(long query, int byteOffset);
+
+        public static native String captureNameForId(long query, int id);
+
+        public static native String stringValueForId(long query, int id);
+    }
 }
