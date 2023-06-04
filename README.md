@@ -10,12 +10,18 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 // main library
 implementation 'com.itsaky.androidide:android-tree-sitter:<version>'
 
-// tree-sitter-java
-implementation 'com.itsaky.androidide:tree-sitter-java:<version>'
-
-// tree-sitter-python
-implementation 'com.itsaky.androidide:tree-sitter-python:<version>'
+// grammar libraries
+// <language> is the name of the grammar language. e.g. 'java', 'python', 'xml', etc.
+implementation 'com.itsaky.androidide:tree-sitter-<language>:<version>'
 ```
+
+The following grammars have been published to Maven central :
+- Java
+- JSON
+- Kotlin
+- Logs (for highlighting logs in AndroidIDE)
+- Python
+- XML
 
 ## Building
 
