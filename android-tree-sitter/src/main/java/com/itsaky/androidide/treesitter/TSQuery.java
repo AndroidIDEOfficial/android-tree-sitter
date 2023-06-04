@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.treesitter;
 
+import java.util.Objects;
+
 public class TSQuery implements AutoCloseable {
   final long pointer;
   private int errorOffset;
@@ -35,6 +37,11 @@ public class TSQuery implements AutoCloseable {
    * to the `error_type` parameter.
    */
   public TSQuery(TSLanguage language, String source) {
+    Objects.requireNonNull(language, "Language cannot be null");
+    if (source == null || source.isEmpty()) {
+      throw new IllegalArgumentException("Query source cannot be null");
+    }
+    
     this.pointer = Native.newQuery(this, language.pointer, source);
   }
 
