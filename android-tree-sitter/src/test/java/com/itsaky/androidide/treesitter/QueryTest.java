@@ -233,6 +233,7 @@ public class QueryTest extends TreeSitterTest {
     @Test
     public void testEmptyQuery() throws Exception {
         try (final var query = TSQuery.EMPTY) {
+            assertThat(query.isValid()).isFalse();
             assertThat(query.getPatternCount()).isEqualTo(0);
             assertThat(query.getCaptureCount()).isEqualTo(0);
             assertThat(query.getStringCount()).isEqualTo(0);
