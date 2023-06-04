@@ -44,7 +44,10 @@ public class TSQuery implements AutoCloseable {
      * is written to the `error_type` parameter.
      */
     public TSQuery(TSLanguage language, String source) {
-        Objects.requireNonNull(language, "Language cannot be null");
+        if (language == null) {
+            throw new IllegalArgumentException("Language cannot be null");
+        }
+        
         if (source == null || source.isEmpty()) {
             throw new IllegalArgumentException("Query source cannot be null");
         }
