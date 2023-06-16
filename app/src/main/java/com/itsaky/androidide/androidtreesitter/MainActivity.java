@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
   static {
     System.loadLibrary("android-tree-sitter");
+    System.loadLibrary("tree-sitter-c");
     System.loadLibrary("tree-sitter-java");
     System.loadLibrary("tree-sitter-json");
     System.loadLibrary("tree-sitter-kotlin");
@@ -80,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
     setContentView(binding.getRoot());
     setSupportActionBar(binding.toolbar);
+
+    final var sharedLibDir = getApplication().getApplicationInfo().nativeLibraryDir;
+    languageMap.put("C", TSLanguage.loadLanguage(sharedLibDir + "/libtree-sitter-c.so", "c"));
 
     content.languageChooser.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
       languageMap.keySet().toArray(new String[0])));

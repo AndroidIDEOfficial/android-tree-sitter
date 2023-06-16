@@ -48,3 +48,9 @@ add_library(android-tree-sitter SHARED
         utils/jni_utils.cpp
         utils/ts_obj_utils.cc
         utils/utils.cpp)
+
+if (${CMAKE_SYSTEM_NAME} STREQUAL Android)
+    # Find the log library and link it to android-tree-sitter
+    find_library(log log)
+    target_link_libraries(android-tree-sitter ${log})
+endif()

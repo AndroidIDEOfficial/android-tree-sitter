@@ -18,15 +18,24 @@
 package com.itsaky.androidide.treesitter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 /**
  * A tree-sitter language.
  *
  * @author Akash Yadav
  */
-public class TSLanguage {
+public class TSLanguage implements AutoCloseable {
+
+  private static final Pattern LANG_NAME = Pattern.compile("^[a-zA-Z_]\\w*$");
 
   final long pointer;
+
+  /**
+   * The pointer to the library handle if this language was loaded using
+   * {@link TSLanguage#loadLanguage(String, String)}.
+   */
+  private long libHandle;
 
   /**
    * Create a new {@link TSLanguage} instance with the given pointer.
@@ -37,7 +46,21 @@ public class TSLanguage {
     this.pointer = pointer;
   }
 
-  /** Get the number of distinct node types in the language. */
+  private TSLanguage(long[] pointers) {
+    if (pointers == null) {
+      throw new IllegalArgumentException("Cannot create TSLanguage from null pointers");
+    }
+    if (pointers.length != 2) {
+      throw new IllegalArgumentException("There must be exactly 2 elements the pointers array");
+    }
+
+    this.pointer = pointers[0];
+    this.libHandle = pointers[1];
+  }
+
+  /**
+   * Get the number of distinct node types in the language.
+   */
   public int getSymbolCount() {
     return Native.symCount(this.pointer);
   }
@@ -72,7 +95,45 @@ public class TSLanguage {
     return Native.langVer(this.pointer);
   }
 
+  @Override
+  public void close() throws Exception {
+    if (this.libHandle != 0) {
+      Native.dlclose(this.libHandle);
+    }
+  }
+
+  /**
+   * Loads the tree-sitter language and returns an instance of {@link TSLanguage}. This method will
+   * load the library using <code>dlopen</code> and keep a reference to the library handle as long
+   * the {@link TSLanguage#close()} is not called.
+   *
+   * @param libraryPath The absolute path to the shared library.
+   * @param lang        The name of the language, without {@code tree-sitter-} prefix (e.g. 'java',
+   *                    'kotlin', etc).
+   * @return The {@link TSLanguage} instance for the given language name, or <code>null</code> if
+   * the language cannot be loaded.
+   * @throws IllegalArgumentException If the given language name is invalid.
+   */
+  public static TSLanguage loadLanguage(String libraryPath, String lang) {
+    validateLangName(lang);
+
+    final long[] pointers = Native.loadLanguage(libraryPath, "tree_sitter_" + lang);
+    if (pointers == null) {
+      return null;
+    }
+
+    return new TSLanguage(pointers);
+  }
+
+  private static void validateLangName(String lang) {
+    final var matcher = LANG_NAME.matcher(lang);
+    if (!matcher.matches()) {
+      throw new IllegalArgumentException("Invalid language name: " + lang);
+    }
+  }
+
   private static class Native {
+
     private static native int symCount(long ptr);
 
     private static native int fldCount(long ptr);
@@ -88,5 +149,9 @@ public class TSLanguage {
     private static native int symType(long ptr, int sym);
 
     private static native int langVer(long ptr);
+
+    private static native long[] loadLanguage(String sharedLib, String func);
+
+    private static native void dlclose(long libhandle);
   }
 }
