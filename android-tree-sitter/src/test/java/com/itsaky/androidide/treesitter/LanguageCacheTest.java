@@ -31,7 +31,7 @@ public class LanguageCacheTest extends TreeSitterTest {
   @Test
   public void testCacheAndRetrieval() {
     final var lang = TSLanguageJava.getInstance();
-    assertThat(lang).isEqualTo(TSLanguageCache.get("tree_sitter_java"));
+    assertThat(lang).isEqualTo(TSLanguageCache.get("java"));
     assertThat(lang).isEqualTo(TSLanguageCache.get(lang.pointer));
   }
 
@@ -54,5 +54,19 @@ public class LanguageCacheTest extends TreeSitterTest {
         assertThat(TSLanguageCache.get(lang.pointer)).isEqualTo(tree.getLanguage());
       }
     }
+  }
+
+  @Test
+  public void testExternalLanguageCache() {
+    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c.so";
+    var lang = TSLanguage.loadLanguage(libraryPath, "c");
+    assertThat(lang).isNotNull();
+    assertThat(lang.canAccess()).isTrue();
+    assertThat(TSLanguageCache.get("c")).isEqualTo(lang);
+    assertThat(TSLanguageCache.get(lang.pointer)).isEqualTo(lang);
+    lang.close();
+
+    assertThat(lang.canAccess()).isFalse();
+    assertThat(TSLanguageCache.get("c")).isNull();
   }
 }
