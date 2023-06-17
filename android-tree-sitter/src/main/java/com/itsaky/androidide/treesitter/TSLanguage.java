@@ -110,6 +110,9 @@ public class TSLanguage extends TSNativeObject {
     if (this.libHandle != 0) {
       Native.dlclose(this.libHandle);
       this.libHandle = 0;
+
+      // Language instance loading using loadLanguage(...) must not be reused
+      TSLanguageCache.remove(this);
     }
 
     super.close();

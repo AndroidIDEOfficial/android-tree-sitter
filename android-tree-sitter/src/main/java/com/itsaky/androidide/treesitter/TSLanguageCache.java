@@ -75,4 +75,17 @@ public final class TSLanguageCache {
   public static void closeAll() {
     languagesByName.forEach((name, lang) -> lang.close());
   }
+
+  /**
+   * Remove the given language from the cache.
+   *
+   * @param language The language to remove.
+   */
+  static void remove(TSLanguage language) {
+    if (language == null) {
+      return;
+    }
+    languagesByName.entrySet().removeIf(entry -> language.equals(entry.getValue()));
+    languagesByPtr.entrySet().removeIf(entry -> language.equals(entry.getValue()));
+  }
 }
