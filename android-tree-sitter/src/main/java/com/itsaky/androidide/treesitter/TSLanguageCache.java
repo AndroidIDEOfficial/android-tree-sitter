@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.treesitter;
 
+import android.util.Pair;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,16 +70,25 @@ public final class TSLanguageCache {
   }
 
   /**
-   * Calls {@link TSLanguage#close()} on each cached language. This makes sure that any language
-   * that may have been opened with {@link TSLanguage#loadLanguage(String, String)} closes the
-   * associated native library handle.
+   * Calls {@link TSLanguage#close()} on each cached language that is externally loaded. This makes
+   * sure that any language that may have been opened with
+   * {@link TSLanguage#loadLanguage(String, String)} closes the associated native library handle.
    */
   public static void closeExternal() {
+    final var toRemove = new HashSet<Pair<String, Long>>();
     languagesByName.forEach((name, lang) -> {
       if (lang.isExternal()) {
+        toRemove.add(Pair.create(name, lang.pointer));
         lang.close();
       }
     });
+
+    for (Pair<String, Long> lang : toRemove) {
+      //noinspection resource
+      languagesByName.remove(lang.first);
+      //noinspection resource
+      languagesByPtr.remove(lang.second);
+    }
   }
 
   /**

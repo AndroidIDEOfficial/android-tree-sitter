@@ -38,4 +38,5 @@ dependencies {
   testImplementation(projects.treeSitterPython)
   testImplementation(libs.tests.google.truth)
   testImplementation(libs.tests.junit)
+  testImplementation(libs.tests.robolectric)
 }

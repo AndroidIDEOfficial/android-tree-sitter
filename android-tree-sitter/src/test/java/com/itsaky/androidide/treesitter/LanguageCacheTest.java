@@ -21,11 +21,14 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * @author Akash Yadav
  */
 
+@RunWith(RobolectricTestRunner.class)
 public class LanguageCacheTest extends TreeSitterTest {
 
   @Test
@@ -66,6 +69,20 @@ public class LanguageCacheTest extends TreeSitterTest {
     assertThat(TSLanguageCache.get(lang.pointer)).isEqualTo(lang);
     lang.close();
 
+    assertThat(lang.canAccess()).isFalse();
+    assertThat(TSLanguageCache.get("c")).isNull();
+  }
+
+  @Test
+  public void testExternalLanguageCloseWithCloseExternal() {
+    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c.so";
+    var lang = TSLanguage.loadLanguage(libraryPath, "c");
+    assertThat(lang).isNotNull();
+    assertThat(lang.canAccess()).isTrue();
+    assertThat(TSLanguageCache.get("c")).isEqualTo(lang);
+    assertThat(TSLanguageCache.get(lang.pointer)).isEqualTo(lang);
+
+    TSLanguageCache.closeExternal();
     assertThat(lang.canAccess()).isFalse();
     assertThat(TSLanguageCache.get("c")).isNull();
   }
