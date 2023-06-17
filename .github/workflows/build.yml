@@ -1,28 +1,31 @@
-
-name: Build shared libraries
+name: Build and test
 
 on:
   push:
-    branches:
-      - dev
-      - main
-  workflow_dispatch: {}
+    branches: [ "dev", "main" ]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches: [ "dev" ]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch: { }
 
 jobs:
-  build:
-    name: Build shared libraries + APK
+  build_apk:
+    name: Build APK
     runs-on: ubuntu-latest
     steps:
+
       - name: Cancel previous runs
         uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
 
-      - name: Clone repo
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          submodules: true
 
       - name: Setup NDK
         uses: nttld/setup-ndk@v1
@@ -30,29 +33,118 @@ jobs:
         with:
           ndk-version: r25
 
-      - name: Setup JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: 17
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
 
-      - name: Build project
-        id: build
-        shell: bash
-        run: |
-          chmod +x ./gradlew
-          ./gradlew build
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Assemble Release
+        run: ./gradlew assembleRelease
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Publish packages
-        if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.build.outcome == 'success' }}
-        shell: bash
-        run: ./gradlew nyxMake nyxMark publish release --stacktrace
+      - name: Copy release APK
+        run: cp app/build/outputs/apk/release/*.apk ./
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: app-release.apk
+
+  unit_test_debug:
+    name: Run local tests
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run debug tests
+        run: ./gradlew testDebug --continue
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+      - name: Upload test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/'
+
+  publish:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: [ build_apk, unit_test_debug ]
+    if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.build_apk.result == 'success' && needs.unit_test_debug.result == 'success' }}
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Publish release
+        run: ./gradlew nyxMake nyxMark nyxPublish release closeAndReleaseRepository --stacktrace
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MVN_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MVN_PASSWORD }}
@@ -62,11 +154,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Upload sample app
+      - name: Archive Nyx state file
         uses: actions/upload-artifact@v3
-        if: ${{ !github.head_ref }}
+        if: ${{ always() }}
         with:
-          name: sample-app
-          path: |
-            app/build/outputs/apk/release/app-release.apk
-
+          name: .nyx-state-${{ github.job }}.json
+          path: build/nyx-state.json
