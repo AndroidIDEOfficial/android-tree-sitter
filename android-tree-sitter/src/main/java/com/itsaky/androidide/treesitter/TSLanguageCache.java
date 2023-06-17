@@ -55,6 +55,9 @@ public final class TSLanguageCache {
    * language was not cached.
    */
   public static TSLanguage get(String name) {
+    if (name == null) {
+      return null;
+    }
     return languagesByName.get(name);
   }
 
@@ -66,6 +69,9 @@ public final class TSLanguageCache {
    * language was not cached.
    */
   public static TSLanguage get(long pointer) {
+    if (pointer == 0) {
+      return null;
+    }
     return languagesByPtr.get(pointer);
   }
 
