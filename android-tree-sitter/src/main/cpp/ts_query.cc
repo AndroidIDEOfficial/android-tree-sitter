@@ -31,9 +31,6 @@ Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_newQuery(
   auto error_type = new TSQueryError;
   TSQuery* query = ts_query_new((TSLanguage*)language, c_source, source_length,
                                 error_offset, error_type);
-  if (query == nullptr) {
-    return 0;
-  }
   fillQuery(env, queryObject, *error_offset, *error_type);
   return (jlong)query;
 }
