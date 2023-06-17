@@ -105,9 +105,19 @@ public class TSLanguage extends TSNativeObject {
     return Native.langVer(this.pointer);
   }
 
+  /**
+   * Returns whether this language is external i.e. loaded with
+   * {@link TSLanguage#loadLanguage(String, String)}.
+   *
+   * @return <code>true</code> if this language is external, <code>false</code> otherwise.
+   */
+  public boolean isExternal() {
+    return this.libHandle != 0;
+  }
+
   @Override
   public void close() {
-    if (this.libHandle != 0) {
+    if (isExternal()) {
       Native.dlclose(this.libHandle);
       this.libHandle = 0;
 
