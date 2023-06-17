@@ -33,21 +33,46 @@ public final class TSLanguageCache {
   private TSLanguageCache() {
   }
 
+  /**
+   * Caches the given {@link TSLanguage}.
+   *
+   * @param name     The name of the language. This can be later used to retrieve the language
+   *                 instance using {@link TSLanguageCache#get(String)}.
+   * @param language The {@link TSLanguage} instance to cache.
+   */
   public static void cache(String name, TSLanguage language) {
-    final var existing = languagesByName.put(name, language);
-    if (existing != null && existing != language) {
-      languagesByName.put(name, existing);
-      throw new IllegalStateException(String.format("An instance of '%s' already exists", name));
-    }
-
+    languagesByName.computeIfAbsent(name, key -> language);
     languagesByPtr.put(language.pointer, language);
   }
 
+  /**
+   * Get the {@link TSLanguage} instance by the given pointer.
+   *
+   * @param name The name of the language to get the {@link TSLanguage} instance for.
+   * @return The {@link TSLanguage} instance for the given language, or <code>null</code> if the
+   * language was not cached.
+   */
   public static TSLanguage get(String name) {
     return languagesByName.get(name);
   }
 
+  /**
+   * Get the {@link TSLanguage} instance by the given pointer.
+   *
+   * @param pointer The pointer to the native language instance.
+   * @return The {@link TSLanguage} instance for the given pointer, or <code>null</code> if the
+   * language was not cached.
+   */
   public static TSLanguage get(long pointer) {
     return languagesByPtr.get(pointer);
+  }
+
+  /**
+   * Calls {@link TSLanguage#close()} on each cached language. This makes sure that any language
+   * that may have been opened with {@link TSLanguage#loadLanguage(String, String)} closes the
+   * associated native library handle.
+   */
+  public static void closeAll() {
+    languagesByName.forEach((name, lang) -> lang.close());
   }
 }

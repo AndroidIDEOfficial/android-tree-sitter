@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding;
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding;
 import com.itsaky.androidide.treesitter.TSLanguage;
+import com.itsaky.androidide.treesitter.TSLanguageCache;
 import com.itsaky.androidide.treesitter.TSParser;
 import com.itsaky.androidide.treesitter.TSTreeCursor;
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     setContentView(binding.getRoot());
     setSupportActionBar(binding.toolbar);
-    
+
     languageMap.put("C", TSLanguage.loadLanguage(this, "c"));
 
     content.languageChooser.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
@@ -99,6 +100,12 @@ public class MainActivity extends AppCompatActivity {
         afterInputChanged(editable);
       }
     });
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    TSLanguageCache.closeAll();
   }
 
   private void afterInputChanged(Editable editable) {
