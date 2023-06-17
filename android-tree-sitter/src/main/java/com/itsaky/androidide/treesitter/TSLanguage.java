@@ -30,6 +30,8 @@ public class TSLanguage extends TSNativeObject {
 
   private static final Pattern LANG_NAME = Pattern.compile("^[a-zA-Z_]\\w*$");
 
+  private final String name;
+
   /**
    * The pointer to the library handle if this language was loaded using
    * {@link TSLanguage#loadLanguage(String, String)}.
@@ -40,12 +42,25 @@ public class TSLanguage extends TSNativeObject {
    * Create a new {@link TSLanguage} instance with the given pointer.
    *
    * @param pointer The pointer to the language implementation in C.
+   * @deprecated Use {@link TSLanguage#TSLanguage(String, long)} instead.
    */
+  @Deprecated
   public TSLanguage(long pointer) {
-    this(new long[]{pointer, 0});
+    this(null, pointer);
   }
 
-  private TSLanguage(long[] pointers) {
+  /**
+   * Create a new {@link TSLanguage} instance with the given name and pointer.
+   *
+   * @param name    The name of the language. This is used to efficiently remove externally loaded
+   *                languages in {@link TSLanguageCache}.
+   * @param pointer The pointer to the language implementation in C.
+   */
+  public TSLanguage(String name, long pointer) {
+    this(name, new long[]{pointer, 0});
+  }
+
+  private TSLanguage(String name, long[] pointers) {
     super(0);
 
     if (pointers == null) {
@@ -56,8 +71,20 @@ public class TSLanguage extends TSNativeObject {
       throw new IllegalArgumentException("There must be exactly 2 elements the pointers array");
     }
 
+    this.name = name;
     this.pointer = pointers[0];
     this.libHandle = pointers[1];
+  }
+
+  /**
+   * Get the name of this language.
+   *
+   * @return The name of the language.
+   * @see TSLanguage#TSLanguage(String, long)
+   * @see TSLanguage#loadLanguage(String, String)
+   */
+  public String getName() {
+    return name;
   }
 
   /**
@@ -186,7 +213,7 @@ public class TSLanguage extends TSNativeObject {
       return null;
     }
 
-    language = new TSLanguage(pointers);
+    language = new TSLanguage(lang, pointers);
     TSLanguageCache.cache(lang, language);
     return language;
   }

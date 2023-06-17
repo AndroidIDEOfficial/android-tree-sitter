@@ -106,7 +106,19 @@ public final class TSLanguageCache {
     if (language == null) {
       return;
     }
-    languagesByName.entrySet().removeIf(entry -> language.equals(entry.getValue()));
-    languagesByPtr.entrySet().removeIf(entry -> language.equals(entry.getValue()));
+
+    if (language.getName() != null) {
+      //noinspection resource
+      languagesByName.remove(language.getName());
+    } else {
+      languagesByName.entrySet().removeIf(entry -> language.equals(entry.getValue()));
+    }
+
+    if (language.pointer != 0) {
+      //noinspection resource
+      languagesByPtr.remove(language.pointer);
+    } else {
+      languagesByPtr.entrySet().removeIf(entry -> language.equals(entry.getValue()));
+    }
   }
 }
