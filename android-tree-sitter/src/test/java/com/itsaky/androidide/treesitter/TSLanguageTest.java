@@ -31,7 +31,7 @@ public class TSLanguageTest extends TreeSitterTest {
 
   @Test
   public void testFunctionality() {
-    final var lang = TSLanguageJava.newInstance();
+    final var lang = TSLanguageJava.getInstance();
     lang.getLanguageVersion();
     lang.getFieldCount();
     lang.getSymbolCount();

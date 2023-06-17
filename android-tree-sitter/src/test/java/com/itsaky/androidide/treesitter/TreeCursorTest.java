@@ -31,7 +31,7 @@ public class TreeCursorTest extends TreeSitterTest {
   @Test
   public void testWalk() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguagePython.newInstance());
+      parser.setLanguage(TSLanguagePython.getInstance());
       final var source =
           UTF16StringFactory.newString("def foo(bar, baz):\n  print(bar)\n  print(baz)");
       try (TSTree tree = parser.parseString(source)) {

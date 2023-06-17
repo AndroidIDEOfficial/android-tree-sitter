@@ -37,7 +37,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testParse() throws UnsupportedEncodingException {
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguagePython.newInstance());
+      parser.setLanguage(TSLanguagePython.getInstance());
       try (TSTree tree = parser.parseString("print(\"hi\")")) {
         assertThat(tree.getRootNode().getNodeString()).isEqualTo(
           "(module (expression_statement (call function: (identifier) arguments: (argument_list (string string_content: (string_content))))))");
@@ -49,8 +49,8 @@ public class ParserTest extends TreeSitterTest {
   public void testCodeEditor() throws Throwable {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguageJava.newInstance());
-      assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguageJava.newInstance().pointer);
+      parser.setLanguage(TSLanguageJava.getInstance());
+      assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguageJava.getInstance().pointer);
       try (var tree = parser.parseString(
         readString(Paths.get("./src/test/resources/CodeEditor.java.txt")))) {
         System.out.println(tree.getRootNode().getNodeString());
@@ -64,7 +64,7 @@ public class ParserTest extends TreeSitterTest {
   public void testView() throws Throwable {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguageJava.newInstance());
+      parser.setLanguage(TSLanguageJava.getInstance());
       try (var tree = parser.parseString(
         readString(Paths.get("./src/test/resources/View.java.txt")))) {
         System.out.println(tree.getRootNode().getNodeString());
@@ -78,7 +78,7 @@ public class ParserTest extends TreeSitterTest {
     final var timeout = 1000L; // 1 millisecond
     final var start = System.currentTimeMillis();
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguageJava.newInstance());
+      parser.setLanguage(TSLanguageJava.getInstance());
       parser.setTimeout(timeout);
       assertThat(parser.getTimeout()).isEqualTo(timeout);
       try (final var tree = parser.parseString(
@@ -93,7 +93,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testIncrementalParsing() throws UnsupportedEncodingException {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguageJava.newInstance());
+      parser.setLanguage(TSLanguageJava.getInstance());
 
       // the start byte below is invalid as it is in the middle of a character
       // It should fail in this case
@@ -115,7 +115,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testJsonGrammar() {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguageJson.newInstance());
+      parser.setLanguage(TSLanguageJson.getInstance());
 
       final var source = "{\n" + "    \"string\": \"value\",\n" + "    \"boolean\": true,\n" +
         "    \"number\": 1234,\n" + "    \"null\": null,\n" + "\n" + "    \"object\": {\n" + "\n" +
@@ -132,7 +132,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testKotlinGrammar() {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguageKotlin.newInstance());
+      parser.setLanguage(TSLanguageKotlin.getInstance());
 
       final var source =
         "class Main {\n" + "    fun main() {\n" + "        println(\"Hello World\")\n" + "    }\n" +
@@ -151,7 +151,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testLogGrammar_beginHeader() {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguageLog.newInstance());
+      parser.setLanguage(TSLanguageLog.getInstance());
 
       final var source = "--------- beginning of system";
 
@@ -167,7 +167,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testLogGrammar_logcatLine() {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguageLog.newInstance());
+      parser.setLanguage(TSLanguageLog.getInstance());
 
       final var source = "04-19 09:37:12.217  1384  1527 BroadcastQueue: W Background execution not allowed: receiving Intent { act=android.intent.action.USER_PRESENT flg=0x24200010 } to com.google.android.gms/.auth.setup.devicesignals.LockScreenReceiver";
 
@@ -184,7 +184,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testLogGrammar_ideLogLine() {
     try (final var parser = new TSParser()) {
-      parser.setLanguage(TSLanguageLog.newInstance());
+      parser.setLanguage(TSLanguageLog.getInstance());
 
       final var source = "..aultApiVersionsRegistry I   Creating API versions table for platform dir: /data/data/com.itsaky.androidide/files/home/android-sdk/platforms/android-32";
 

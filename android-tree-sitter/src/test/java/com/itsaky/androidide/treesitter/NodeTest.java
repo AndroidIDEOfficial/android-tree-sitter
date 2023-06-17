@@ -29,7 +29,7 @@ public class NodeTest extends TreeSitterTest {
   @Test
   public void multiTest() {
     try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguagePython.newInstance());
+      parser.setLanguage(TSLanguagePython.getInstance());
       final var sourceToParse = newString("def foo(bar, baz):\n  print(bar)\n  print(baz)");
       try (TSTree tree = parser.parseString(sourceToParse)) {
         var root = tree.getRootNode();

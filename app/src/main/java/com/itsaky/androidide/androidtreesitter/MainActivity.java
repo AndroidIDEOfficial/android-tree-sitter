@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
   static {
     System.loadLibrary("android-tree-sitter");
-    System.loadLibrary("tree-sitter-c");
     System.loadLibrary("tree-sitter-java");
     System.loadLibrary("tree-sitter-json");
     System.loadLibrary("tree-sitter-kotlin");
@@ -62,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
     System.loadLibrary("tree-sitter-xml");
 
     languageMap = new HashMap<>();
-    languageMap.put("Java", TSLanguageJava.newInstance());
-    languageMap.put("JSON", TSLanguageJson.newInstance());
-    languageMap.put("Kotlin", TSLanguageKotlin.newInstance());
-    languageMap.put("Log", TSLanguageLog.newInstance());
-    languageMap.put("Python", TSLanguagePython.newInstance());
-    languageMap.put("XML", TSLanguageXml.newInstance());
+    languageMap.put("Java", TSLanguageJava.getInstance());
+    languageMap.put("JSON", TSLanguageJson.getInstance());
+    languageMap.put("Kotlin", TSLanguageKotlin.getInstance());
+    languageMap.put("Log", TSLanguageLog.getInstance());
+    languageMap.put("Python", TSLanguagePython.getInstance());
+    languageMap.put("XML", TSLanguageXml.getInstance());
   }
 
   private ContentMainBinding content;
