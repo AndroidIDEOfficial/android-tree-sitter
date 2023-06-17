@@ -124,6 +124,10 @@ public class TSLanguage extends TSNativeObject {
    * Loads the tree-sitter language and returns an instance of {@link TSLanguage}. This method will
    * load the library using <code>dlopen</code> and keep a reference to the library handle as long
    * the {@link TSLanguage#close()} is not called.
+   * <p>
+   * The native library is opened using <code>dlopen</code>. The {@link TSLanguage} instances
+   * created with this method must be closed with {@link TSLanguage#close()}. This makes sure that
+   * the underlying native library handle is closed as well.
    *
    * @param context The context used to retrive the
    *                {@link android.content.pm.ApplicationInfo#nativeLibraryDir nativeLibraryDir}.
@@ -144,6 +148,10 @@ public class TSLanguage extends TSNativeObject {
    * Loads the tree-sitter language and returns an instance of {@link TSLanguage}. This method will
    * load the library using <code>dlopen</code> and keep a reference to the library handle as long
    * the {@link TSLanguage#close()} is not called.
+   * <p>
+   * The native library is opened using <code>dlopen</code>. The {@link TSLanguage} instances
+   * created with this method must be closed with {@link TSLanguage#close()}. This makes sure that
+   * the underlying native library handle is closed as well.
    *
    * @param libraryPath The absolute path to the shared library.
    * @param lang        The name of the language, without {@code tree-sitter-} prefix (e.g. 'java',
