@@ -62,14 +62,11 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Copy release APK
-        run: cp app/build/outputs/apk/release/*.apk ./
-
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: app-release
-          path: app-release.apk
+          path: app/build/outputs/apk/debug/app-release.apk
 
   unit_test_debug:
     name: Run local tests
