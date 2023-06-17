@@ -32,101 +32,105 @@ buildscript {
 }
 
 @Suppress("DSL_SCOPE_VIOLATION") plugins {
-    id("build-logic.root-project")
-    alias(libs.plugins.maven.publish) apply false
+  id("build-logic.root-project")
+  alias(libs.plugins.maven.publish) apply false
 }
 
 fun Project.configureBaseExtension() {
-    extensions.configure<BaseExtension> {
-        compileSdkVersion(33)
+  extensions.configure<BaseExtension> {
+    compileSdkVersion(33)
 
-        defaultConfig {
-            minSdk = 21
-            targetSdk = 33
-            versionCode = project.projectVersionCode
-            versionName = rootProject.version.toString()
-        }
-
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
-        }
-
-        buildTypes {
-            getByName("release") {
-                isMinifyEnabled = false
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro")
-            }
-        }
+    defaultConfig {
+      minSdk = 21
+      targetSdk = 33
+      versionCode = project.projectVersionCode
+      versionName = rootProject.version.toString()
     }
+
+    compileOptions {
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
+
+      isCoreLibraryDesugaringEnabled = true
+    }
+
+    buildTypes {
+      getByName("release") {
+        isMinifyEnabled = false
+        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
+          "proguard-rules.pro")
+      }
+    }
+
+    configurations.getByName("coreLibraryDesugaring").dependencies.add(
+      libs.common.coreLibDesugaring.get())
+  }
 }
 
 subprojects {
-    plugins.withId("com.android.application") { configureBaseExtension() }
-    plugins.withId("com.android.library") { configureBaseExtension() }
-    plugins.withId("android-tree-sitter.ts") {
-        configureTsModule()
+  plugins.withId("com.android.application") { configureBaseExtension() }
+  plugins.withId("com.android.library") { configureBaseExtension() }
+  plugins.withId("android-tree-sitter.ts") {
+    configureTsModule()
 
-        // set java library path for tests
-        tasks.withType<Test> {
-            systemProperty("java.library.path",
-                rootProject.buildDir.resolve("host").absolutePath)
-        }
+    // set java library path for tests
+    tasks.withType<Test> {
+      systemProperty("java.library.path",
+        rootProject.buildDir.resolve("host").absolutePath)
     }
+  }
 
-    plugins.withId("com.vanniktech.maven.publish.base") {
-        configure<MavenPublishBaseExtension> {
-            group = "com.itsaky.androidide"
-            var versionName = rootProject.version.toString()
-            if (System.getenv("PublishToMaven").isNullOrBlank()) {
-                versionName = "$versionName-SNAPSHOT"
-            }
-            versionName = versionName.substring(1) // remove 'v' prefix
+  plugins.withId("com.vanniktech.maven.publish.base") {
+    configure<MavenPublishBaseExtension> {
+      group = "com.itsaky.androidide"
+      var versionName = rootProject.version.toString()
+      if (System.getenv("PublishToMaven").isNullOrBlank()) {
+        versionName = "$versionName-SNAPSHOT"
+      }
+      versionName = versionName.substring(1) // remove 'v' prefix
 
-            pom {
-                name.set(project.name)
+      pom {
+        name.set(project.name)
 
-                description.set(
-                    if (project.description.isNullOrBlank()) "${project.name} grammar for android-tree-sitter."
-                    else project.description)
+        description.set(
+          if (project.description.isNullOrBlank()) "${project.name} grammar for android-tree-sitter."
+          else project.description)
 
-                inceptionYear.set("2022")
-                url.set("https://github.com/itsaky/android-tree-sitter/")
+        inceptionYear.set("2022")
+        url.set("https://github.com/itsaky/android-tree-sitter/")
 
-                licenses {
-                    license {
-                        name.set("LGPL-v2.1")
-                        url.set(
-                            "https://github.com/itsaky/android-tree-sitter/blob/main/LICENSE")
-                        distribution.set("repo")
-                    }
-                }
-
-                scm {
-                    url.set("https://github.com/itsaky/android-tree-sitter/")
-                    connection.set(
-                        "scm:git:git://github.com/itsaky/android-tree-sitter.git")
-                    developerConnection.set(
-                        "scm:git:ssh://git@github.com/itsaky/android-tree-sitter.git")
-                }
-
-                developers {
-                    developer {
-                        id.set("androidide")
-                        name.set("AndroidIDE")
-                        url.set("https://androidide.com")
-                    }
-                }
-            }
-
-            coordinates(project.group.toString(), project.name, versionName)
-            publishToMavenCentral(host = SonatypeHost.S01)
-            signAllPublications()
-            configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
+        licenses {
+          license {
+            name.set("LGPL-v2.1")
+            url.set(
+              "https://github.com/itsaky/android-tree-sitter/blob/main/LICENSE")
+            distribution.set("repo")
+          }
         }
+
+        scm {
+          url.set("https://github.com/itsaky/android-tree-sitter/")
+          connection.set(
+            "scm:git:git://github.com/itsaky/android-tree-sitter.git")
+          developerConnection.set(
+            "scm:git:ssh://git@github.com/itsaky/android-tree-sitter.git")
+        }
+
+        developers {
+          developer {
+            id.set("androidide")
+            name.set("AndroidIDE")
+            url.set("https://androidide.com")
+          }
+        }
+      }
+
+      coordinates(project.group.toString(), project.name, versionName)
+      publishToMavenCentral(host = SonatypeHost.S01)
+      signAllPublications()
+      configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
     }
+  }
 }
 
 tasks.register<BuildTreeSitterTask>("buildTreeSitter")
@@ -134,45 +138,43 @@ tasks.register<BuildTreeSitterTask>("buildTreeSitter")
 tasks.register<CleanTreeSitterBuildTask>("cleanTreeSitterBuild")
 
 tasks.register<Delete>("clean").configure {
-    dependsOn("cleanTreeSitterBuild")
-    delete(rootProject.buildDir)
-    delete(rootProject.file("tree-sitter-lib/cli/build"))
+  dependsOn("cleanTreeSitterBuild")
+  delete(rootProject.buildDir)
+  delete(rootProject.file("tree-sitter-lib/cli/build"))
 }
 
 fun Project.configureTsModule() {
-    extensions.configure<BaseExtension> {
-        val grammarName =
-            project.project.name.substringAfter("tree-sitter-", "")
-        if (grammarName.isNotBlank()) {
-            namespace = "com.itsaky.androidide.treesitter.$grammarName"
-            logger.lifecycle("Set namespace '$namespace' to $project")
-        }
-
-        ndkVersion = "24.0.8215888"
-
-        defaultConfig {
-            val rootProjDir = project.rootProject.projectDir.absolutePath
-            val tsDir = "${rootProjDir}/tree-sitter-lib"
-
-            externalNativeBuild {
-                cmake {
-                    arguments("-DPROJECT_DIR=${rootProjDir}",
-                        "-DTS_DIR=${tsDir}")
-                }
-            }
-        }
-
-        externalNativeBuild {
-            cmake {
-                path = project.file("src/main/cpp/CMakeLists.txt")
-                version = "3.22.1"
-            }
-        }
+  extensions.configure<BaseExtension> {
+    val grammarName = project.project.name.substringAfter("tree-sitter-", "")
+    if (grammarName.isNotBlank()) {
+      namespace = "com.itsaky.androidide.treesitter.$grammarName"
+      logger.lifecycle("Set namespace '$namespace' to $project")
     }
 
-    // avoid circular dependency
-    if (project.projects.androidTreeSitter.name != project.name) {
-        configurations.getByName("api").dependencies.add(
-            project.projects.androidTreeSitter)
+    ndkVersion = "24.0.8215888"
+
+    defaultConfig {
+      val rootProjDir = project.rootProject.projectDir.absolutePath
+      val tsDir = "${rootProjDir}/tree-sitter-lib"
+
+      externalNativeBuild {
+        cmake {
+          arguments("-DPROJECT_DIR=${rootProjDir}", "-DTS_DIR=${tsDir}")
+        }
+      }
     }
+
+    externalNativeBuild {
+      cmake {
+        path = project.file("src/main/cpp/CMakeLists.txt")
+        version = "3.22.1"
+      }
+    }
+  }
+
+  // avoid circular dependency
+  if (project.projects.androidTreeSitter.name != project.name) {
+    configurations.getByName("api").dependencies.add(
+      project.projects.androidTreeSitter)
+  }
 }
