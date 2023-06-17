@@ -72,8 +72,12 @@ public final class TSLanguageCache {
    * that may have been opened with {@link TSLanguage#loadLanguage(String, String)} closes the
    * associated native library handle.
    */
-  public static void closeAll() {
-    languagesByName.forEach((name, lang) -> lang.close());
+  public static void closeExternal() {
+    languagesByName.forEach((name, lang) -> {
+      if (lang.isExternal()) {
+        lang.close();
+      }
+    });
   }
 
   /**

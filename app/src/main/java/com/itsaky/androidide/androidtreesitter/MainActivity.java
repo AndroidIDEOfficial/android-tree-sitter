@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    TSLanguageCache.closeAll();
+    TSLanguageCache.closeExternal();
   }
 
   private void afterInputChanged(Editable editable) {
