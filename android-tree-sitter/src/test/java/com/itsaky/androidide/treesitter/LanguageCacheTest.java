@@ -61,7 +61,7 @@ public class LanguageCacheTest extends TreeSitterTest {
 
   @Test
   public void testExternalLanguageCache() {
-    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c.so";
+    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c";
     var lang = TSLanguage.loadLanguage(libraryPath, "c");
     assertThat(lang).isNotNull();
     assertThat(lang.canAccess()).isTrue();
@@ -75,7 +75,7 @@ public class LanguageCacheTest extends TreeSitterTest {
 
   @Test
   public void testExternalLanguageCloseWithCloseExternal() {
-    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c.so";
+    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c";
     var lang = TSLanguage.loadLanguage(libraryPath, "c");
     assertThat(lang).isNotNull();
     assertThat(lang.canAccess()).isTrue();

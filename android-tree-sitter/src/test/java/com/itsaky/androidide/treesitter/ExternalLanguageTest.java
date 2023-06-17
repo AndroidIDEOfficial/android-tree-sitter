@@ -28,7 +28,7 @@ public class ExternalLanguageTest extends TreeSitterTest {
 
   @Test
   public void testExternallyLoadedLanguage() {
-    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c.so";
+    String libraryPath = System.getProperty("user.dir") + "/src/test/resources/libtree-sitter-c";
     try (final var lang = TSLanguage.loadLanguage(libraryPath, "c")) {
       assertThat(lang).isNotNull();
       assertThat(lang.canAccess()).isTrue();
