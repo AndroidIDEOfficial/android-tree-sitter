@@ -80,9 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
     setContentView(binding.getRoot());
     setSupportActionBar(binding.toolbar);
-
-    final var sharedLibDir = getApplication().getApplicationInfo().nativeLibraryDir;
-    languageMap.put("C", TSLanguage.loadLanguage(sharedLibDir + "/libtree-sitter-c.so", "c"));
+    
+    languageMap.put("C", TSLanguage.loadLanguage(this, "c"));
 
     content.languageChooser.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
       languageMap.keySet().toArray(new String[0])));
