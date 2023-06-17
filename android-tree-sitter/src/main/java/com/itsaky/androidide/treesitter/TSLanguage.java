@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import android.content.Context;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
@@ -117,6 +118,26 @@ public class TSLanguage extends TSNativeObject {
   @Override
   protected void closeNativeObj() {
     // no-op
+  }
+
+  /**
+   * Loads the tree-sitter language and returns an instance of {@link TSLanguage}. This method will
+   * load the library using <code>dlopen</code> and keep a reference to the library handle as long
+   * the {@link TSLanguage#close()} is not called.
+   *
+   * @param context The context used to retrive the
+   *                {@link android.content.pm.ApplicationInfo#nativeLibraryDir nativeLibraryDir}.
+   *                The name of the gramar's shared library is then appended to the native library
+   *                directory. For example :
+   *                <pre>nativeLibraryDir + "/libtree-sitter-" + lang + ".so"</pre>.
+   * @param lang    The name of the language, without <code>tree-sitter-</code> prefix (e.g. 'java',
+   *                'kotlin', etc).
+   * @see TSLanguage#loadLanguage(String, String)
+   */
+  public static TSLanguage loadLanguage(Context context, String lang) {
+    final var libraryPath =
+      context.getApplicationInfo().nativeLibraryDir + "/libtree-sitter-" + lang + ".so";
+    return loadLanguage(libraryPath, lang);
   }
 
   /**
