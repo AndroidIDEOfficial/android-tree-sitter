@@ -28,7 +28,6 @@ import org.robolectric.RobolectricTestRunner;
  * @author Akash Yadav
  */
 
-@RunWith(RobolectricTestRunner.class)
 public class LanguageCacheTest extends TreeSitterTest {
 
   @Test
