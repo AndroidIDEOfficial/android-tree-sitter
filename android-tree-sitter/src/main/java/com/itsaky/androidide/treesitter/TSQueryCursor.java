@@ -20,17 +20,16 @@ package com.itsaky.androidide.treesitter;
 /**
  * @author Akash Yadav
  */
-public class TSQueryCursor implements AutoCloseable {
-
-  final long pointer;
+public class TSQueryCursor extends TSNativeObject {
 
   public TSQueryCursor() {
-    this.pointer = Native.newCursor();
+    super(Native.newCursor());
   }
 
   /** Start running the given query on the given node. */
   public void exec(TSQuery query, TSNode node) {
-    if (query == null || !query.isValid()) {
+    checkAccess();
+    if (query == null || !query.canAccess()) {
       throw new IllegalArgumentException("Cannot execute invalid query");
     }
     Native.exec(this.pointer, query.pointer, node);
@@ -47,6 +46,7 @@ public class TSQueryCursor implements AutoCloseable {
    * is executed.
    */
   public boolean didExceedMatchLimit() {
+    checkAccess();
     return Native.exceededMatchLimit(this.pointer);
   }
 
@@ -57,6 +57,7 @@ public class TSQueryCursor implements AutoCloseable {
    * @see #didExceedMatchLimit()
    */
   public int getMatchLimit() {
+    checkAccess();
     return Native.matchLimit(this.pointer);
   }
 
@@ -67,27 +68,32 @@ public class TSQueryCursor implements AutoCloseable {
    * @see #didExceedMatchLimit()
    */
   public void setMatchLimit(int newLimit) {
+    checkAccess();
     Native.matchLimit(this.pointer, newLimit);
   }
 
   public void setByteRange(int start, int end) {
+    checkAccess();
     Native.setByteRange(this.pointer, start, end);
   }
 
   public void setPointRange(TSPoint start, TSPoint end) {
+    checkAccess();
     Native.setPointRange(this.pointer, start, end);
   }
 
   public TSQueryMatch nextMatch() {
+    checkAccess();
     return Native.nextMatch(this.pointer);
   }
 
   public void removeMatch(int id) {
+    checkAccess();
     Native.removeMatch(this.pointer, id);
   }
 
   @Override
-  public void close() throws Exception {
+  protected void closeNativeObj() {
     Native.delete(this.pointer);
   }
 

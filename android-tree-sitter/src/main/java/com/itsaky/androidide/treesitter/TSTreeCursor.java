@@ -17,8 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
-public class TSTreeCursor implements AutoCloseable {
-  private final long pointer;
+public class TSTreeCursor extends TSNativeObject {
   private int context0;
   private int context1;
   private long id;
@@ -29,12 +28,11 @@ public class TSTreeCursor implements AutoCloseable {
   }
 
   TSTreeCursor(long pointer) {
-    this.pointer = pointer;
+    super(pointer);
   }
 
-  /** Close and delete this tree cursor. */
   @Override
-  public void close() {
+  protected void closeNativeObj() {
     Native.delete(pointer);
   }
 
@@ -44,6 +42,7 @@ public class TSTreeCursor implements AutoCloseable {
    * @return The current {@link TSNode}.
    */
   public TSNode getCurrentNode() {
+    checkAccess();
     return Native.currentNode(pointer);
   }
 
@@ -53,6 +52,7 @@ public class TSTreeCursor implements AutoCloseable {
    * @return The field name.
    */
   public String getCurrentFieldName() {
+    checkAccess();
     return Native.currentFieldName(pointer);
   }
 
@@ -62,6 +62,7 @@ public class TSTreeCursor implements AutoCloseable {
    * @return The current tree cursor node.
    */
   public TSTreeCursorNode getCurrentTreeCursorNode() {
+    checkAccess();
     return Native.currentTreeCursorNode(pointer);
   }
 
@@ -71,6 +72,7 @@ public class TSTreeCursor implements AutoCloseable {
    * @return <code>true</code> if moved successfully, <code>false</code> otherwise.
    */
   public boolean gotoFirstChild() {
+    checkAccess();
     return Native.gotoFirstChild(pointer);
   }
 
@@ -80,6 +82,7 @@ public class TSTreeCursor implements AutoCloseable {
    * @return <code>true</code> if moved successfully, <code>false</code> otherwise.
    */
   public boolean gotoNextSibling() {
+    checkAccess();
     return Native.gotoNextSibling(pointer);
   }
 
@@ -89,6 +92,7 @@ public class TSTreeCursor implements AutoCloseable {
    * @return <code>true</code> if moved successfully, <code>false</code> otherwise.
    */
   public boolean gotoParent() {
+    checkAccess();
     return Native.gotoParent(pointer);
   }
 

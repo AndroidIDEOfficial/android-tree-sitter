@@ -17,17 +17,14 @@
 
 package com.itsaky.androidide.treesitter;
 
-public class TSTree implements AutoCloseable {
-
-  private final long pointer;
+public class TSTree extends TSNativeObject {
 
   TSTree(long pointer) {
-    this.pointer = pointer;
+    super(pointer);
   }
 
-  /** Close and delete this tree. */
   @Override
-  public void close() {
+  protected void closeNativeObj() {
     Native.delete(pointer);
   }
 
@@ -37,10 +34,14 @@ public class TSTree implements AutoCloseable {
    * @return The root node.
    */
   public TSNode getRootNode() {
+    checkAccess();
     return Native.rootNode(pointer);
   }
 
   public TSRange[] getChangedRanges(TSTree oldTree) {
+    checkAccess();
+    oldTree.checkAccess();
+
     TSRange[] ranges = Native.changedRanges(this.pointer, oldTree.pointer);
     if (ranges == null) {
       return new TSRange[0];
@@ -54,6 +55,7 @@ public class TSTree implements AutoCloseable {
    * @return The copy of this tree.
    */
   public TSTree copy() {
+    checkAccess();
     return new TSTree(Native.copy(pointer));
   }
 
@@ -63,6 +65,7 @@ public class TSTree implements AutoCloseable {
    * @param edit The edit.
    */
   public void edit(TSInputEdit edit) {
+    checkAccess();
     Native.edit(pointer, edit);
   }
 
@@ -72,16 +75,8 @@ public class TSTree implements AutoCloseable {
    * @return The tree sitter language.
    */
   public TSLanguage getLanguage() {
+    checkAccess();
     return new TSLanguage(Native.getLanguage(this.pointer));
-  }
-
-  /**
-   * Get the pointer of this tree.
-   *
-   * @return The pointer.
-   */
-  long getPointer() {
-    return pointer;
   }
 
   private static class Native {

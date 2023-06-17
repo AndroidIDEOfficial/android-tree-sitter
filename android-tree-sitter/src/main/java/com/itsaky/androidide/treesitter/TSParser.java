@@ -22,11 +22,10 @@ import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 
 import java.io.UnsupportedEncodingException;
 
-public class TSParser implements AutoCloseable {
-  private final long pointer;
+public class TSParser extends TSNativeObject {
 
   public TSParser(long pointer) {
-    this.pointer = pointer;
+    super(pointer);
   }
 
   public TSParser() {
@@ -47,6 +46,7 @@ public class TSParser implements AutoCloseable {
    * @see TSLanguage
    */
   public void setLanguage(TSLanguage language) {
+    checkAccess();
     Native.setLanguage(pointer, language.pointer);
   }
 
@@ -56,6 +56,7 @@ public class TSParser implements AutoCloseable {
    * @return The language instance.
    */
   public TSLanguage getLanguage() {
+    checkAccess();
     return new TSLanguage(Native.getLanguage(this.pointer));
   }
 
@@ -93,8 +94,10 @@ public class TSParser implements AutoCloseable {
   }
 
   public TSTree parseString(TSTree oldTree, UTF16String source) {
+    checkAccess();
+
     final var strPointer = source.getPointer();
-    final var oldTreePointer = oldTree != null ? oldTree.getPointer() : 0;
+    final var oldTreePointer = oldTree != null ? oldTree.pointer : 0;
     final var tree = Native.parse(this.pointer, oldTreePointer, strPointer);
     return createTree(tree);
   }
@@ -105,6 +108,7 @@ public class TSParser implements AutoCloseable {
    * <p>If parsing takes longer than this, it will halt early, returning <code>null</code>.
    */
   public void setTimeout(long microseconds) {
+    checkAccess();
     Native.setTimeout(this.pointer, microseconds);
   }
 
@@ -114,6 +118,7 @@ public class TSParser implements AutoCloseable {
    * @return The timeout in microseconds.
    */
   public long getTimeout() {
+    checkAccess();
     return Native.getTimeout(this.pointer);
   }
 
@@ -134,10 +139,12 @@ public class TSParser implements AutoCloseable {
    * assigned, and this function will return `false`. On success, this function returns `true`
    */
   public boolean setIncludedRanges(TSRange[] ranges) {
+    checkAccess();
     return Native.setIncludedRanges(this.pointer, ranges);
   }
 
   public TSRange[] getIncludedRanges() {
+    checkAccess();
     return Native.getIncludedRanges(this.pointer);
   }
 
@@ -150,12 +157,12 @@ public class TSParser implements AutoCloseable {
    * call this function first.
    */
   public void reset() {
+    checkAccess();
     Native.reset(this.pointer);
   }
 
-  /** Closes and deletes the current parser. */
   @Override
-  public void close() {
+  protected void closeNativeObj() {
     Native.delete(pointer);
   }
 

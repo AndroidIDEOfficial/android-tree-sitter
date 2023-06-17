@@ -25,11 +25,9 @@ import java.util.regex.Pattern;
  *
  * @author Akash Yadav
  */
-public class TSLanguage implements AutoCloseable {
+public class TSLanguage extends TSNativeObject {
 
   private static final Pattern LANG_NAME = Pattern.compile("^[a-zA-Z_]\\w*$");
-
-  final long pointer;
 
   /**
    * The pointer to the library handle if this language was loaded using
@@ -43,13 +41,16 @@ public class TSLanguage implements AutoCloseable {
    * @param pointer The pointer to the language implementation in C.
    */
   public TSLanguage(long pointer) {
-    this.pointer = pointer;
+    this(new long[]{pointer, 0});
   }
 
   private TSLanguage(long[] pointers) {
+    super(0);
+
     if (pointers == null) {
       throw new IllegalArgumentException("Cannot create TSLanguage from null pointers");
     }
+
     if (pointers.length != 2) {
       throw new IllegalArgumentException("There must be exactly 2 elements the pointers array");
     }
@@ -62,44 +63,60 @@ public class TSLanguage implements AutoCloseable {
    * Get the number of distinct node types in the language.
    */
   public int getSymbolCount() {
+    checkAccess();
     return Native.symCount(this.pointer);
   }
 
   public int getFieldCount() {
+    checkAccess();
     return Native.fldCount(this.pointer);
   }
 
   public String getSymbolName(int symbol) {
+    checkAccess();
     return Native.symName(this.pointer, symbol);
   }
 
   public int getSymbolForTypeString(String name, boolean isNamed) {
+    checkAccess();
     final var bytes = name.getBytes(StandardCharsets.UTF_8);
     return Native.symForName(this.pointer, bytes, bytes.length, isNamed);
   }
 
   public String getFieldNameForId(int id) {
+    checkAccess();
     return Native.fldNameForId(this.pointer, id);
   }
 
   public int getFieldIdForName(String name) {
+    checkAccess();
     final var bytes = name.getBytes(StandardCharsets.UTF_8);
     return Native.fldIdForName(this.pointer, bytes, bytes.length);
   }
 
   public TSSymbolType getSymbolType(int symbol) {
+    checkAccess();
     return TSSymbolType.forId(Native.symType(this.pointer, symbol));
   }
 
   public int getLanguageVersion() {
+    checkAccess();
     return Native.langVer(this.pointer);
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() {
     if (this.libHandle != 0) {
       Native.dlclose(this.libHandle);
+      this.libHandle = 0;
     }
+
+    super.close();
+  }
+
+  @Override
+  protected void closeNativeObj() {
+    // no-op
   }
 
   /**
