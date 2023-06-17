@@ -188,13 +188,13 @@ public final class TSLanguage${capitalizedName()} {
    * @return The instance of the ${capitalizedName()} language.
    */
   public static TSLanguage getInstance() {
-    var language = TSLanguageCache.get("tree_sitter_${name}");
+    var language = TSLanguageCache.get("$name");
     if (language != null) {
       return language;
     }
 
     language = new TSLanguage(Native.getInstance());
-    TSLanguageCache.cache("tree_sitter_${name}", language);
+    TSLanguageCache.cache("$name", language);
     return language;
   }
 

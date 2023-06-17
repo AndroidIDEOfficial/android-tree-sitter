@@ -27,20 +27,27 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class TSLanguageCache {
 
-  private static final Map<String, TSLanguage> languages = new ConcurrentHashMap<>();
+  private static final Map<String, TSLanguage> languagesByName = new ConcurrentHashMap<>();
+  private static final Map<Long, TSLanguage> languagesByPtr = new ConcurrentHashMap<>();
 
   private TSLanguageCache() {
   }
 
   public static void cache(String name, TSLanguage language) {
-    final var existing = languages.put(name, language);
+    final var existing = languagesByName.put(name, language);
     if (existing != null && existing != language) {
-      languages.put(name, existing);
+      languagesByName.put(name, existing);
       throw new IllegalStateException(String.format("An instance of '%s' already exists", name));
     }
+
+    languagesByPtr.put(language.pointer, language);
   }
 
   public static TSLanguage get(String name) {
-    return languages.get(name);
+    return languagesByName.get(name);
+  }
+
+  public static TSLanguage get(long pointer) {
+    return languagesByPtr.get(pointer);
   }
 }

@@ -57,7 +57,12 @@ public class TSParser extends TSNativeObject {
    */
   public TSLanguage getLanguage() {
     checkAccess();
-    return new TSLanguage(Native.getLanguage(this.pointer));
+    final var langPtr = Native.getLanguage(this.pointer);
+    if (langPtr == 0) {
+      return null;
+    }
+
+    return TSLanguageCache.get(langPtr);
   }
 
   /**

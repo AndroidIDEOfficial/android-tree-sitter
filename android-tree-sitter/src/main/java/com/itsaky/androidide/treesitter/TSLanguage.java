@@ -155,19 +155,18 @@ public class TSLanguage extends TSNativeObject {
   public static TSLanguage loadLanguage(String libraryPath, String lang) {
     validateLangName(lang);
 
-    String func = "tree_sitter_" + lang;
-    var language = TSLanguageCache.get(func);
+    var language = TSLanguageCache.get(lang);
     if (language != null) {
       return language;
     }
 
-    final long[] pointers = Native.loadLanguage(libraryPath, func);
+    final long[] pointers = Native.loadLanguage(libraryPath, "tree_sitter_" + lang);
     if (pointers == null) {
       return null;
     }
 
     language = new TSLanguage(pointers);
-    TSLanguageCache.cache(func, language);
+    TSLanguageCache.cache(lang, language);
     return language;
   }
 
