@@ -169,7 +169,7 @@ public class ParserTest extends TreeSitterTest {
     try (final var parser = new TSParser()) {
       parser.setLanguage(TSLanguageLog.getInstance());
 
-      final var source = "04-19 09:37:12.217 1384 1527 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.USER_PRESENT flg=0x24200010 } to com.google.android.gms/.auth.setup.devicesignals.LockScreenReceiver";
+      final var source = "06-16 17:32:54.289 19154 19154 W ziparchive: Unable to open '/data/app/~~S0ZGwshlag_3SKvS2AUm9g==/com.itsaky.androidide.logsender.sample-2mbpM5fpkBwx7otcNLWYNA==/base.dm': No such file or directory";
 
       try (final var tree = parser.parseString(source)) {
         final var rootNode = tree.getRootNode();
