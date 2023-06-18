@@ -57,7 +57,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Assemble Release
-        run: ./gradlew assembleRelease --info --stacktrace
+        run: ./gradlew assembleRelease
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
@@ -107,7 +107,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Run debug tests
-        run: ./gradlew testDebug --info --stacktrace --continue
+        run: ./gradlew testDebug --continue
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
