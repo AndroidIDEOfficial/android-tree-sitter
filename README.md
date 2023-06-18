@@ -139,6 +139,8 @@ try (final var parser = new TSParser()) {
 
 ### Load grammars at runtime
 
+> android-tree-sitter `v3.1.0` or newer is required for this method.
+
 `TSLanguage` provides `loadLanguage(String, String)` method which can be used to load the grammars at runtime. This method uses `dlopen` to load the shared library, get the language instance and return its pointer. Use this method CAREFULLY.
 
 The language instances created using this method **MUST** be closed using `TSLanguage.close()`. Calling the `close` method ensures that the underlying `dlopen`'ed library handle is closed using `dlclose`.
