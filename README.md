@@ -69,7 +69,7 @@ Apart from the `DynamicModulePlugin`, there are [other Gradle plugins](https://g
 
 The common configuration for the grammars can be found in the [`build.gradle.kts`](https://github.com/AndroidIDEOfficial/android-tree-sitter/blob/52cc0400feee5079cac25b27d1e7b673ee53f436/build.gradle.kts#L136) file. This is where you can make changes or adjustments to the module configuration that applies to all grammars.
 
-The generated modules are located in the `rootDir/build/grammar-modules` directory. This is where you can find the output of the module generation process.
+The generated modules are located in the `rootDir/grammar-modules` directory. This is where you can find the output of the module generation process.
 
 To add a new grammar to the project, follow these steps:
 
