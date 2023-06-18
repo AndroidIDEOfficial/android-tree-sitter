@@ -59,76 +59,7 @@ git clone --recurse-submodules https://github.com/AndroidIDEOfficial/android-tre
 
 A normal Gradle build (`./gradlew build`) can be executed in order to build everything for Android _and_ the host OS. To build `android-tree-sitter` and the grammars _only_ for the host OS, you can execute `buildForHost` task on appropriate subprojects.
 
-## Examples
-
-First, load the shared libraries somewhere in your application:
-
-```java
-    public class App {
-      static {
-        // load the tree sitter library
-        TreeSitter.loadLibrary();
-        
-        // native libraries for languages are automatically loaded
-        // no need to load them manually
-      }
-    }
-```
-
-Then, you can create a `TSParser`, set the language, and start parsing:
-
-```java 
-    try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguagePython.newInstance());
-      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)", TSInputEncoding.TSInputEncodingUTF8 /*specify encoding, default is UTF-8*/)) {
-        TSNode root = tree.getRootNode();
-        assertEquals(1, root.getChildCount());
-        assertEquals("module", root.getType());
-        assertEquals(0, root.getStartByte());
-        assertEquals(44, root.getEndByte());
-
-        TSNode function = root.getChild(0);
-        assertEquals("function_definition", function.getType());
-        assertEquals(5, function.getChildCount());
-      }
-    }
-```
-
-For debugging, it can be helpful to see string representation of the tree:
-
-```java
-    try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguagePython.newInstance());
-      try (TSTree tree = parser.parseString("print(\"hi\")")) {
-        assertEquals(
-          "(module (expression_statement (call function: (identifier) arguments: (argument_list (string)))))",
-          tree.getRootNode().getNodeString()
-        );
-      }
-    }
-```
-
-If you're going to be traversing a tree, then you can use the `walk` method, which is much more efficient than the above getters:
-
-```java
-    try (TSParser parser = new TSParser()) {
-      parser.setLanguage(TSLanguagePython.newInstance());
-      try (TSTree tree = parser.parseString("def foo(bar, baz):\n  print(bar)\n  print(baz)")) {
-        try (TSTreeCursor cursor = tree.getRootNode().walk()) {
-          assertEquals("module", cursor.getCurrentTreeCursorNode().getType());
-          cursor.gotoFirstChild();
-          assertEquals("function_definition", cursor.getCurrentTreeCursorNode().getType());
-          cursor.gotoFirstChild();
-          assertEquals("def", cursor.getCurrentTreeCursorNode().getType());
-          cursor.gotoNextSibling();
-          cursor.gotoParent();
-        }
-      }
-```
-
-For more examples, see the tests in `android-tree-sitter/src/test/java/com/itsaky/androidide/treesitter`.
-
-## Adding more grammars
+## Adding grammars
 
 The Gradle modules for the grammars are almost identical, with only minor differences in the CMakeLists file and the Java binding class.
 
@@ -151,3 +82,120 @@ git submodule add <remote_url> grammars/<language_name>
     - The name of the resulting shared library will be `libtree-sitter-abc.so`.
 3. After adding the grammar source, update the `grammars.json` file to include the newly added grammar in the project.
 4. Finally, sync the project to trigger the generation of the module for the newly added grammar.
+
+## Loading external grammars
+
+You have two ways to load grammars that are not published along with this project :
+
+- Package the grammar with your application.
+- Load the grammar at runtime using `TSLanguage.loadLanguage`.
+
+`TSLanguage.loadLanguage` uses `dlopen` to load the library and must be CAREFULLY used. Also, grammars that are loaded using this method must be closed when they are not used.
+
+> **_Prefer using the first method whenever possible._**
+
+### Package the grammar with your application
+
+You can package the grammar in your Android application as you would package any other shared library :
+
+- Include the `libtree-sitter-myLang.so` file in the `jniLibs` directory of your project.
+- Create a native method in a Java class which will return the pointer to the language :
+```java
+package com.my.app;
+
+public class MyClass {
+
+  static {
+    System.loadLibrary("tree-sitter-myLang");
+  }
+
+  public static native long myLang();
+}
+```
+
+- Write the C/C++ implementation for the method :
+```c++
+extern "C" TSLanguage *tree_sitter_myLang();
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_my_app_MyClass_myLang(JNIEnv *env, jclass clazz) {
+  // simply cast the language pointer to jlong
+  return (jlong) tree_sitter_myLang();
+}
+```
+
+- Create and use the `TSLanguage` instance :
+
+```java
+final TSLanguage myLang = new TSLanguage("myLang", MyClass.myLang());
+
+// use it with TSParser
+try (final var parser = new TSParser()) {
+  parser.setLanguage(myLang);
+  ...
+}
+```
+
+### Load grammars at runtime
+
+`TSLanguage` provides `loadLanguage(String, String)` method which can be used to load the grammars at runtime. This method uses `dlopen` to load the shared library, get the language instance and return its pointer. Use this method CAREFULLY.
+
+The language instances created using this method **MUST** be closed using `TSLanguage.close()`. Calling the `close` method ensures that the underlying `dlopen`'ed library handle is closed using `dlclose`.
+
+Usage :
+```java
+// provide the path to the shared library and the name of the language
+// the name is used to cache the language instance
+// further invocations of this method with the same lang name returns the
+// cached language instance
+final TSLanguage myLang = TSLanguage.loadLanguage("/path/to/libtree-sitter-myLang.so", "myLang");
+
+if (myLang != null) {
+  // loaded successfully
+} else {
+  // failed to load the language
+  // see logcat for details
+}
+```
+
+Use this language :
+```java
+try (final var parser = new TSParser()) {
+  parser.setLanguage(myLang);
+  ...
+}
+```
+
+You don't have to keep a reference to `myLang`. Once loaded, the language can be accessed using `TSLanguageCache` :
+```java
+// returns the 'myLang' instance i.e. both are same
+final TSLanguage cachedMyLang = TSLanguageCache.get("myLang");
+```
+
+**DO NOT FORGET** to close the language :
+```java
+// this closes the underlying library handle
+myLang.close();
+```
+
+## Examples
+
+For examples, see the [tests](https://github.com/AndroidIDEOfficial/android-tree-sitter/tree/dev/android-tree-sitter/src/test/java/com/itsaky/androidide/treesitter).
+
+## License
+
+```
+android-tree-sitter library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+android-tree-sitter library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
+```
