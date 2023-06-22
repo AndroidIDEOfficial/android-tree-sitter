@@ -284,7 +284,7 @@ public class QueryTest extends TreeSitterTest {
         cursor.exec(query, tree.getRootNode());
 
         // pattern 0 -> method_declaration
-        // capture 0 -> @method_name
+        // capture 0 -> @class_name
         final var quantifier = query.getCaptureQuantifierForId(0, 0);
         assertThat(quantifier).isNotNull();
         assertThat(quantifier).isEqualTo(TSQuantifier.ZeroOrOne);
