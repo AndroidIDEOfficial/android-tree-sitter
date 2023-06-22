@@ -18,6 +18,7 @@
 #include "utils/ts_obj_utils.h"
 
 void fillQuery(JNIEnv*, jobject, uint32_t, TSQueryError);
+int query_quantifier_id(TSQuantifier quantifier);
 jint getErrorType(TSQueryError);
 
 extern "C" JNIEXPORT jlong JNICALL
@@ -145,5 +146,28 @@ jint getErrorType(TSQueryError error) {
       return 5;
     case TSQueryErrorLanguage:
       return 6;
+  }
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureQuantifierForId(
+    JNIEnv *env,
+    jclass clazz,
+    jlong query,
+    jint pattern,
+    jint capture) {
+
+  auto ts_query = (TSQuery*) query;
+  auto quantifier = ts_query_capture_quantifier_for_id(ts_query, pattern, capture);
+  return query_quantifier_id(quantifier);
+}
+
+int query_quantifier_id(TSQuantifier quantifier) {
+  switch (quantifier) {
+    case TSQuantifierZero: return 0;
+    case TSQuantifierZeroOrOne: return 1;
+    case TSQuantifierZeroOrMore: return 2;
+    case TSQuantifierOne: return 3;
+    case TSQuantifierOneOrMore: return 4;
   }
 }

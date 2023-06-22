@@ -160,6 +160,12 @@ public class TSQuery extends TSNativeObject {
     return Native.stringValueForId(this.pointer, id);
   }
 
+  public TSQuantifier getCaptureQuantifierForId(int pattern, int capture) {
+    checkAccess();
+    validatePatternIndex(pattern);
+    return TSQuantifier.forId(Native.captureQuantifierForId(this.pointer, pattern, capture));
+  }
+
   @Override
   protected void closeNativeObj() {
     Native.delete(this.pointer);
@@ -273,5 +279,7 @@ public class TSQuery extends TSNativeObject {
     public static native String captureNameForId(long query, int id);
 
     public static native String stringValueForId(long query, int id);
+
+    public static native int captureQuantifierForId(long query, int pattern, int capture);
   }
 }

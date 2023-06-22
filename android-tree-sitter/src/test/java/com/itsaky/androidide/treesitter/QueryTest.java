@@ -230,7 +230,7 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void testEmptyQuery() throws Exception {
     try (final var query = TSQuery.EMPTY) {
-      assertThat(query.isValid()).isFalse();
+      assertThat(query.canAccess()).isFalse();
       assertThat(query.getPatternCount()).isEqualTo(0);
       assertThat(query.getCaptureCount()).isEqualTo(0);
       assertThat(query.getStringCount()).isEqualTo(0);
@@ -240,5 +240,130 @@ public class QueryTest extends TreeSitterTest {
   @Test(expected = IllegalArgumentException.class)
   public void testQueryConstructionError() throws Exception {
     new TSQuery(null, "not-empty").close();
+  }
+
+  @Test
+  public void testQueryQuantifierZero() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(class_declaration name: (identifier) @class_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
+        querySource); final var cursor = new TSQueryCursor()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        cursor.exec(query, tree.getRootNode());
+
+        // pattern 0 -> method_declaration
+        // capture 1 -> invalid capture id, result must be TSQuantifier.Zero
+        final var quantifier = query.getCaptureQuantifierForId(0, 1);
+        assertThat(quantifier).isNotNull();
+        assertThat(quantifier).isEqualTo(TSQuantifier.Zero);
+      }
+    }
+  }
+
+  @Test
+  public void testQueryQuantifierZeroOrOne() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(class_declaration name: (identifier)? @class_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
+        querySource); final var cursor = new TSQueryCursor()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        cursor.exec(query, tree.getRootNode());
+
+        // pattern 0 -> method_declaration
+        // capture 0 -> @method_name
+        final var quantifier = query.getCaptureQuantifierForId(0, 0);
+        assertThat(quantifier).isNotNull();
+        assertThat(quantifier).isEqualTo(TSQuantifier.ZeroOrOne);
+      }
+    }
+  }
+
+  @Test
+  public void testQueryQuantifierZeroOrMore() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (identifier)* @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
+        querySource); final var cursor = new TSQueryCursor()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        cursor.exec(query, tree.getRootNode());
+
+        // pattern 0 -> method_declaration
+        // capture 0 -> @method_name
+        final var quantifier = query.getCaptureQuantifierForId(0, 0);
+        assertThat(quantifier).isNotNull();
+        assertThat(quantifier).isEqualTo(TSQuantifier.ZeroOrMore);
+      }
+    }
+  }
+
+  @Test
+  public void testQueryQuantifierOne() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (_) @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
+        querySource); final var cursor = new TSQueryCursor()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        cursor.exec(query, tree.getRootNode());
+
+        // pattern 0 -> method_declaration
+        // capture 0 -> @method_name
+        final var quantifier = query.getCaptureQuantifierForId(0, 0);
+        assertThat(quantifier).isNotNull();
+        assertThat(quantifier).isEqualTo(TSQuantifier.One);
+      }
+    }
+  }
+
+  @Test
+  public void testQueryQuantifierOneOrMore() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (identifier)+ @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
+        querySource); final var cursor = new TSQueryCursor()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        cursor.exec(query, tree.getRootNode());
+
+        // pattern 0 -> method_declaration
+        // capture 0 -> @method_name
+        final var quantifier = query.getCaptureQuantifierForId(0, 0);
+        assertThat(quantifier).isNotNull();
+        assertThat(quantifier).isEqualTo(TSQuantifier.OneOrMore);
+      }
+    }
   }
 }
