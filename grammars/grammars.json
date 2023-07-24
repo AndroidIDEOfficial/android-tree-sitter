@@ -1,5 +1,9 @@
 [
   {
+    "name": "aidl",
+    "src.extra": []
+  },
+  {
     "name": "java",
     "src.extra": []
   },
@@ -15,6 +19,10 @@
   },
   {
     "name": "log",
+    "src.extra": []
+  },
+  {
+    "name": "properties",
     "src.extra": []
   },
   {

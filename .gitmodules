@@ -19,3 +19,9 @@
 [submodule "grammars/xml"]
 	path = grammars/xml
 	url = https://github.com/AndroidIDEOfficial/tree-sitter-xml
+[submodule "grammars/aidl"]
+	path = grammars/aidl
+	url = https://github.com/AndroidIDEOfficial/tree-sitter-aidl
+[submodule "grammars/properties"]
+	path = grammars/properties
+	url = https://github.com/AndroidIDEOfficial/tree-sitter-properties
