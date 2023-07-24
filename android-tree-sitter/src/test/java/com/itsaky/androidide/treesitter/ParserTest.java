@@ -40,7 +40,7 @@ public class ParserTest extends TreeSitterTest {
       parser.setLanguage(TSLanguagePython.getInstance());
       try (TSTree tree = parser.parseString("print(\"hi\")")) {
         assertThat(tree.getRootNode().getNodeString()).isEqualTo(
-          "(module (expression_statement (call function: (identifier) arguments: (argument_list (string string_content: (string_content))))))");
+          "(module (expression_statement (call function: (identifier) arguments: (argument_list (string (string_start) (string_content) (string_end))))))");
       }
     }
   }

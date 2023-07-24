@@ -28,7 +28,7 @@
   {
     "name": "python",
     "src.extra": [
-      "src/scanner.cc"
+      "src/scanner.c"
     ]
   },
   {
