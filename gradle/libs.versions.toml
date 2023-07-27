@@ -21,4 +21,4 @@ gradle-android = { module = "com.android.tools.build:gradle", version.ref = "agp
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.25.2" }
+maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.25.3" }
