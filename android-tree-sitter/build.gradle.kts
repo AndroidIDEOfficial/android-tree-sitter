@@ -1,5 +1,3 @@
-import org.gradle.internal.classpath.Instrumented.systemProperty
-
 /*
  *  This file is part of android-tree-sitter.
  *
@@ -35,7 +33,6 @@ dependencies {
   testImplementation(projects.treeSitterJson)
   testImplementation(projects.treeSitterKotlin)
   testImplementation(projects.treeSitterLog)
-  testImplementation(projects.treeSitterProperties)
   testImplementation(projects.treeSitterXml)
   testImplementation(projects.treeSitterPython)
   testImplementation(libs.tests.google.truth)
