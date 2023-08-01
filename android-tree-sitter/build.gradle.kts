@@ -30,10 +30,12 @@ android {
 }
 
 dependencies {
+  testImplementation(projects.treeSitterAidl)
   testImplementation(projects.treeSitterJava)
   testImplementation(projects.treeSitterJson)
   testImplementation(projects.treeSitterKotlin)
   testImplementation(projects.treeSitterLog)
+  testImplementation(projects.treeSitterProperties)
   testImplementation(projects.treeSitterXml)
   testImplementation(projects.treeSitterPython)
   testImplementation(libs.tests.google.truth)

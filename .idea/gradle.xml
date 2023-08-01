@@ -19,6 +19,7 @@
         <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="jbr-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -26,10 +27,12 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/ats" />
+            <option value="$PROJECT_DIR$/grammar-modules/aidl" />
             <option value="$PROJECT_DIR$/grammar-modules/java" />
             <option value="$PROJECT_DIR$/grammar-modules/json" />
             <option value="$PROJECT_DIR$/grammar-modules/kotlin" />
             <option value="$PROJECT_DIR$/grammar-modules/log" />
+            <option value="$PROJECT_DIR$/grammar-modules/properties" />
             <option value="$PROJECT_DIR$/grammar-modules/python" />
             <option value="$PROJECT_DIR$/grammar-modules/xml" />
           </set>

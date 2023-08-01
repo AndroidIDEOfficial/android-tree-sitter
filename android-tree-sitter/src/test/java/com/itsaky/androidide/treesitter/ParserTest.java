@@ -20,6 +20,7 @@ package com.itsaky.androidide.treesitter;
 import static com.google.common.truth.Truth.assertThat;
 import static com.itsaky.androidide.treesitter.TestUtils.readString;
 
+import com.itsaky.androidide.treesitter.aidl.TSLanguageAidl;
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.treesitter.json.TSLanguageJson;
 import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin;
@@ -27,12 +28,21 @@ import com.itsaky.androidide.treesitter.log.TSLanguageLog;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(JUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class ParserTest extends TreeSitterTest {
+
+  private static String readResource(String... names) {
+    return readString(Paths.get("./src/test/resources", names));
+  }
 
   @Test
   public void testParse() throws UnsupportedEncodingException {
@@ -51,8 +61,7 @@ public class ParserTest extends TreeSitterTest {
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguageJava.getInstance().pointer);
-      try (var tree = parser.parseString(
-        readString(Paths.get("./src/test/resources/CodeEditor.java.txt")))) {
+      try (var tree = parser.parseString(readResource("CodeEditor.java.txt"))) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println(
           "\nParsed CodeEditor.java in: " + (System.currentTimeMillis() - start) + "ms");
@@ -65,8 +74,7 @@ public class ParserTest extends TreeSitterTest {
     final long start = System.currentTimeMillis();
     try (TSParser parser = new TSParser()) {
       parser.setLanguage(TSLanguageJava.getInstance());
-      try (var tree = parser.parseString(
-        readString(Paths.get("./src/test/resources/View.java.txt")))) {
+      try (var tree = parser.parseString(readResource("View.java.txt"))) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println("\nParsed View.java in: " + (System.currentTimeMillis() - start) + "ms");
       }
@@ -81,8 +89,7 @@ public class ParserTest extends TreeSitterTest {
       parser.setLanguage(TSLanguageJava.getInstance());
       parser.setTimeout(timeout);
       assertThat(parser.getTimeout()).isEqualTo(timeout);
-      try (final var tree = parser.parseString(
-        readString(Paths.get("./src/test/resources/View.java.txt")))) {
+      try (final var tree = parser.parseString(readResource("View.java.txt"))) {
         final var timeConsumed = System.currentTimeMillis() - start;
         assertThat(tree).isNull();
         System.out.println("Parsed in " + timeConsumed + "ms");
@@ -196,5 +203,107 @@ public class ParserTest extends TreeSitterTest {
           "(logs (ide_log_line (ide_tag) (priority) (message)))");
       }
     }
+  }
+
+  @Test
+  public void testAIDLGrammar_interfaceDecl() {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguageAidl.getInstance());
+
+      final var source = readResource("IInterface.aidl");
+
+      try (final var tree = parser.parseString(source)) {
+        final var rootNode = tree.getRootNode();
+        assertThat(rootNode).isNotNull();
+        assertThat(rootNode.getChildCount()).isGreaterThan(0);
+        assertThat(rootNode.hasErrors()).isFalse();
+
+        //noinspection DataFlowIssue
+        final var packages = substrings(execQueryGroupByCaptures(
+          "(package_declaration name: (_) @package)",
+          TSLanguageAidl.getInstance(), rootNode).get("package"), source);
+        assertThat(packages).containsExactly("com.itsaky.androidide.treesitter.test");
+
+        //noinspection DataFlowIssue
+        final var annotations = substrings(execQueryGroupByCaptures(
+          "(annotation name: (_) @annotation) (marker_annotation name: (_) @annotation)",
+          TSLanguageAidl.getInstance(), rootNode).get("annotation"), source);
+        assertThat(annotations).containsExactly("SomeMarker", "Something",
+          "SomethingWithArrayParam", "UnsupportedAppUsage", "OnAMethod", "OnAParam", "OnAParam",
+          "CanBeMultiple", "MayHaveValues");
+
+        //noinspection DataFlowIssue
+        final var interfaces = substrings(
+          execQueryGroupByCaptures("(interface_declaration name: (_) @interface)",
+            TSLanguageAidl.getInstance(), rootNode).get("interface"), source);
+        assertThat(interfaces).containsExactly("IInterface");
+
+        //noinspection DataFlowIssue
+        final var methods = substrings(
+          execQueryGroupByCaptures("(method_declaration name: (_) @method)",
+            TSLanguageAidl.getInstance(), rootNode).get("method"), source);
+        assertThat(methods).containsExactly("notify", "fill", "thereIsOnlyOneWay");
+
+        //noinspection DataFlowIssue
+        final var variables = substrings(
+          execQueryGroupByCaptures("(variable_declarator name: (_) @variable)",
+            TSLanguageAidl.getInstance(), rootNode).get("variable"), source);
+        assertThat(variables).containsExactly("somethingWeReceive", "somethingWeProvide",
+          "somethingWeBothUse");
+      }
+    }
+  }
+
+  @Test
+  public void testAIDLGrammar_parcelableDecl() {
+    try (final var parser = new TSParser()) {
+      parser.setLanguage(TSLanguageAidl.getInstance());
+
+      final var source = readResource("SomethingParcelable.aidl");
+
+      try (final var tree = parser.parseString(source)) {
+        final var rootNode = tree.getRootNode();
+        assertThat(rootNode).isNotNull();
+        assertThat(rootNode.getChildCount()).isGreaterThan(0);
+        assertThat(rootNode.hasErrors()).isFalse();
+
+        //noinspection DataFlowIssue
+        final var interfaces = substrings(
+          execQueryGroupByCaptures("(parcelable_declaration name: (_) @parcelable)",
+            TSLanguageAidl.getInstance(), rootNode).get("parcelable"), source);
+        assertThat(interfaces).containsExactly("SomethingDefinedSomewhere", "CanWeDefineAsManyAsWeWant", "SomethingParcelable");
+
+        //noinspection DataFlowIssue
+        final var variables = substrings(
+          execQueryGroupByCaptures("(variable_declarator name: (_) @variable)",
+            TSLanguageAidl.getInstance(), rootNode).get("variable"), source);
+        assertThat(variables).containsExactly("hasField", "orFields", "isIt");
+      }
+    }
+  }
+
+  private static Map<String, List<TSNode>> execQueryGroupByCaptures(String querySource,
+                                                                    TSLanguage language, TSNode node
+  ) {
+    final var result = new HashMap<String, List<TSNode>>();
+    try (final var cursor = new TSQueryCursor(); final var query = TSQuery.create(language,
+      querySource)) {
+      cursor.exec(query, node);
+      TSQueryMatch match;
+      while ((match = cursor.nextMatch()) != null) {
+        for (TSQueryCapture capture : match.getCaptures()) {
+          result.computeIfAbsent(query.getCaptureNameForId(capture.getIndex()),
+            name -> new ArrayList<>()).add(capture.getNode());
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private static List<String> substrings(List<TSNode> nodes, String source) {
+    return nodes.stream()
+      .map(node -> source.substring(node.getStartByte() / 2, node.getEndByte() / 2))
+      .collect(Collectors.toList());
   }
 }
