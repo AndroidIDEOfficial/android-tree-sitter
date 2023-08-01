@@ -20,6 +20,7 @@ package com.itsaky.androidide.treesitter;
 import static com.google.common.truth.Truth.assertThat;
 import static com.itsaky.androidide.treesitter.TestUtils.readString;
 
+import android.text.TextUtils;
 import com.itsaky.androidide.treesitter.aidl.TSLanguageAidl;
 import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.treesitter.json.TSLanguageJson;
@@ -33,15 +34,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+import org.junit.runners.JUnit4;
+import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(JUnit4.class)
 public class ParserTest extends TreeSitterTest {
 
-  private static String readResource(String... names) {
-    return readString(Paths.get("./src/test/resources", names));
+  private MockedStatic<TextUtils> mockedTextUtils;
+
+  @Before
+  public void setupMocks() {
+    mockedTextUtils = Mockito.mockStatic(TextUtils.class);
+    mockedTextUtils.when(() -> TextUtils.getTrimmedLength(ArgumentMatchers.anyString()))
+      .thenAnswer(invocation -> {
+        final var arguments = invocation.getArguments();
+        if (arguments == null || arguments.length != 1 || !(arguments[0] instanceof CharSequence)) {
+          throw new IllegalArgumentException();
+        }
+        return getTrimmedLength(((CharSequence) arguments[0]));
+      });
+  }
+
+  @After
+  public void releaseMocks() {
+    if (mockedTextUtils != null) {
+      mockedTextUtils.close();
+    }
   }
 
   @Test
@@ -219,9 +243,9 @@ public class ParserTest extends TreeSitterTest {
         assertThat(rootNode.hasErrors()).isFalse();
 
         //noinspection DataFlowIssue
-        final var packages = substrings(execQueryGroupByCaptures(
-          "(package_declaration name: (_) @package)",
-          TSLanguageAidl.getInstance(), rootNode).get("package"), source);
+        final var packages = substrings(
+          execQueryGroupByCaptures("(package_declaration name: (_) @package)",
+            TSLanguageAidl.getInstance(), rootNode).get("package"), source);
         assertThat(packages).containsExactly("com.itsaky.androidide.treesitter.test");
 
         //noinspection DataFlowIssue
@@ -271,7 +295,8 @@ public class ParserTest extends TreeSitterTest {
         final var interfaces = substrings(
           execQueryGroupByCaptures("(parcelable_declaration name: (_) @parcelable)",
             TSLanguageAidl.getInstance(), rootNode).get("parcelable"), source);
-        assertThat(interfaces).containsExactly("SomethingDefinedSomewhere", "CanWeDefineAsManyAsWeWant", "SomethingParcelable");
+        assertThat(interfaces).containsExactly("SomethingDefinedSomewhere",
+          "CanWeDefineAsManyAsWeWant", "SomethingParcelable");
 
         //noinspection DataFlowIssue
         final var variables = substrings(
@@ -305,5 +330,25 @@ public class ParserTest extends TreeSitterTest {
     return nodes.stream()
       .map(node -> source.substring(node.getStartByte() / 2, node.getEndByte() / 2))
       .collect(Collectors.toList());
+  }
+
+  private static int getTrimmedLength(CharSequence s) {
+    int len = s.length();
+
+    int start = 0;
+    while (start < len && s.charAt(start) <= ' ') {
+      start++;
+    }
+
+    int end = len;
+    while (end > start && s.charAt(end - 1) <= ' ') {
+      end--;
+    }
+
+    return end - start;
+  }
+
+  private static String readResource(String... names) {
+    return readString(Paths.get("./src/test/resources", names));
   }
 }
