@@ -77,7 +77,7 @@ Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_nextMatch(
   TSQueryMatch m;
   bool b = ts_query_cursor_next_match((TSQueryCursor *)cursor, &m);
   if (!b) {
-    return NULL;
+    return nullptr;
   }
   return _marshalMatch(env, m);
 }
