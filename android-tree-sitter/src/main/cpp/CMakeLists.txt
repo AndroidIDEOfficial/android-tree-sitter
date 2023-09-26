@@ -35,6 +35,7 @@ add_library(android-tree-sitter SHARED
         ts.cc
         ts_cursor.cc
         ts_language.cc
+        ts_lookahead_iterator.cc
         ts_node.cc
         ts_parser.cc
         ts_query.cc
