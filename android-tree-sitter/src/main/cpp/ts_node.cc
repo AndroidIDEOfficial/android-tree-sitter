@@ -239,3 +239,17 @@ Java_com_itsaky_androidide_treesitter_TSNode_hasErrors(JNIEnv* env,
                                                        jobject self) {
   return (jboolean)ts_node_has_error(_unmarshalNode(env, self));
 }
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_isError(JNIEnv *env,
+                                                     jobject self) {
+  return (jboolean) ts_node_is_error(_unmarshalNode(env, self));
+}
+
+extern "C"
+JNIEXPORT jshort JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_getParseState(JNIEnv *env,
+                                                           jobject self) {
+  return (jshort) ts_node_parse_state(_unmarshalNode(env, self));
+}

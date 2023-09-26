@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class TSNode {
+
   private int context0;
   private int context1;
   private int context2;
@@ -32,7 +33,8 @@ public class TSNode {
 
   private TSTree mTree;
 
-  private TSNode() {}
+  private TSNode() {
+  }
 
   /**
    * Get the syntax tree that this node is associated with.
@@ -106,8 +108,9 @@ public class TSNode {
     return null;
   }
 
-  public List<TSNode> findChildrenWithType(
-      final String type, final boolean reverseSearch, final boolean namedOnly) {
+  public List<TSNode> findChildrenWithType(final String type, final boolean reverseSearch,
+                                           final boolean namedOnly
+  ) {
     if (reverseSearch) {
       return findChildrenWithTypeReverse(type, namedOnly);
     }
@@ -258,7 +261,9 @@ public class TSNode {
    */
   public native int getChildCount();
 
-  /** Get the number of 'named' child nodes in the node. */
+  /**
+   * Get the number of 'named' child nodes in the node.
+   */
   public native int getNamedChildCount();
 
   /**
@@ -310,7 +315,9 @@ public class TSNode {
    */
   public native int getSymbol();
 
-  /** Check if the node is null. */
+  /**
+   * Check if the node is null.
+   */
   public native boolean isNull();
 
   /**
@@ -331,9 +338,23 @@ public class TSNode {
    */
   public native boolean isMissing();
 
-  /** Check if the given node has been edited. */
+  /**
+   * Check if the given node has been edited.
+   */
   public native boolean hasChanges();
 
-  /** Check if the node is a syntax error or contains any syntax errors. */
+  /**
+   * Check if the node is a syntax error or contains any syntax errors.
+   */
   public native boolean hasErrors();
+
+  /**
+   * Check if the node is an error.
+   */
+  public native boolean isError();
+
+  /**
+   * Get this node's parse state.
+   */
+  public native short getParseState();
 }
