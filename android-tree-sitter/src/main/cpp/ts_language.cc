@@ -156,3 +156,21 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_dlclose(JNIEnv *env
   if (libhandle == 0) return;
   dlclose((void *) libhandle);
 }
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_stateCount(JNIEnv *env,
+                                                                        jclass clazz,
+                                                                        jlong pointer) {
+  return (jint) ts_language_state_count((TSLanguage*) pointer);
+}
+
+extern "C"
+JNIEXPORT jshort JNICALL
+Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_nextState(JNIEnv *env,
+                                                                       jclass clazz,
+                                                                       jlong pointer,
+                                                                       jshort state_id,
+                                                                       jshort symbol) {
+  return (jshort) ts_language_next_state((TSLanguage*) pointer, state_id, symbol);
+}

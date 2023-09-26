@@ -127,6 +127,23 @@ public class TSLanguage extends TSNativeObject {
     return TSSymbolType.forId(Native.symType(this.pointer, symbol));
   }
 
+  /**
+   * Get the number of valid states in this language.
+   */
+  public int getStateCount() {
+    checkAccess();
+    return Native.stateCount(pointer);
+  }
+
+  /**
+   * Get the next parse state. Combine this with lookahead iterators to generate
+   * completion suggestions or valid symbols in error nodes.
+   */
+  public short getNextState(short stateId, short symbol) {
+    checkAccess();
+    return Native.nextState(pointer, stateId, symbol);
+  }
+
   public int getLanguageVersion() {
     checkAccess();
     return Native.langVer(this.pointer);
@@ -246,5 +263,9 @@ public class TSLanguage extends TSNativeObject {
     private static native long[] loadLanguage(String sharedLib, String func);
 
     private static native void dlclose(long libhandle);
+
+    public static native int stateCount(long pointer);
+
+    public static native short nextState(long pointer, short stateId, short symbol);
   }
 }
