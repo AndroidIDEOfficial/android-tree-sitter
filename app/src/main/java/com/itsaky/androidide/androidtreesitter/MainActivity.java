@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         try (final var cursor = tree.getRootNode().walk()) {
           final var duration = System.currentTimeMillis() - start;
           final var sb = new StringBuilder();
-          sb.append("Parsed in ").append(duration).append("ms").append("\n\n");
+          sb.append("Parsed in ").append(duration).append("ms").append("\n");
 
           appendTo(sb, cursor, 0);
 
@@ -131,11 +131,11 @@ public class MainActivity extends AppCompatActivity {
 
   private void appendTo(@NonNull StringBuilder sb, @NonNull TSTreeCursor cursor, int indentLevel) {
     final var node = cursor.getCurrentNode();
+    sb.append("\n");
+    repeatSpaces(sb, indentLevel * 4);
     sb.append(node.getType());
     sb.append(
-      String.format(Locale.getDefault(), "[%d, %d]", node.getStartByte(), node.getEndByte()));
-    sb.append("\n");
-    repeatSpaces(sb, indentLevel * 2);
+      String.format(Locale.getDefault(), "[%d, %d]", node.getStartByte() / 2, node.getEndByte() / 2));
 
     if (node.getNamedChildCount() != 0) {
       for (int i = 0; i < node.getNamedChildCount(); i++) {
