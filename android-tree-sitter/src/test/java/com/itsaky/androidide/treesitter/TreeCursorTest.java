@@ -25,12 +25,15 @@ import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+@RunWith(RobolectricTestRunner.class)
 public class TreeCursorTest extends TreeSitterTest {
 
   @Test
   public void testWalk() throws UnsupportedEncodingException {
-    try (TSParser parser = new TSParser()) {
+    try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguagePython.getInstance());
       final var source =
           UTF16StringFactory.newString("def foo(bar, baz):\n  print(bar)\n  print(baz)");

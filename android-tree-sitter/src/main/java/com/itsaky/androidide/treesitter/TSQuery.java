@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import android.text.TextUtils;
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 
 public class TSQuery extends TSNativeObject {
 
@@ -32,35 +33,12 @@ public class TSQuery extends TSNativeObject {
   private String[] captureNames = null;
 
   /**
-   * Create a new query from a string containing one or more S-expression patterns. The query is
-   * associated with a particular language, and can only be run on syntax nodes parsed with that
-   * language.
-   *
-   * <p>If all of the given patterns are valid, this returns a `TSQuery`. If a pattern is
-   * invalid, this returns `NULL`, and provides two pieces of information about the problem: 1. The
-   * byte offset of the error is written to the `error_offset` parameter. 2. The type of error is
-   * written to the `error_type` parameter.
-   */
-  public TSQuery(TSLanguage language, String source) {
-    super(0);
-    if (language == null) {
-      throw new IllegalArgumentException("Language cannot be null");
-    }
-
-    if (source == null || source.isEmpty()) {
-      throw new IllegalArgumentException("Query source cannot be null");
-    }
-
-    this.pointer = Native.newQuery(this, language.pointer, source);
-  }
-
-  /**
-   * For subclasses only!
+   * For internal use only!
    * <p>
    * Constructs an invalid query.
    */
-  protected TSQuery() {
-    super(0);
+  protected TSQuery(long pointer) {
+    super(pointer);
   }
 
   /**
@@ -182,15 +160,31 @@ public class TSQuery extends TSNativeObject {
    * Creates a new {@link TSQuery} with the given {@link TSLanguage} and query source. If the
    * language or the query source is invalid, {@link TSQuery#EMPTY} is returned.
    *
+   * The query string should contain one or more S-expression patterns. The query is
+   * associated with a particular language, and can only be run on syntax nodes parsed with that
+   * language.
+   *
+   * <p>If all of the given patterns are valid, this returns a <code>TSQuery</code>. If a pattern is
+   * invalid, this returns <code>null</code>, and provides two pieces of information about the problem:
+   * 1. The byte offset of the error is written to the {@link #errorOffset} parameter.
+   * 2. The type of error is written to the {@link #errorType} parameter.
+   *
    * @param language The {@link TSLanguage} for the query.
-   * @param query    The query source.
+   * @param querySource    The query source.
    * @return The {@link TSQuery} object.
    */
-  public static TSQuery create(TSLanguage language, String query) {
-    if (language == null || query == null || TextUtils.getTrimmedLength(query) == 0) {
-      return EMPTY;
+  public static TSQuery create(TSLanguage language, String querySource) {
+    if (language == null) {
+      throw new IllegalArgumentException("Language cannot be null");
     }
-    return new TSQuery(language, query);
+
+    if (querySource == null || TextUtils.getTrimmedLength(querySource) == 0) {
+      throw new IllegalArgumentException("Query cannot be null or blank");
+    }
+
+    final var query = TSObjectFactoryProvider.getFactory().createQuery(0);
+    query.pointer = Native.newQuery(query, language.pointer, querySource);
+    return query;
   }
 
   /**
@@ -202,6 +196,7 @@ public class TSQuery extends TSNativeObject {
   private static final class EmptyQuery extends TSQuery {
 
     private EmptyQuery() {
+      super(0);
     }
 
     @Override

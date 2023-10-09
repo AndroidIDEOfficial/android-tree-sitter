@@ -38,12 +38,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(JUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class ParserTest extends TreeSitterTest {
 
   private MockedStatic<TextUtils> mockedTextUtils;
@@ -70,7 +70,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testParse() throws UnsupportedEncodingException {
-    try (TSParser parser = new TSParser()) {
+    try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguagePython.getInstance());
       try (TSTree tree = parser.parseString("print(\"hi\")")) {
         assertThat(tree.getRootNode().getNodeString()).isEqualTo(
@@ -82,7 +82,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testCodeEditor() throws Throwable {
     final long start = System.currentTimeMillis();
-    try (TSParser parser = new TSParser()) {
+    try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguageJava.getInstance().pointer);
       try (var tree = parser.parseString(readResource("CodeEditor.java.txt"))) {
@@ -96,7 +96,7 @@ public class ParserTest extends TreeSitterTest {
   @Test
   public void testView() throws Throwable {
     final long start = System.currentTimeMillis();
-    try (TSParser parser = new TSParser()) {
+    try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       try (var tree = parser.parseString(readResource("View.java.txt"))) {
         System.out.println(tree.getRootNode().getNodeString());
@@ -109,7 +109,7 @@ public class ParserTest extends TreeSitterTest {
   public void testTimeout() throws UnsupportedEncodingException {
     final var timeout = 1000L; // 1 millisecond
     final var start = System.currentTimeMillis();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       parser.setTimeout(timeout);
       assertThat(parser.getTimeout()).isEqualTo(timeout);
@@ -123,13 +123,14 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testIncrementalParsing() throws UnsupportedEncodingException {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
 
       // the start byte below is invalid as it is in the middle of a character
       // It should fail in this case
       parser.setIncludedRanges(
-        new TSRange[]{new TSRange(21, 65, new TSPoint(0, 21), new TSPoint(0, 65))});
+        new TSRange[]{TSRange.create(21, 65, TSPoint.create(0, 21), TSPoint.create(0, 65))});
+
       final var source = "public class Main { class Inner { public static void main() {} } }";
       try (final var tree = parser.parseString(source)) {
         assertThat(tree).isNotNull();
@@ -145,7 +146,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testJsonGrammar() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJson.getInstance());
 
       final var source = "{\n" + "    \"string\": \"value\",\n" + "    \"boolean\": true,\n" +
@@ -162,7 +163,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testKotlinGrammar() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageKotlin.getInstance());
 
       final var source =
@@ -181,7 +182,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testLogGrammar_beginHeader() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageLog.getInstance());
 
       final var source = "--------- beginning of system";
@@ -197,7 +198,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testLogGrammar_logcatLine() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageLog.getInstance());
 
       final var source = "06-16 17:32:54.289 19154 19154 W ziparchive: Unable to open '/data/app/~~S0ZGwshlag_3SKvS2AUm9g==/com.itsaky.androidide.logsender.sample-2mbpM5fpkBwx7otcNLWYNA==/base.dm': No such file or directory";
@@ -214,7 +215,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testLogGrammar_ideLogLine() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageLog.getInstance());
 
       final var source = "..aultApiVersionsRegistry I   Creating API versions table for platform dir: /data/data/com.itsaky.androidide/files/home/android-sdk/platforms/android-32";
@@ -231,7 +232,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testAIDLGrammar_interfaceDecl() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageAidl.getInstance());
 
       final var source = readResource("IInterface.aidl");
@@ -280,7 +281,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testAIDLGrammar_parcelableDecl() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageAidl.getInstance());
 
       final var source = readResource("SomethingParcelable.aidl");
@@ -311,7 +312,7 @@ public class ParserTest extends TreeSitterTest {
                                                                     TSLanguage language, TSNode node
   ) {
     final var result = new HashMap<String, List<TSNode>>();
-    try (final var cursor = new TSQueryCursor(); final var query = TSQuery.create(language,
+    try (final var cursor = TSQueryCursor.create(); final var query = TSQuery.create(language,
       querySource)) {
       cursor.exec(query, node);
       TSQueryMatch match;

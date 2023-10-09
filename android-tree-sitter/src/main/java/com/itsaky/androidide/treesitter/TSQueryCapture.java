@@ -17,12 +17,27 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 /**
  * @author Akash Yadav
  */
 public class TSQueryCapture {
-  private TSNode node;
-  private int index;
+
+  protected TSNode node;
+  protected int index;
+
+  protected TSQueryCapture() {
+  }
+
+  protected TSQueryCapture(TSNode node, int index) {
+    this.node = node;
+    this.index = index;
+  }
+
+  public static TSQueryCapture create(TSNode node, int index) {
+    return TSObjectFactoryProvider.getFactory().createQueryCapture(node, index);
+  }
 
   public TSNode getNode() {
     return node;

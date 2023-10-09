@@ -19,24 +19,32 @@ package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
-
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.io.UnsupportedEncodingException;
 
 public class TSParser extends TSNativeObject {
 
-  public TSParser(long pointer) {
+  protected TSParser(long pointer) {
     super(pointer);
   }
 
-  public TSParser() {
+  protected TSParser() {
     this(Native.newParser());
+  }
+
+  public static TSParser create() {
+    return create(Native.newParser());
+  }
+
+  public static TSParser create(long parserPointer) {
+    return TSObjectFactoryProvider.getFactory().createParser(parserPointer);
   }
 
   private TSTree createTree(long pointer) {
     if (pointer == 0) {
       return null;
     }
-    return new TSTree(pointer);
+    return TSTree.create(pointer);
   }
 
   /**
@@ -108,7 +116,8 @@ public class TSParser extends TSNativeObject {
   }
 
   /**
-   * Set the maximum duration in microseconds that parsing should be allowed to take before halting.
+   * Set the maximum duration in microseconds that parsing should be allowed to take before
+   * halting.
    *
    * <p>If parsing takes longer than this, it will halt early, returning <code>null</code>.
    */
@@ -172,6 +181,7 @@ public class TSParser extends TSNativeObject {
   }
 
   private static class Native {
+
     public static native long newParser();
 
     public static native void delete(long parser);

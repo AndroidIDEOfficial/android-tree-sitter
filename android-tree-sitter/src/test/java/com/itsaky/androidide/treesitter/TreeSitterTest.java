@@ -20,10 +20,13 @@ package com.itsaky.androidide.treesitter;
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+@RunWith(RobolectricTestRunner.class)
 public class TreeSitterTest {
 
-  static {
+  public TreeSitterTest() {
     TreeSitter.loadLibrary();
   }
 

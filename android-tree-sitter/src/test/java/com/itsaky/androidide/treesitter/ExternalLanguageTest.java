@@ -20,10 +20,13 @@ package com.itsaky.androidide.treesitter;
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * @author Akash Yadav
  */
+@RunWith(RobolectricTestRunner.class)
 public class ExternalLanguageTest extends TreeSitterTest {
 
   @Test
@@ -33,7 +36,7 @@ public class ExternalLanguageTest extends TreeSitterTest {
       assertThat(lang).isNotNull();
       assertThat(lang.canAccess()).isTrue();
 
-      try (final var parser = new TSParser()) {
+      try (final var parser = TSParser.create()) {
         parser.setLanguage(lang);
         assertThat(parser.getLanguage()).isEqualTo(lang);
         try (final var tree = parser.parseString("#include <cstring>\n int main() { return 0; }")) {

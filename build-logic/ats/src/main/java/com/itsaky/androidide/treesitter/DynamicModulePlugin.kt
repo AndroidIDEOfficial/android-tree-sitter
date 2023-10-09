@@ -193,7 +193,7 @@ public final class TSLanguage${capitalizedName()} {
       return language;
     }
 
-    language = new TSLanguage("$name", Native.getInstance());
+    language = TSLanguage.create("$name", Native.getInstance());
     TSLanguageCache.cache("$name", language);
     return language;
   }

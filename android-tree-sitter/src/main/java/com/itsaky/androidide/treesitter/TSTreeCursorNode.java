@@ -17,17 +17,28 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 public class TSTreeCursorNode {
+
   private String type;
   private String name;
   private int startByte;
   private int endByte;
 
-  public TSTreeCursorNode(String type, String name, int startByte, int endByte) {
+  protected TSTreeCursorNode() {
+  }
+
+  protected TSTreeCursorNode(String type, String name, int startByte, int endByte) {
     this.type = type;
     this.name = name;
     this.startByte = startByte;
     this.endByte = endByte;
+  }
+
+  public static TSTreeCursorNode create(String type, String name, int startByte, int endByte) {
+    return TSObjectFactoryProvider.getFactory()
+      .createTreeCursorNode(type, name, startByte, endByte);
   }
 
   public String getType() {

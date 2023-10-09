@@ -17,13 +17,29 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 /**
  * @author Akash Yadav
  */
 public class TSQueryMatch {
-  private int id;
-  private int patternIndex;
-  private TSQueryCapture[] captures;
+
+  protected int id;
+  protected int patternIndex;
+  protected TSQueryCapture[] captures;
+
+  protected TSQueryMatch() {
+  }
+
+  protected TSQueryMatch(int id, int patternIndex, TSQueryCapture[] captures) {
+    this.id = id;
+    this.patternIndex = patternIndex;
+    this.captures = captures;
+  }
+
+  public static TSQueryMatch create(int id, int patternIndex, TSQueryCapture[] captures) {
+    return TSObjectFactoryProvider.getFactory().createQueryMatch(id, patternIndex, captures);
+  }
 
   public int getId() {
     return id;

@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
-import java.util.Objects;
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 
 /**
  * Lookahead iterators can be useful to generate suggestions and improve syntax error diagnostics.
@@ -32,7 +32,7 @@ import java.util.Objects;
  */
 public class TSLookaheadIterator extends TSNativeObject {
 
-  private TSLanguage language;
+  protected String langName;
 
   /**
    * Create a new lookahead iterator for the given language and parse state.
@@ -44,14 +44,16 @@ public class TSLookaheadIterator extends TSNativeObject {
    * @return The {@link TSLookaheadIterator} or <code>null</code> if there was an error creating the
    * iterator.
    */
-  public static TSLookaheadIterator newInstance(TSLanguage language, short stateId) {
+  public static TSLookaheadIterator create(TSLanguage language, short stateId) {
     language.checkAccess();
     final var pointer = Native.newIterator(language.pointer, stateId);
     if (pointer == 0) {
       return null;
     }
 
-    return new TSLookaheadIterator(language, pointer);
+    final var iterator = TSObjectFactoryProvider.getFactory().createLookaheadIterator(pointer);
+    iterator.langName = language.getName();
+    return iterator;
   }
 
   /**
@@ -61,10 +63,8 @@ public class TSLookaheadIterator extends TSNativeObject {
    *                {@link TSLookaheadIterator} with pointer set to 0 and then set the pointer
    *                lazily.
    */
-  private TSLookaheadIterator(TSLanguage language, long pointer) {
+  protected TSLookaheadIterator(long pointer) {
     super(pointer);
-    Objects.requireNonNull(language);
-    this.language = language;
   }
 
   /**
@@ -111,12 +111,11 @@ public class TSLookaheadIterator extends TSNativeObject {
   public boolean reset(TSLanguage language, short stateId) {
     checkAccess();
     language.checkAccess();
-    final var result = Native.reset(pointer, language.pointer, stateId);
-    if (result) {
-      this.language = language;
+    final var reset = Native.reset(pointer, language.pointer, stateId);
+    if (reset) {
+      langName = language.getName();
     }
-
-    return result;
+    return reset;
   }
 
   /**
@@ -124,7 +123,7 @@ public class TSLookaheadIterator extends TSNativeObject {
    */
   public TSLanguage getLanguage() {
     checkAccess();
-    return language;
+    return TSLanguageCache.get(langName);
   }
 
   @Override
@@ -134,18 +133,20 @@ public class TSLookaheadIterator extends TSNativeObject {
 
   private static final class Native {
 
-    public static native long newIterator(long language, short stateId);
+    static native long newIterator(long language, short stateId);
 
-    public static native void delete(long pointer);
+    static native void delete(long pointer);
 
-    public static native boolean next(long pointer);
+    static native boolean next(long pointer);
 
-    public static native short currentSymbol(long pointer);
+    static native short currentSymbol(long pointer);
 
-    public static native String currentSymbolName(long pointer);
+    static native String currentSymbolName(long pointer);
 
-    public static native boolean resetState(long pointer, short stateId);
+    static native boolean resetState(long pointer, short stateId);
 
-    public static native boolean reset(long pointer, long pointer1, short stateId);
+    static native boolean reset(long pointer, long pointer1, short stateId);
+
+    static native long language(long pointer);
   }
 }

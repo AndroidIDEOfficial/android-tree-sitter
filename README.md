@@ -29,6 +29,7 @@ The following grammars have been published to Maven central :
 
 - Android NDK
 - `JDK 11` or newer.
+  - `JAVA_HOME` must be set to a JDK installation containing header files in the `JAVA_HOME/include` directory. The JDK bundled with Android Studio does not contain these headers.
 - `build-essential`, `cargo`, `nodejs`, `cmake` and `ninja-build` packages are required for builds. Install them with :
   ```
   sudo apt install build-essential cargo nodejs cmake ninja-build

@@ -17,31 +17,40 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 /**
  * InputEdit
+ *
+ * @noinspection unused
  */
 public class TSInputEdit {
 
-    public int startByte;
-    int oldEndByte;
-    int newEndByte;
-    public TSPoint start_point;
-    TSPoint old_end_point;
-    TSPoint new_end_point;
+  public int startByte;
+  public int oldEndByte;
+  public int newEndByte;
+  public TSPoint startPoint;
+  public TSPoint oldEndPoint;
+  public TSPoint newEndPoint;
 
-    public TSInputEdit(
-        int startByte,
-        int oldEndByte,
-        int newEndByte,
-        TSPoint start_point,
-        TSPoint old_end_point,
-        TSPoint new_end_point
-    ) {
-        this.startByte = startByte;
-        this.oldEndByte = oldEndByte;
-        this.newEndByte = newEndByte;
-        this.start_point = start_point;
-        this.old_end_point = old_end_point;
-        this.new_end_point = new_end_point;
-    }
+  protected TSInputEdit() {
+  }
+
+  protected TSInputEdit(int startByte, int oldEndByte, int newEndByte, TSPoint startPoint,
+                        TSPoint oldEndPoint, TSPoint newEndPoint
+  ) {
+    this.startByte = startByte;
+    this.oldEndByte = oldEndByte;
+    this.newEndByte = newEndByte;
+    this.startPoint = startPoint;
+    this.oldEndPoint = oldEndPoint;
+    this.newEndPoint = newEndPoint;
+  }
+
+  public static TSInputEdit create(int startByte, int oldEndByte, int newEndByte,
+                                   TSPoint startPoint, TSPoint oldEndPoint, TSPoint newEndPoint
+  ) {
+    return TSObjectFactoryProvider.getFactory()
+      .createInputEdit(startByte, oldEndByte, newEndByte, startPoint, oldEndPoint, newEndPoint);
+  }
 }

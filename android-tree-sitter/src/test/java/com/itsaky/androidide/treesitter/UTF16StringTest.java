@@ -21,15 +21,14 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * @author Akash Yadav
  */
-@RunWith(JUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class UTF16StringTest extends TreeSitterTest {
 
   @Test
@@ -146,25 +145,21 @@ public class UTF16StringTest extends TreeSitterTest {
   public void testMultithreadedUse() throws InterruptedException {
     final var threads = new Thread[20];
     for (int i = 0; i < threads.length; i++) {
-      threads[i] =
-          new Thread(
-              () -> {
-                final var strs = new UTF16String[100];
-                for (int j = 0; j < strs.length; j++) {
-                  strs[j] =
-                      UTF16StringFactory.newString(
-                          "UTF16String from " + Thread.currentThread().getName());
-                  try {
-                    Thread.sleep(10);
-                  } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                  }
-                }
-                for (UTF16String str : strs) {
-                  str.close();
-                }
-              },
-              "StringThread #" + i);
+      threads[i] = new Thread(() -> {
+        final var strs = new UTF16String[100];
+        for (int j = 0; j < strs.length; j++) {
+          strs[j] = UTF16StringFactory.newString(
+            "UTF16String from " + Thread.currentThread().getName());
+          try {
+            Thread.sleep(10);
+          } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+        }
+        for (UTF16String str : strs) {
+          str.close();
+        }
+      }, "StringThread #" + i);
     }
 
     for (Thread thread : threads) {

@@ -17,10 +17,16 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 public class TSTree extends TSNativeObject {
 
-  TSTree(long pointer) {
+  protected TSTree(long pointer) {
     super(pointer);
+  }
+
+  public static TSTree create(long pointer) {
+    return TSObjectFactoryProvider.getFactory().createTree(pointer);
   }
 
   @Override
@@ -56,7 +62,7 @@ public class TSTree extends TSNativeObject {
    */
   public TSTree copy() {
     checkAccess();
-    return new TSTree(Native.copy(pointer));
+    return TSTree.create(Native.copy(pointer));
   }
 
   /**
@@ -85,6 +91,7 @@ public class TSTree extends TSNativeObject {
   }
 
   private static class Native {
+
     public static native void edit(long tree, TSInputEdit inputEdit);
 
     public static native void delete(long tree);

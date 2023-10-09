@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Objects;
+
 public class TSTreeCursor extends TSNativeObject {
 
   private int context0;
@@ -24,12 +27,21 @@ public class TSTreeCursor extends TSNativeObject {
   private long id;
   private long tree;
 
-  public TSTreeCursor(TSNode node) {
+  protected TSTreeCursor(TSNode node) {
     this(Native.newCursor(node));
   }
 
-  TSTreeCursor(long pointer) {
+  protected TSTreeCursor(long pointer) {
     super(pointer);
+  }
+
+  public static TSTreeCursor create(long pointer) {
+    return TSObjectFactoryProvider.getFactory().createTreeCursor(pointer);
+  }
+
+  public static TSTreeCursor create(TSNode node) {
+    Objects.requireNonNull(node);
+    return TSTreeCursor.create(Native.newCursor(node));
   }
 
   @Override
@@ -160,8 +172,8 @@ public class TSTreeCursor extends TSNativeObject {
   }
 
   /**
-   * Get the index of the cursor's current node out of all of the
-   * descendants of the original node that the cursor was constructed with.
+   * Get the index of the cursor's current node out of all of the descendants of the original node
+   * that the cursor was constructed with.
    */
   public int getCurrentDescendantIndex() {
     checkAccess();
@@ -169,8 +181,8 @@ public class TSTreeCursor extends TSNativeObject {
   }
 
   /**
-   * Get the depth of the cursor's current node relative to the original
-   * node that the cursor was constructed with.
+   * Get the depth of the cursor's current node relative to the original node that the cursor was
+   * constructed with.
    */
   public int getDepth() {
     checkAccess();
@@ -209,7 +221,8 @@ public class TSTreeCursor extends TSNativeObject {
     if (pointer == 0) {
       return null;
     }
-    return new TSTreeCursor(pointer);
+
+    return TSObjectFactoryProvider.getFactory().createTreeCursor(pointer);
   }
 
   private static class Native {

@@ -23,12 +23,15 @@ import static com.itsaky.androidide.treesitter.string.UTF16StringFactory.newStri
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+@RunWith(RobolectricTestRunner.class)
 public class NodeTest extends TreeSitterTest {
 
   @Test
   public void multiTest() {
-    try (TSParser parser = new TSParser()) {
+    try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguagePython.getInstance());
       final var sourceToParse = newString("def foo(bar, baz):\n  print(bar)\n  print(baz)");
       try (TSTree tree = parser.parseString(sourceToParse)) {

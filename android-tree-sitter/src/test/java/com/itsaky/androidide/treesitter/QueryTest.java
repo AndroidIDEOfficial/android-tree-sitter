@@ -26,21 +26,24 @@ import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.xml.TSLanguageXml;
 import java.nio.file.Paths;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * @author Akash Yadav
  */
+@RunWith(RobolectricTestRunner.class)
 public class QueryTest extends TreeSitterTest {
 
   @Test
   public void queryTest() throws Exception {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       try (final var tree = parser.parseString(
         "public class MyClass { int x = 0; public void myFunc(){} }")) {
-        var query = new TSQuery(tree.getLanguage(),
+        var query = TSQuery.create(tree.getLanguage(),
           "(class_declaration name: (identifier) @MyClass)");
-        var cursor = new TSQueryCursor();
+        var cursor = TSQueryCursor.create();
         cursor.exec(query, tree.getRootNode());
 
         assertThat(query.getCaptureCount()).isEqualTo(1);
@@ -63,8 +66,9 @@ public class QueryTest extends TreeSitterTest {
         query.close();
         cursor.close();
 
-        query = new TSQuery(tree.getLanguage(), "(method_declaration name: (identifier) @myFunc)");
-        cursor = new TSQueryCursor();
+        query = TSQuery.create(tree.getLanguage(),
+          "(method_declaration name: (identifier) @myFunc)");
+        cursor = TSQueryCursor.create();
         cursor.exec(query, tree.getRootNode());
         match = cursor.nextMatch();
         assertThat(match).isNotNull();
@@ -82,7 +86,7 @@ public class QueryTest extends TreeSitterTest {
 
   @Test
   public void testQuerySyntaxError() throws Exception {
-    try (TSQuery query = new TSQuery(TSLanguageJava.getInstance(), "(class_declaration")) {
+    try (TSQuery query = TSQuery.create(TSLanguageJava.getInstance(), "(class_declaration")) {
       assertThat(query.pointer).isEqualTo(0);
       assertThat(query.getErrorOffset()).isEqualTo("(class_declaration".length());
       assertThat(query.getErrorType()).isEqualTo(TSQueryError.Syntax);
@@ -91,12 +95,12 @@ public class QueryTest extends TreeSitterTest {
 
   @Test
   public void testQueryNoResult() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       try (final var tree = parser.parseString("public class MyClass {}")) {
-        var query = new TSQuery(tree.getLanguage(),
+        var query = TSQuery.create(tree.getLanguage(),
           "(method_declaration name: (identifier) @NoDeclWithThisName)");
-        var cursor = new TSQueryCursor();
+        var cursor = TSQueryCursor.create();
         cursor.exec(query, tree.getRootNode());
         var match = cursor.nextMatch();
         assertThat(match).isNull();
@@ -110,13 +114,13 @@ public class QueryTest extends TreeSitterTest {
 
   @Test
   public void testHighlightsFunctionality() {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       try (final var tree = parser.parseString(
         readString(get("./src/test/resources/View.java.txt")))) {
-        var query = new TSQuery(tree.getLanguage(),
+        var query = TSQuery.create(tree.getLanguage(),
           readString(get("./src/test/resources/highlights-java.scm")));
-        var cursor = new TSQueryCursor();
+        var cursor = TSQueryCursor.create();
         cursor.exec(query, tree.getRootNode());
         TSQueryMatch match;
         while ((match = cursor.nextMatch()) != null) {
@@ -137,7 +141,7 @@ public class QueryTest extends TreeSitterTest {
 
   @Test
   public void testOffsetsInUtf16String() throws Exception {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       final var source = UTF16StringFactory.newString(
         readString(Paths.get("./src/test/resources/CodeEditor.java.txt")));
@@ -146,9 +150,9 @@ public class QueryTest extends TreeSitterTest {
         assertThat(root.getStartByte()).isEqualTo(0);
         assertThat(root.getEndByte()).isEqualTo(source.byteLength());
 
-        final var query = new TSQuery(parser.getLanguage(),
+        final var query = TSQuery.create(parser.getLanguage(),
           readString(Paths.get("./src/test/resources/highlights-java.scm")));
-        final var cursor = new TSQueryCursor();
+        final var cursor = TSQueryCursor.create();
         cursor.exec(query, root);
 
         TSQueryMatch match;
@@ -183,7 +187,7 @@ public class QueryTest extends TreeSitterTest {
 
   @Test
   public void testXmlBlocksQuery() throws Exception {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageXml.getInstance());
       final var source = UTF16StringFactory.newString(
         readString(Paths.get("./src/test/resources/test.xml")));
@@ -192,9 +196,9 @@ public class QueryTest extends TreeSitterTest {
         assertThat(root.getStartByte()).isEqualTo(0);
         assertThat(root.getEndByte()).isEqualTo(source.byteLength());
 
-        final var query = new TSQuery(parser.getLanguage(),
+        final var query = TSQuery.create(parser.getLanguage(),
           readString(Paths.get("./src/test/resources/blocks-xml.scm")));
-        final var cursor = new TSQueryCursor();
+        final var cursor = TSQueryCursor.create();
         cursor.exec(query, root);
 
         TSQueryMatch match;
@@ -239,19 +243,19 @@ public class QueryTest extends TreeSitterTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testQueryConstructionError() throws Exception {
-    new TSQuery(null, "not-empty").close();
+    TSQuery.create(null, "not-empty").close();
   }
 
   @Test
   public void testQueryQuantifierZero() {
     final var lang = TSLanguageJava.getInstance();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(lang);
       String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
       String querySource = "(class_declaration name: (identifier) @class_name)";
 
-      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
-        querySource); final var cursor = new TSQueryCursor()) {
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
 
         assertThat(query.canAccess()).isTrue();
         assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
@@ -270,13 +274,13 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void testQueryQuantifierZeroOrOne() {
     final var lang = TSLanguageJava.getInstance();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(lang);
       String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
       String querySource = "(class_declaration name: (identifier)? @class_name)";
 
-      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
-        querySource); final var cursor = new TSQueryCursor()) {
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
 
         assertThat(query.canAccess()).isTrue();
         assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
@@ -295,13 +299,13 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void testQueryQuantifierZeroOrMore() {
     final var lang = TSLanguageJava.getInstance();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(lang);
       String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
       String querySource = "(method_declaration name: (identifier)* @method_name)";
 
-      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
-        querySource); final var cursor = new TSQueryCursor()) {
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
 
         assertThat(query.canAccess()).isTrue();
         assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
@@ -320,13 +324,13 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void testQueryQuantifierOne() {
     final var lang = TSLanguageJava.getInstance();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(lang);
       String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
       String querySource = "(method_declaration name: (_) @method_name)";
 
-      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
-        querySource); final var cursor = new TSQueryCursor()) {
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
 
         assertThat(query.canAccess()).isTrue();
         assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
@@ -345,13 +349,13 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void testQueryQuantifierOneOrMore() {
     final var lang = TSLanguageJava.getInstance();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(lang);
       String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
       String querySource = "(method_declaration name: (identifier)+ @method_name)";
 
-      try (final var tree = parser.parseString(javaSource); final var query = new TSQuery(lang,
-        querySource); final var cursor = new TSQueryCursor()) {
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
 
         assertThat(query.canAccess()).isTrue();
         assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);

@@ -99,3 +99,12 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_reset(
                                                 (TSLanguage *) language,
                                                 state_id);
 }
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_language(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer) {
+  return (jlong) ts_lookahead_iterator_language((TSLookaheadIterator *) pointer);
+}

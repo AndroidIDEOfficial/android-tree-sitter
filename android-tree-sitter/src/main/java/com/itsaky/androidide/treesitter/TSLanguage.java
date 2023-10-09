@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import android.content.Context;
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
@@ -39,28 +40,17 @@ public class TSLanguage extends TSNativeObject {
   private long libHandle;
 
   /**
-   * Create a new {@link TSLanguage} instance with the given pointer.
-   *
-   * @param pointer The pointer to the language implementation in C.
-   * @deprecated Use {@link TSLanguage#TSLanguage(String, long)} instead.
-   */
-  @Deprecated
-  public TSLanguage(long pointer) {
-    this(null, pointer);
-  }
-
-  /**
    * Create a new {@link TSLanguage} instance with the given name and pointer.
    *
    * @param name    The name of the language. This is used to efficiently remove externally loaded
    *                languages in {@link TSLanguageCache}.
    * @param pointer The pointer to the language implementation in C.
    */
-  public TSLanguage(String name, long pointer) {
+  protected TSLanguage(String name, long pointer) {
     this(name, new long[]{pointer, 0});
   }
 
-  private TSLanguage(String name, long[] pointers) {
+  protected TSLanguage(String name, long[] pointers) {
     super(0);
 
     if (pointers == null) {
@@ -74,6 +64,14 @@ public class TSLanguage extends TSNativeObject {
     this.name = name;
     this.pointer = pointers[0];
     this.libHandle = pointers[1];
+  }
+
+  public static TSLanguage create(String name, long pointer) {
+    return create(name, new long[]{pointer, 0});
+  }
+
+  public static TSLanguage create(String name, long[] pointers) {
+    return TSObjectFactoryProvider.getFactory().createLanguage(name, pointers);
   }
 
   /**
@@ -136,8 +134,8 @@ public class TSLanguage extends TSNativeObject {
   }
 
   /**
-   * Get the next parse state. Combine this with lookahead iterators to generate
-   * completion suggestions or valid symbols in error nodes.
+   * Get the next parse state. Combine this with lookahead iterators to generate completion
+   * suggestions or valid symbols in error nodes.
    */
   public short getNextState(short stateId, short symbol) {
     checkAccess();
@@ -230,7 +228,7 @@ public class TSLanguage extends TSNativeObject {
       return null;
     }
 
-    language = new TSLanguage(lang, pointers);
+    language = TSLanguage.create(lang, pointers);
     TSLanguageCache.cache(lang, language);
     return language;
   }

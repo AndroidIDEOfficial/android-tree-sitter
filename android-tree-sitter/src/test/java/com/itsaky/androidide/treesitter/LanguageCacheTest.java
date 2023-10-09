@@ -28,6 +28,7 @@ import org.robolectric.RobolectricTestRunner;
  * @author Akash Yadav
  */
 
+@RunWith(RobolectricTestRunner.class)
 public class LanguageCacheTest extends TreeSitterTest {
 
   @Test
@@ -40,7 +41,7 @@ public class LanguageCacheTest extends TreeSitterTest {
   @Test
   public void testLangFromParser() {
     var lang = TSLanguageJava.getInstance();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(lang);
       assertThat(parser.getLanguage()).isEqualTo(lang);
     }
@@ -49,7 +50,7 @@ public class LanguageCacheTest extends TreeSitterTest {
   @Test
   public void testLangFromQuery() {
     var lang = TSLanguageJava.getInstance();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(lang);
       try (final var tree = parser.parseString("public class Main {}")) {
         assertThat(tree.getLanguage()).isEqualTo(lang);

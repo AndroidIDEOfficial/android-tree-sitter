@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +25,32 @@ import java.util.Objects;
 
 public class TSNode {
 
-  private int context0;
-  private int context1;
-  private int context2;
-  private int context3;
-  private long id;
-  private long tree;
+  public int context0;
+  public int context1;
+  public int context2;
+  public int context3;
+  public long id;
+  public long tree;
 
   private TSTree mTree;
 
-  private TSNode() {
+  protected TSNode() {
+  }
+
+  protected TSNode(int context0, int context1, int context2, int context3, long id, long tree) {
+    this.context0 = context0;
+    this.context1 = context1;
+    this.context2 = context2;
+    this.context3 = context3;
+    this.id = id;
+    this.tree = tree;
+  }
+
+  public static TSNode create(int context0, int context1, int context2, int context3, long id,
+                              long tree
+  ) {
+    return TSObjectFactoryProvider.getFactory()
+      .createNode(context0, context1, context2, context3, id, tree);
   }
 
   /**
@@ -43,7 +60,7 @@ public class TSNode {
    */
   public TSTree getTree() {
     if (mTree == null) {
-      mTree = new TSTree(this.tree);
+      mTree = TSTree.create(this.tree);
     }
     return mTree;
   }
@@ -90,7 +107,7 @@ public class TSNode {
   }
 
   public TSTreeCursor walk() {
-    return new TSTreeCursor(this);
+    return TSTreeCursor.create(this);
   }
 
   public TSNode findNodeWithType(final String type, final boolean namedOnly) {

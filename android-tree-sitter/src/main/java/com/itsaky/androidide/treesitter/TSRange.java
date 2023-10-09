@@ -17,20 +17,31 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 /**
  * @author Akash Yadav
  */
 public class TSRange {
+
   private int startByte;
   private int endByte;
   private TSPoint startPoint;
   private TSPoint endPoint;
 
-  public TSRange(int startByte, int endByte, TSPoint startPoint, TSPoint endPoint) {
+  protected TSRange() {
+  }
+
+  protected TSRange(int startByte, int endByte, TSPoint startPoint, TSPoint endPoint) {
     this.startByte = startByte;
     this.endByte = endByte;
     this.startPoint = startPoint;
     this.endPoint = endPoint;
+  }
+
+  public static TSRange create(int startByte, int endByte, TSPoint startPoint, TSPoint endPoint) {
+    return TSObjectFactoryProvider.getFactory()
+      .createRange(startByte, endByte, startPoint, endPoint);
   }
 
   public int getStartByte() {

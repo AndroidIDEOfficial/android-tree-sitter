@@ -17,20 +17,29 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 /**
  * TSPoint
  */
 public class TSPoint {
 
-    public int row, column;
+  public int row, column;
 
-    public TSPoint(int row, int column) {
-        this.row = row;
-        this.column = column;
-    }
+  protected TSPoint() {
+  }
 
-    @Override
-    public String toString() {
-        return "TSPoint(Row: " + this.row + ", Column: " + this.column + ")";
-    }
+  protected TSPoint(int row, int column) {
+    this.row = row;
+    this.column = column;
+  }
+
+  public static TSPoint create(int row, int column) {
+    return TSObjectFactoryProvider.getFactory().createPoint(row, column);
+  }
+
+  @Override
+  public String toString() {
+    return "TSPoint(Row: " + this.row + ", Column: " + this.column + ")";
+  }
 }

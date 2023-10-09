@@ -17,14 +17,28 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 /**
  * @author Akash Yadav
  */
 public class TSQueryPredicateStep {
 
   private Type cachedType = null;
-  private int type = -1;
-  private int valueId = -1;
+  protected int type = -1;
+  protected int valueId = -1;
+
+  protected TSQueryPredicateStep() {
+  }
+
+  protected TSQueryPredicateStep(int type, int valueId) {
+    this.type = type;
+    this.valueId = valueId;
+  }
+
+  public static TSQueryPredicateStep create(int type, int valueId) {
+    return TSObjectFactoryProvider.getFactory().createQueryPredicateStep(type, valueId);
+  }
 
   public Type getType() {
     if (cachedType == null) {

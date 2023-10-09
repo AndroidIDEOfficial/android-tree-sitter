@@ -24,15 +24,18 @@ import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * @author Akash Yadav
  */
+@RunWith(RobolectricTestRunner.class)
 public class TreeTest extends TreeSitterTest {
 
   @Test
   public void testTreeCopy() throws UnsupportedEncodingException {
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       try (final var tree = parser.parseString("class Main { void main() {} }")) {
         assertThat(tree.getLanguage().pointer).isEqualTo(TSLanguageJava.getInstance().pointer);

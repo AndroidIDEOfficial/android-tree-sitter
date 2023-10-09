@@ -115,11 +115,11 @@ void onLoad(JNIEnv* env) {
   _loadField(_inputEditStartByteField, _inputEditClass, "startByte", "I");
   _loadField(_inputEditOldEndByteField, _inputEditClass, "oldEndByte", "I");
   _loadField(_inputEditNewEndByteField, _inputEditClass, "newEndByte", "I");
-  _loadField(_inputEditStartPointField, _inputEditClass, "start_point",
+  _loadField(_inputEditStartPointField, _inputEditClass, "startPoint",
              "Lcom/itsaky/androidide/treesitter/TSPoint;");
-  _loadField(_inputEditOldEndPointField, _inputEditClass, "old_end_point",
+  _loadField(_inputEditOldEndPointField, _inputEditClass, "oldEndPoint",
              "Lcom/itsaky/androidide/treesitter/TSPoint;");
-  _loadField(_inputEditNewEndPointField, _inputEditClass, "new_end_point",
+  _loadField(_inputEditNewEndPointField, _inputEditClass, "newEndPoint",
              "Lcom/itsaky/androidide/treesitter/TSPoint;");
 
   // TSQueryMatch

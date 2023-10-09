@@ -17,16 +17,32 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+
 /**
  * @author Akash Yadav
  */
 public class TSQueryCursor extends TSNativeObject {
 
-  public TSQueryCursor() {
-    super(Native.newCursor());
+  protected TSQueryCursor() {
+    this(Native.newCursor());
   }
 
-  /** Start running the given query on the given node. */
+  protected TSQueryCursor(long pointer) {
+    super(pointer);
+  }
+
+  public static TSQueryCursor create(long pointer) {
+    return TSObjectFactoryProvider.getFactory().createQueryCursor(pointer);
+  }
+
+  public static TSQueryCursor create() {
+    return create(Native.newCursor());
+  }
+
+  /**
+   * Start running the given query on the given node.
+   */
   public void exec(TSQuery query, TSNode node) {
     checkAccess();
     if (query == null || !query.canAccess()) {
@@ -98,6 +114,7 @@ public class TSQueryCursor extends TSNativeObject {
   }
 
   private static class Native {
+
     public static native long newCursor();
 
     public static native void delete(long cursor);

@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void afterInputChanged(Editable editable) {
     final var start = System.currentTimeMillis();
-    try (final var parser = new TSParser()) {
+    try (final var parser = TSParser.create()) {
       parser.setLanguage(Objects.requireNonNull(
         languageMap.get((String) content.languageChooser.getSelectedItem())));
       try (final var tree = parser.parseString(editable.toString())) {
