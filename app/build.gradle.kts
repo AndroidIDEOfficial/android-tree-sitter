@@ -25,6 +25,7 @@ android {
     defaultConfig {
         applicationId = "com.itsaky.androidide.androidtreesitter"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = 24
     }
 
     buildTypes {

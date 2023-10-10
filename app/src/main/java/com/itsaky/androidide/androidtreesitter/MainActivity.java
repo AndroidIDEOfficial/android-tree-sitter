@@ -21,10 +21,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.ContentLoadingProgressBar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding;
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding;
 import com.itsaky.androidide.treesitter.TSLanguage;
@@ -44,6 +47,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Akash Yadav
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(
+    ActivityMainBinding binding = ActivityMainBinding.inflate(
       getLayoutInflater());
     content = binding.content;
 
@@ -94,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     Log.d("MainActivity", "UTF16Str: " + utf16String);
     utf16String.close();
 
+    var lastChange = 0;
     content.code.addTextChangedListener(new Watcher() {
       @Override
       public void afterTextChanged(Editable editable) {
@@ -109,24 +114,46 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void afterInputChanged(Editable editable) {
-    final var start = System.currentTimeMillis();
-    try (final var parser = TSParser.create()) {
-      parser.setLanguage(Objects.requireNonNull(
-        languageMap.get((String) content.languageChooser.getSelectedItem())));
-      try (final var tree = parser.parseString(editable.toString())) {
-        try (final var cursor = tree.getRootNode().walk()) {
+    final var language = languageMap.get((String) content.languageChooser.getSelectedItem());
+    final var text = content.ast;
+    final var progress = content.progress;
+    final var codeView = content.code;
+
+    progress.setVisibility(View.VISIBLE);
+    codeView.setEnabled(false);
+
+    CompletableFuture.supplyAsync(() ->{
+      final var start = System.currentTimeMillis();
+      try (final var parser = TSParser.create()) {
+        parser.setLanguage(Objects.requireNonNull(language));
+        try (final var tree = parser.parseString(editable.toString())) {
           final var duration = System.currentTimeMillis() - start;
-          final var sb = new StringBuilder();
-          sb.append("Parsed in ").append(duration).append("ms").append("\n");
-
-          appendTo(sb, cursor, 0);
-
-          content.ast.setText(sb);
+          try (final var cursor = tree.getRootNode().walk()) {
+            final var sb = new StringBuilder();
+            sb.append("Parsed in ").append(duration).append("ms").append("\n");
+            final var insert = sb.length();
+            appendTo(sb, cursor, 0);
+            sb.insert(insert, String.format(Locale.US,"Walked in %d ms\n", System.currentTimeMillis() - start));
+            return sb;
+          }
+        } catch (Throwable err) {
+          return trace(err);
         }
-      } catch (Throwable err) {
-        content.ast.setText(trace(err));
       }
-    }
+    }).whenComplete((result, err) -> {
+      var txt = result;
+      if (result == null || err != null) {
+        txt = err == null ? "Unknown eror" : trace(err);
+      }
+
+      final var finalText = txt;
+      runOnUiThread(() -> {
+        text.setText(finalText);
+        progress.setVisibility(View.GONE);
+        codeView.setEnabled(true);
+        codeView.requestFocus();
+      });
+    });
   }
 
   private void appendTo(@NonNull StringBuilder sb, @NonNull TSTreeCursor cursor, int indentLevel) {
