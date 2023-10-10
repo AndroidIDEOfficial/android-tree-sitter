@@ -23,256 +23,311 @@
 jint getPredicateTypeId(TSQueryPredicateStepType type);
 
 // Node
-static jclass _nodeClass;
-static jfieldID _nodeContext0Field;
-static jfieldID _nodeContext1Field;
-static jfieldID _nodeContext2Field;
-static jfieldID _nodeContext3Field;
-static jfieldID _nodeIdField;
-static jfieldID _nodeTreeField;
+static jclass nodeClass;
+static jfieldID nodeContext0Field;
+static jfieldID nodeContext1Field;
+static jfieldID nodeContext2Field;
+static jfieldID nodeContext3Field;
+static jfieldID nodeIdField;
+static jfieldID nodeTreeField;
 
 // TreeCursorNode
-static jclass _treeCursorNodeClass;
-static jfieldID _treeCursorNodeTypeField;
-static jfieldID _treeCursorNodeNameField;
-static jfieldID _treeCursorNodeStartByteField;
-static jfieldID _treeCursorNodeEndByteField;
+static jclass treeCursorNodeClass;
+static jfieldID treeCursorNodeTypeField;
+static jfieldID treeCursorNodeNameField;
+static jfieldID treeCursorNodeStartByteField;
+static jfieldID treeCursorNodeEndByteField;
 
 // TSPoint
-static jclass _pointClass;
-static jfieldID _pointRowField;
-static jfieldID _pointColumnField;
+static jclass pointClass;
+static jfieldID pointRowField;
+static jfieldID pointColumnField;
 
 // TSRange
-static jclass _rangeClass;
-static jfieldID _rangeClassStartByteField;
-static jfieldID _rangeClassEndByteField;
-static jfieldID _rangeClassStartPointField;
-static jfieldID _rangeClassEndPointField;
+static jclass rangeClass;
+static jfieldID rangeClassStartByteField;
+static jfieldID rangeClassEndByteField;
+static jfieldID rangeClassStartPointField;
+static jfieldID rangeClassEndPointField;
 
 // TSInputEdit
-static jclass _inputEditClass;
-static jfieldID _inputEditStartByteField;
-static jfieldID _inputEditOldEndByteField;
-static jfieldID _inputEditNewEndByteField;
-static jfieldID _inputEditStartPointField;
-static jfieldID _inputEditOldEndPointField;
-static jfieldID _inputEditNewEndPointField;
+static jclass inputEditClass;
+static jfieldID inputEditStartByteField;
+static jfieldID inputEditOldEndByteField;
+static jfieldID inputEditNewEndByteField;
+static jfieldID inputEditStartPointField;
+static jfieldID inputEditOldEndPointField;
+static jfieldID inputEditNewEndPointField;
 
 // TSQueryMatch
-static jclass _matchClass;
-static jfieldID _matchClassIdField;
-static jfieldID _matchClassPatternIndexField;
-static jfieldID _matchClassCapturesField;
+static jclass matchClass;
+static jfieldID matchClassIdField;
+static jfieldID matchClassPatternIndexField;
+static jfieldID matchClassCapturesField;
 
 // TSQueryCapture
-static jclass _captureClass;
-static jfieldID _captureClassIndexField;
-static jfieldID _captureClassNodeField;
+static jclass captureClass;
+static jfieldID captureClassIndexField;
+static jfieldID captureClassNodeField;
 
 // TSQueryPredicateStep
-static jclass _queryPredicateStepClass;
-static jfieldID _queryPredicateStepTypeField;
-static jfieldID _queryPredicateStepValueIdField;
+static jclass queryPredicateStepClass;
+static jfieldID queryPredicateStepTypeField;
+static jfieldID queryPredicateStepValueIdField;
 
-void onLoad(JNIEnv* env) {
+static jclass objectFactoryClass;
+static jmethodID factory_createNode;
+static jmethodID factory_createTreeCursorNode;
+static jmethodID factory_createPoint;
+static jmethodID factory_createRange;
+static jmethodID factory_createInputEdit;
+static jmethodID factory_createQueryMatch;
+static jmethodID factory_createQueryCapture;
+static jmethodID factory_createQueryPredicateStep;
+
+void onLoad(JNIEnv *env) {
+
+  _loadClass(objectFactoryClass,
+             "com/itsaky/androidide/treesitter/internal/NativeObjectFactory")
+
+  _loadStaticMethod(factory_createNode,
+                    objectFactoryClass,
+                    "createNode",
+                    "(IIIIJJ)Lcom/itsaky/androidide/treesitter/TSNode;")
+
+  _loadStaticMethod(factory_createTreeCursorNode,
+                    objectFactoryClass,
+                    "createTreeCursorNode",
+                    "(Ljava/lang/String;Ljava/lang/String;II)Lcom/itsaky/androidide/treesitter/TSTreeCursorNode;")
+
+  _loadStaticMethod(factory_createPoint,
+                    objectFactoryClass,
+                    "createPoint",
+                    "(II)Lcom/itsaky/androidide/treesitter/TSPoint;")
+
+  _loadStaticMethod(factory_createRange,
+                    objectFactoryClass,
+                    "createRange",
+                    "(IIIIII)Lcom/itsaky/androidide/treesitter/TSRange;")
+
+  _loadStaticMethod(factory_createInputEdit,
+                    objectFactoryClass,
+                    "createInputEdit",
+                    "(IIIIIIIII)Lcom/itsaky/androidide/treesitter/TSInputEdit;")
+
+  _loadStaticMethod(factory_createQueryMatch,
+                    objectFactoryClass,
+                    "createQueryMatch",
+                    "(II[Lcom/itsaky/androidide/treesitter/TSQueryCapture;)Lcom/itsaky/androidide/treesitter/TSQueryMatch;")
+
+  _loadStaticMethod(factory_createQueryCapture,
+                    objectFactoryClass,
+                    "createQueryCapture",
+                    "(IIIIIJJ)Lcom/itsaky/androidide/treesitter/TSQueryCapture;")
+
+  _loadStaticMethod(factory_createQueryPredicateStep,
+                    objectFactoryClass,
+                    "createQueryPredicateStep",
+                    "(II)Lcom/itsaky/androidide/treesitter/TSQueryPredicateStep;")
+
   // Node
-  _loadClass(_nodeClass, "com/itsaky/androidide/treesitter/TSNode");
-  _loadField(_nodeContext0Field, _nodeClass, "context0", "I");
-  _loadField(_nodeContext1Field, _nodeClass, "context1", "I");
-  _loadField(_nodeContext2Field, _nodeClass, "context2", "I");
-  _loadField(_nodeContext3Field, _nodeClass, "context3", "I");
-  _loadField(_nodeIdField, _nodeClass, "id", "J");
-  _loadField(_nodeTreeField, _nodeClass, "tree", "J");
+  _loadClass(nodeClass, "com/itsaky/androidide/treesitter/TSNode")
+  _loadField(nodeContext0Field, nodeClass, "context0", "I")
+  _loadField(nodeContext1Field, nodeClass, "context1", "I")
+  _loadField(nodeContext2Field, nodeClass, "context2", "I")
+  _loadField(nodeContext3Field, nodeClass, "context3", "I")
+  _loadField(nodeIdField, nodeClass, "id", "J")
+  _loadField(nodeTreeField, nodeClass, "tree", "J")
 
   // TreeCursorNode
-  _loadClass(_treeCursorNodeClass,
-             "com/itsaky/androidide/treesitter/TSTreeCursorNode");
-  _loadField(_treeCursorNodeTypeField, _treeCursorNodeClass, "type",
-             "Ljava/lang/String;");
-  _loadField(_treeCursorNodeNameField, _treeCursorNodeClass, "name",
-             "Ljava/lang/String;");
-  _loadField(_treeCursorNodeStartByteField, _treeCursorNodeClass, "startByte",
-             "I");
-  _loadField(_treeCursorNodeEndByteField, _treeCursorNodeClass, "endByte", "I");
+  _loadClass(treeCursorNodeClass,
+             "com/itsaky/androidide/treesitter/TSTreeCursorNode")
+  _loadField(treeCursorNodeTypeField, treeCursorNodeClass, "type",
+             "Ljava/lang/String;")
+  _loadField(treeCursorNodeNameField, treeCursorNodeClass, "name",
+             "Ljava/lang/String;")
+  _loadField(treeCursorNodeStartByteField, treeCursorNodeClass, "startByte",
+             "I")
+  _loadField(treeCursorNodeEndByteField, treeCursorNodeClass, "endByte", "I")
 
   // TSPoint
-  _loadClass(_pointClass, "com/itsaky/androidide/treesitter/TSPoint");
-  _loadField(_pointRowField, _pointClass, "row", "I");
-  _loadField(_pointColumnField, _pointClass, "column", "I");
+  _loadClass(pointClass, "com/itsaky/androidide/treesitter/TSPoint")
+  _loadField(pointRowField, pointClass, "row", "I")
+  _loadField(pointColumnField, pointClass, "column", "I")
 
   // TSRange
-  _loadClass(_rangeClass, "com/itsaky/androidide/treesitter/TSRange");
-  _loadField(_rangeClassStartByteField, _rangeClass, "startByte", "I");
-  _loadField(_rangeClassEndByteField, _rangeClass, "endByte", "I");
-  _loadField(_rangeClassStartPointField, _rangeClass, "startPoint",
-             "Lcom/itsaky/androidide/treesitter/TSPoint;");
-  _loadField(_rangeClassEndPointField, _rangeClass, "endPoint",
-             "Lcom/itsaky/androidide/treesitter/TSPoint;");
+  _loadClass(rangeClass, "com/itsaky/androidide/treesitter/TSRange")
+  _loadField(rangeClassStartByteField, rangeClass, "startByte", "I")
+  _loadField(rangeClassEndByteField, rangeClass, "endByte", "I")
+  _loadField(rangeClassStartPointField, rangeClass, "startPoint",
+             "Lcom/itsaky/androidide/treesitter/TSPoint;")
+  _loadField(rangeClassEndPointField, rangeClass, "endPoint",
+             "Lcom/itsaky/androidide/treesitter/TSPoint;")
 
   // TSInputEdit
-  _loadClass(_inputEditClass, "com/itsaky/androidide/treesitter/TSInputEdit");
-  _loadField(_inputEditStartByteField, _inputEditClass, "startByte", "I");
-  _loadField(_inputEditOldEndByteField, _inputEditClass, "oldEndByte", "I");
-  _loadField(_inputEditNewEndByteField, _inputEditClass, "newEndByte", "I");
-  _loadField(_inputEditStartPointField, _inputEditClass, "startPoint",
-             "Lcom/itsaky/androidide/treesitter/TSPoint;");
-  _loadField(_inputEditOldEndPointField, _inputEditClass, "oldEndPoint",
-             "Lcom/itsaky/androidide/treesitter/TSPoint;");
-  _loadField(_inputEditNewEndPointField, _inputEditClass, "newEndPoint",
-             "Lcom/itsaky/androidide/treesitter/TSPoint;");
+  _loadClass(inputEditClass, "com/itsaky/androidide/treesitter/TSInputEdit")
+  _loadField(inputEditStartByteField, inputEditClass, "startByte", "I")
+  _loadField(inputEditOldEndByteField, inputEditClass, "oldEndByte", "I")
+  _loadField(inputEditNewEndByteField, inputEditClass, "newEndByte", "I")
+  _loadField(inputEditStartPointField, inputEditClass, "startPoint",
+             "Lcom/itsaky/androidide/treesitter/TSPoint;")
+  _loadField(inputEditOldEndPointField, inputEditClass, "oldEndPoint",
+             "Lcom/itsaky/androidide/treesitter/TSPoint;")
+  _loadField(inputEditNewEndPointField, inputEditClass, "newEndPoint",
+             "Lcom/itsaky/androidide/treesitter/TSPoint;")
 
   // TSQueryMatch
-  _loadClass(_matchClass, "com/itsaky/androidide/treesitter/TSQueryMatch");
-  _loadField(_matchClassIdField, _matchClass, "id", "I");
-  _loadField(_matchClassPatternIndexField, _matchClass, "patternIndex", "I");
-  _loadField(_matchClassCapturesField, _matchClass, "captures",
-             "[Lcom/itsaky/androidide/treesitter/TSQueryCapture;");
+  _loadClass(matchClass, "com/itsaky/androidide/treesitter/TSQueryMatch")
+  _loadField(matchClassIdField, matchClass, "id", "I")
+  _loadField(matchClassPatternIndexField, matchClass, "patternIndex", "I")
+  _loadField(matchClassCapturesField, matchClass, "captures",
+             "[Lcom/itsaky/androidide/treesitter/TSQueryCapture;")
 
   // TSQueryCapture
-  _loadClass(_captureClass, "com/itsaky/androidide/treesitter/TSQueryCapture");
-  _loadField(_captureClassIndexField, _captureClass, "index", "I");
-  _loadField(_captureClassNodeField, _captureClass, "node",
-             "Lcom/itsaky/androidide/treesitter/TSNode;");
+  _loadClass(captureClass, "com/itsaky/androidide/treesitter/TSQueryCapture")
+  _loadField(captureClassIndexField, captureClass, "index", "I")
+  _loadField(captureClassNodeField, captureClass, "node",
+             "Lcom/itsaky/androidide/treesitter/TSNode;")
 
   // TSQueryPredicateStep
-  _loadClass(_queryPredicateStepClass,
-             "com/itsaky/androidide/treesitter/TSQueryPredicateStep");
-  _loadField(_queryPredicateStepTypeField, _queryPredicateStepClass, "type",
-             "I");
-  _loadField(_queryPredicateStepValueIdField, _queryPredicateStepClass,
-             "valueId", "I");
+  _loadClass(queryPredicateStepClass,
+             "com/itsaky/androidide/treesitter/TSQueryPredicateStep")
+  _loadField(queryPredicateStepTypeField, queryPredicateStepClass, "type",
+             "I")
+  _loadField(queryPredicateStepValueIdField, queryPredicateStepClass,
+             "valueId", "I")
 }
 
-void onUnload(JNIEnv* env) {
-  env->DeleteGlobalRef(_nodeClass);
-  env->DeleteGlobalRef(_treeCursorNodeClass);
-  env->DeleteGlobalRef(_pointClass);
-  env->DeleteGlobalRef(_rangeClass);
-  env->DeleteGlobalRef(_inputEditClass);
-  env->DeleteGlobalRef(_matchClass);
-  env->DeleteGlobalRef(_captureClass);
-  env->DeleteGlobalRef(_queryPredicateStepClass);
+void onUnload(JNIEnv *env) {
+  env->DeleteGlobalRef(nodeClass);
+  env->DeleteGlobalRef(treeCursorNodeClass);
+  env->DeleteGlobalRef(pointClass);
+  env->DeleteGlobalRef(rangeClass);
+  env->DeleteGlobalRef(inputEditClass);
+  env->DeleteGlobalRef(matchClass);
+  env->DeleteGlobalRef(captureClass);
+  env->DeleteGlobalRef(queryPredicateStepClass);
+  env->DeleteGlobalRef(objectFactoryClass);
 }
 
 // Node
-jobject _marshalNode(JNIEnv* env, TSNode node) {
-  jobject javaObject = env->AllocObject(_nodeClass);
-  env->SetIntField(javaObject, _nodeContext0Field, node.context[0]);
-  env->SetIntField(javaObject, _nodeContext1Field, node.context[1]);
-  env->SetIntField(javaObject, _nodeContext2Field, node.context[2]);
-  env->SetIntField(javaObject, _nodeContext3Field, node.context[3]);
-  env->SetLongField(javaObject, _nodeIdField, (jlong)node.id);
-  env->SetLongField(javaObject, _nodeTreeField, (jlong)node.tree);
-  return javaObject;
+jobject _marshalNode(JNIEnv *env, TSNode node) {
+  return env->CallStaticObjectMethod(objectFactoryClass,
+                                     factory_createNode,
+                                     (jint) node.context[0],
+                                     (jint) node.context[1],
+                                     (jint) node.context[2],
+                                     (jint) node.context[3],
+                                     (jlong) node.id,
+                                     (jlong) node.tree);
 }
 
-TSNode _unmarshalNode(JNIEnv* env, jobject javaObject) {
-  return (TSNode){
+TSNode _unmarshalNode(JNIEnv *env, jobject javaObject) {
+  return (TSNode) {
       {
-          (uint32_t)env->GetIntField(javaObject, _nodeContext0Field),
-          (uint32_t)env->GetIntField(javaObject, _nodeContext1Field),
-          (uint32_t)env->GetIntField(javaObject, _nodeContext2Field),
-          (uint32_t)env->GetIntField(javaObject, _nodeContext3Field),
+          (uint32_t) env->GetIntField(javaObject, nodeContext0Field),
+          (uint32_t) env->GetIntField(javaObject, nodeContext1Field),
+          (uint32_t) env->GetIntField(javaObject, nodeContext2Field),
+          (uint32_t) env->GetIntField(javaObject, nodeContext3Field),
       },
-      (const void*)env->GetLongField(javaObject, _nodeIdField),
-      (const TSTree*)env->GetLongField(javaObject, _nodeTreeField)};
+      (const void *) env->GetLongField(javaObject, nodeIdField),
+      (const TSTree *) env->GetLongField(javaObject, nodeTreeField)};
 }
 
 // TreeCursorNode
-jobject _marshalTreeCursorNode(JNIEnv* env, TreeCursorNode node) {
-  jobject javaObject = env->AllocObject(_treeCursorNodeClass);
-  env->SetObjectField(javaObject, _treeCursorNodeTypeField,
-                      env->NewStringUTF(node.type));
-  env->SetObjectField(javaObject, _treeCursorNodeNameField,
-                      env->NewStringUTF(node.name));
-  env->SetIntField(javaObject, _treeCursorNodeStartByteField, node.startByte);
-  env->SetIntField(javaObject, _treeCursorNodeEndByteField, node.endByte);
-  return javaObject;
+jobject _marshalTreeCursorNode(JNIEnv *env, TreeCursorNode node) {
+  return env->CallStaticObjectMethod(objectFactoryClass,
+                                     factory_createTreeCursorNode,
+                                     env->NewStringUTF(node.type),
+                                     env->NewStringUTF(node.name),
+                                     (jint) node.startByte,
+                                     (jint) node.endByte);
 }
 
 // TSPoint
-// Not sure why but only the column needs to be divided by 2
-jobject _marshalPoint(JNIEnv* env, TSPoint point) {
-  jobject javaObject = env->AllocObject(_pointClass);
-
-  env->SetIntField(javaObject, _pointRowField, point.row);
-  env->SetIntField(javaObject, _pointColumnField, point.column);
-  return javaObject;
+jobject _marshalPoint(JNIEnv *env, TSPoint point) {
+  return env->CallStaticObjectMethod(objectFactoryClass,
+                                     factory_createPoint,
+                                     point.row,
+                                     point.column);
 }
 
-TSPoint _unmarshalPoint(JNIEnv* env, jobject javaObject) {
-  return (TSPoint){
-      (uint32_t)env->GetIntField(javaObject, _pointRowField),
-      (uint32_t)env->GetIntField(javaObject, _pointColumnField),
+TSPoint _unmarshalPoint(JNIEnv *env, jobject javaObject) {
+  return (TSPoint) {
+      (uint32_t) env->GetIntField(javaObject, pointRowField),
+      (uint32_t) env->GetIntField(javaObject, pointColumnField),
   };
 }
 
 // TSInputEdit
-TSInputEdit _unmarshalInputEdit(JNIEnv* env, jobject inputEdit) {
-  return (TSInputEdit){
-      (uint32_t)env->GetIntField(inputEdit, _inputEditStartByteField),
-      (uint32_t)env->GetIntField(inputEdit, _inputEditOldEndByteField),
-      (uint32_t)env->GetIntField(inputEdit, _inputEditNewEndByteField),
+TSInputEdit _unmarshalInputEdit(JNIEnv *env, jobject inputEdit) {
+  return (TSInputEdit) {
+      (uint32_t) env->GetIntField(inputEdit, inputEditStartByteField),
+      (uint32_t) env->GetIntField(inputEdit, inputEditOldEndByteField),
+      (uint32_t) env->GetIntField(inputEdit, inputEditNewEndByteField),
       _unmarshalPoint(
-          env, env->GetObjectField(inputEdit, _inputEditStartPointField)),
+          env, env->GetObjectField(inputEdit, inputEditStartPointField)),
       _unmarshalPoint(
-          env, env->GetObjectField(inputEdit, _inputEditOldEndPointField)),
+          env, env->GetObjectField(inputEdit, inputEditOldEndPointField)),
       _unmarshalPoint(
-          env, env->GetObjectField(inputEdit, _inputEditNewEndPointField)),
+          env, env->GetObjectField(inputEdit, inputEditNewEndPointField)),
   };
 }
 
-jobject _marshalMatch(JNIEnv* env, TSQueryMatch match) {
-  jobject obj = env->AllocObject(_matchClass);
-  env->SetIntField(obj, _matchClassIdField, match.id);
-  env->SetIntField(obj, _matchClassPatternIndexField, match.pattern_index);
+jobject _marshalMatch(JNIEnv *env, TSQueryMatch match) {
   jobjectArray captures =
-      env->NewObjectArray(match.capture_count, _captureClass, NULL);
+      env->NewObjectArray(match.capture_count, captureClass, nullptr);
   for (int i = 0; i < match.capture_count; i++) {
-    const TSQueryCapture* c = match.captures + i;
+    const TSQueryCapture *c = match.captures + i;
     env->SetObjectArrayElement(captures, i, _marshalCapture(env, *c));
   }
-  env->SetObjectField(obj, _matchClassCapturesField, captures);
-  return obj;
+
+  return env->CallObjectMethod(objectFactoryClass,
+                               factory_createQueryMatch,
+                               (jint) match.id,
+                               (jint) match.pattern_index,
+                               captures);
 }
 
-jobject _marshalCapture(JNIEnv* env, TSQueryCapture capture) {
-  jobject obj = env->AllocObject(_captureClass);
-  env->SetIntField(obj, _captureClassIndexField, capture.index);
-  env->SetObjectField(obj, _captureClassNodeField,
-                      _marshalNode(env, capture.node));
-  return obj;
+jobject _marshalCapture(JNIEnv *env, TSQueryCapture capture) {
+  auto node = capture.node;
+  return env->CallObjectMethod(objectFactoryClass,
+                               factory_createQueryCapture,
+                               (jint) capture.index,
+                               (jint) node.context[0],
+                               (jint) node.context[1],
+                               (jint) node.context[2],
+                               (jint) node.context[3],
+                               (jlong) node.id,
+                               (jlong) node.tree);
 }
 
-jobject _marshalRange(JNIEnv* env, TSRange range) {
-  jobject obj = env->AllocObject(_rangeClass);
-  env->SetIntField(obj, _rangeClassStartByteField, range.start_byte);
-  env->SetIntField(obj, _rangeClassEndByteField, range.end_byte);
-  env->SetObjectField(obj, _rangeClassStartPointField,
-                      _marshalPoint(env, range.start_point));
-  env->SetObjectField(obj, _rangeClassEndPointField,
-                      _marshalPoint(env, range.end_point));
-  return obj;
+jobject _marshalRange(JNIEnv *env, TSRange range) {
+  return env->CallObjectMethod(objectFactoryClass, factory_createRange,
+                               (jint) range.start_byte,
+                               (jint) range.end_byte,
+                               (jint) range.start_point.row,
+                               (jint) range.start_point.column,
+                               (jint) range.end_point.row,
+                               (jint) range.end_point.column);
 }
 
-TSRange _unmarshalRange(JNIEnv* env, jobject javaObject) {
-  return (TSRange){
+TSRange _unmarshalRange(JNIEnv *env, jobject javaObject) {
+  return (TSRange) {
       _unmarshalPoint(
-          env, env->GetObjectField(javaObject, _rangeClassStartPointField)),
+          env, env->GetObjectField(javaObject, rangeClassStartPointField)),
       _unmarshalPoint(
-          env, env->GetObjectField(javaObject, _rangeClassEndPointField)),
-      (uint32_t)env->GetIntField(javaObject, _rangeClassStartByteField),
-      (uint32_t)env->GetIntField(javaObject, _rangeClassEndByteField)};
+          env, env->GetObjectField(javaObject, rangeClassEndPointField)),
+      (uint32_t) env->GetIntField(javaObject, rangeClassStartByteField),
+      (uint32_t) env->GetIntField(javaObject, rangeClassEndByteField)};
 }
 
-jobject _marshalQueryPredicateStep(JNIEnv* env,
-                                   const TSQueryPredicateStep* predicate) {
-  jobject obj = env->AllocObject(_queryPredicateStepClass);
-  env->SetIntField(obj, _queryPredicateStepTypeField,
-                   getPredicateTypeId(predicate->type));
-  env->SetIntField(obj, _queryPredicateStepValueIdField, predicate->value_id);
-  return obj;
+jobject _marshalQueryPredicateStep(JNIEnv *env,
+                                   const TSQueryPredicateStep *predicate) {
+  return env->CallObjectMethod(objectFactoryClass,
+                               factory_createQueryPredicateStep,
+                               (jint) getPredicateTypeId(predicate->type),
+                               (jint) predicate->value_id);
 }
 
 jint getPredicateTypeId(TSQueryPredicateStepType type) {

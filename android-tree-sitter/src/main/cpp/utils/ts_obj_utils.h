@@ -37,6 +37,10 @@ struct TreeCursorNode {
   { VARIABLE = env->GetFieldID(CLASS, NAME, TYPE); }
   
 
+#define _loadStaticMethod(VARIABLE, CLASS, NAME, SIGNATURE) \
+  {                                                   \
+    VARIABLE = env->GetStaticMethodID(CLASS, NAME, SIGNATURE);                                                  \
+  }
 void onLoad(JNIEnv* env);
 
 void onUnload(JNIEnv* env);
