@@ -15,21 +15,31 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "jni_utils.h"
+#include "ts_preconditions.h"
+#include "ts_exceptions.h"
+#include "ts_log.h"
 
-jclass ioob = nullptr;
+#include <string>
 
-void throw_ex(JNIEnv *env, jclass klass, const char *msg) {
-    env->ThrowNew(klass, msg);
+void req_nnp(JNIEnv *env, jlong ref, const std::string& name) {
+  req_nnp(env, (void *) ref, name);
 }
 
-void throw_ioob(JNIEnv *env, const char *msg) {
-    if (!ioob) {
-        ioob = env->FindClass("java/lang/IndexOutOfBoundsException");
-    }
-    throw_ex(env, ioob, msg);
+void req_nnp(JNIEnv *env, void *p, const std::string& name) {
+  if (p == nullptr) {
+    std::string msg = name + " == nullptr";
+    throw_illegal_args(env, msg.c_str());
+  }
 }
 
-void throw_neg_arr_size(JNIEnv *env) {
-    throw_ex(env, env->FindClass("java/lang/NegativeArraySizeException"), "Negative array size");
+void req_nnp(JNIEnv *env, jobject& obj, std::string& objName) {
+  if (obj == nullptr) {
+    objName += " == nullptr";
+    throw_illegal_args(env, objName.c_str());
+  }
+}
+
+void req_nnp(JNIEnv *env, jobject& obj, const char* objName) {
+  std::string name(objName);
+  req_nnp(env, obj, name);
 }

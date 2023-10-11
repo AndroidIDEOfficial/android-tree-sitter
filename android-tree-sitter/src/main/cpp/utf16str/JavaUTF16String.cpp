@@ -22,7 +22,6 @@
 
 #include "UTF16String.h"
 #include "../cache/StrCache.h"
-#include "../utils/utils.h"
 
 extern "C"
 JNIEXPORT void JNICALL

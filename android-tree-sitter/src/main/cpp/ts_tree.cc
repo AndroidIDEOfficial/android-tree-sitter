@@ -16,10 +16,13 @@
  */
 
 #include "utils/ts_obj_utils.h"
+#include "utils/ts_preconditions.h"
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_edit(
     JNIEnv* env, jclass self, jlong tree, jobject inputEdit) {
+  req_nnp(env, tree);
+  req_nnp(env, inputEdit);
   TSInputEdit edit = _unmarshalInputEdit(env, inputEdit);
   ts_tree_edit((TSTree*)tree, &edit);
 }
@@ -28,6 +31,7 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_delete(JNIEnv* env,
                                                                 jclass self,
                                                                 jlong tree) {
+  req_nnp(env, tree);
   ts_tree_delete((TSTree*)tree);
 }
 
@@ -35,6 +39,7 @@ extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_copy(JNIEnv* env,
                                                               jclass self,
                                                               jlong tree) {
+  req_nnp(env, tree);
   return (jlong)ts_tree_copy((TSTree*)tree);
 }
 
@@ -42,11 +47,14 @@ extern "C" JNIEXPORT jobject JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_rootNode(JNIEnv* env,
                                                                   jclass self,
                                                                   jlong tree) {
+  req_nnp(env, tree);
   return _marshalNode(env, ts_tree_root_node((TSTree*)tree));
 }
 
 extern "C" JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_TSTree_00024Native_changedRanges
   (JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
+  req_nnp(env, tree, "thisTree");
+  req_nnp(env, oldTree, "oldTree");
     uint32_t count;
     TSRange *ranges = ts_tree_get_changed_ranges((TSTree*) oldTree, (TSTree*) tree, &count);
     if (count == 0) {
@@ -54,10 +62,10 @@ extern "C" JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_
     }
 
     jclass klass = env->FindClass("com/itsaky/androidide/treesitter/TSRange");
-    jobjectArray arr = env->NewObjectArray(count, klass, nullptr);
+    jobjectArray arr = env->NewObjectArray((jint) count, klass, nullptr);
     for (uint32_t i = 0; i < count; i++) {
       TSRange *r = (ranges + i);
-      env->SetObjectArrayElement(arr, i, _marshalRange(env, *r));
+      env->SetObjectArrayElement(arr, (jint) i, _marshalRange(env, *r));
     }
     return arr;
   }
@@ -65,5 +73,6 @@ extern "C" JNIEXPORT jobjectArray JNICALL Java_com_itsaky_androidide_treesitter_
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSTree_00024Native_getLanguage(
     JNIEnv* env, jclass self, jlong tree) {
+  req_nnp(env, tree);
   return (jlong)ts_tree_language((TSTree*)tree);
 }

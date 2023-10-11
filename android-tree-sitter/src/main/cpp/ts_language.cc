@@ -20,18 +20,21 @@
 #include "tree_sitter/api.h"
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_log.h"
+#include "utils/ts_preconditions.h"
 
 typedef const TSLanguage *(*TsLangFunc)();
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symCount
     (JNIEnv *env, jclass self, jlong ptr) {
+  req_nnp(env, ptr);
   return (jint) ts_language_symbol_count((TSLanguage *) ptr);
 }
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldCount
     (JNIEnv *env, jclass self, jlong ptr) {
+  req_nnp(env, ptr);
   return (jint) ts_language_field_count((TSLanguage *) ptr);
 }
 
@@ -44,6 +47,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symForName
      jbyteArray name,
      jint length,
      jboolean isNamed) {
+  req_nnp(env, ptr);
   jbyte *nm = env->GetByteArrayElements(name, NULL);
   uint32_t count = ts_language_symbol_for_name((TSLanguage *) ptr,
                                                reinterpret_cast<const char *>(nm),
@@ -57,6 +61,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symForName
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symName
     (JNIEnv *env, jclass self, jlong lngPtr, jint sym) {
+  req_nnp(env, lngPtr);
   return env->NewStringUTF(ts_language_symbol_name((TSLanguage *) lngPtr, sym));
 }
 
@@ -64,6 +69,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symName
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldNameForId
     (JNIEnv *env, jclass self, jlong ptr, jint id) {
+  req_nnp(env, ptr);
   return env->NewStringUTF(ts_language_field_name_for_id((TSLanguage *) ptr,
                                                          id));
 }
@@ -72,7 +78,8 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldNameForId
 extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldIdForName
     (JNIEnv *env, jclass self, jlong ptr, jbyteArray name, jint length) {
-  jbyte *nm = env->GetByteArrayElements(name, NULL);
+  jbyte *nm = env->GetByteArrayElements(name, nullptr);
+  req_nnp(env, ptr);
   uint32_t id = ts_language_field_id_for_name((TSLanguage *) ptr,
                                               reinterpret_cast<const char *>(nm),
                                               length);
@@ -84,6 +91,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldIdForName
 extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symType
     (JNIEnv *env, jclass self, jlong ptr, jint sym) {
+  req_nnp(env, ptr);
   return (jint) ts_language_symbol_type((TSLanguage *) ptr, sym);
 }
 
@@ -91,6 +99,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symType
 extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_langVer
     (JNIEnv *env, jclass self, jlong ptr) {
+  req_nnp(env, ptr);
   return (jint) ts_language_version((TSLanguage *) ptr);
 }
 
@@ -124,7 +133,7 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_loadLanguage(JNIEnv
 
   auto lang_func = reinterpret_cast<TsLangFunc>(func_addr);
   if (lang_func == nullptr) {
-    LOGE(LOG_TAG, "Cannot reinterpreset_cat to TsLangFunc");
+    LOGE(LOG_TAG, "Cannot reinterpreset_cast to TsLangFunc");
     env->ReleaseStringUTFChars(libpath, lib_path);
     env->ReleaseStringUTFChars(func, func_name);
     return nullptr;
@@ -162,6 +171,7 @@ JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_stateCount(JNIEnv *env,
                                                                         jclass clazz,
                                                                         jlong pointer) {
+  req_nnp(env, pointer);
   return (jint) ts_language_state_count((TSLanguage*) pointer);
 }
 
@@ -172,5 +182,6 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_nextState(JNIEnv *e
                                                                        jlong pointer,
                                                                        jshort state_id,
                                                                        jshort symbol) {
+  req_nnp(env, pointer);
   return (jshort) ts_language_next_state((TSLanguage*) pointer, state_id, symbol);
 }

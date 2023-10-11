@@ -16,6 +16,7 @@
  */
 
 #include "utils/ts_obj_utils.h"
+#include "utils/ts_preconditions.h"
 
 #include <iostream>
 
@@ -28,12 +29,14 @@ Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_newCursor(
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_delete(
     JNIEnv *env, jclass self, jlong cursor) {
+  req_nnp(env, cursor);
   ts_query_cursor_delete((TSQueryCursor *)cursor);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_exec(
     JNIEnv *env, jclass self, jlong cursor, jlong query, jobject node) {
+  req_nnp(env, cursor);
   ts_query_cursor_exec((TSQueryCursor *)cursor, (TSQuery *)query,
                        _unmarshalNode(env, node));
 }
@@ -41,6 +44,7 @@ Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_exec(
 extern "C" JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_exceededMatchLimit(
     JNIEnv *env, jclass self, jlong cursor) {
+  req_nnp(env, cursor);
   return (jboolean)ts_query_cursor_did_exceed_match_limit(
       (TSQueryCursor *)cursor);
 }
@@ -48,24 +52,28 @@ Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_exceededMatchLim
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_matchLimit__JI(
     JNIEnv *env, jclass self, jlong cursor, jint newLimit) {
+  req_nnp(env, cursor);
   ts_query_cursor_set_match_limit((TSQueryCursor *)cursor, newLimit);
 }
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_matchLimit__J(
     JNIEnv *env, jclass self, jlong cursor) {
-  return ts_query_cursor_match_limit((TSQueryCursor *)cursor);
+  req_nnp(env, cursor);
+  return (jint) ts_query_cursor_match_limit((TSQueryCursor *)cursor);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_setByteRange(
     JNIEnv *env, jclass self, jlong cursor, jint start, jint end) {
+  req_nnp(env, cursor);
   ts_query_cursor_set_byte_range((TSQueryCursor *)cursor, start, end);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_setPointRange(
     JNIEnv *env, jclass self, jlong cursor, jobject start, jobject end) {
+  req_nnp(env, cursor);
   ts_query_cursor_set_point_range((TSQueryCursor *)cursor,
                                   _unmarshalPoint(env, start),
                                   _unmarshalPoint(env, end));
@@ -74,6 +82,7 @@ Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_setPointRange(
 extern "C" JNIEXPORT jobject JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_nextMatch(
     JNIEnv *env, jclass self, jlong cursor) {
+  req_nnp(env, cursor);
   TSQueryMatch m;
   bool b = ts_query_cursor_next_match((TSQueryCursor *)cursor, &m);
   if (!b) {
@@ -85,5 +94,6 @@ Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_nextMatch(
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_removeMatch(
     JNIEnv *env, jclass self, jlong cursor, jint id) {
+  req_nnp(env, cursor);
   ts_query_cursor_remove_match((TSQueryCursor *)cursor, id);
 }

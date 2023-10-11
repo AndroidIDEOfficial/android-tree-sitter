@@ -24,9 +24,7 @@
 #include "UTF16String.h"
 #include "../cache/StrCache.h"
 #include "../utils/jni_string.h"
-#include "../utils/jni_utils.h"
 #include "../utils/ts_obj_utils.h"
-#include "../utils/utils.h"
 
 #define HI_BYTE_SHIFT 0
 #define LO_BYTE_SHIFT 8

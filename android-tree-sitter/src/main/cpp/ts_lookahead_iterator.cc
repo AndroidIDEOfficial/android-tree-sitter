@@ -20,6 +20,7 @@
 
 #include "tree_sitter/api.h"
 #include "utils/jni_string.h"
+#include "utils/ts_preconditions.h"
 
 extern "C"
 JNIEXPORT jlong JNICALL
@@ -39,7 +40,7 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_delete(
     JNIEnv *env,
     jclass clazz,
     jlong pointer) {
-
+  req_nnp(env, pointer);
   ts_lookahead_iterator_delete((TSLookaheadIterator *) pointer);
 }
 
@@ -49,7 +50,7 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_next(
     JNIEnv *env,
     jclass clazz,
     jlong pointer) {
-
+  req_nnp(env, pointer);
   return (jboolean) ts_lookahead_iterator_next((TSLookaheadIterator *) pointer);
 }
 
@@ -59,7 +60,7 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_currentSym
     JNIEnv *env,
     jclass clazz,
     jlong pointer) {
-
+  req_nnp(env, pointer);
   return (jshort) ts_lookahead_iterator_current_symbol((TSLookaheadIterator *) pointer);
 }
 
@@ -69,7 +70,7 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_currentSym
     JNIEnv *env,
     jclass clazz,
     jlong pointer) {
-
+  req_nnp(env, pointer);
   const char *name =
       ts_lookahead_iterator_current_symbol_name((TSLookaheadIterator *) pointer);
   return env->NewStringUTF(name);
@@ -82,6 +83,7 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_resetState
     jclass clazz,
     jlong pointer,
     jshort state_id) {
+  req_nnp(env, pointer);
   return (jboolean) ts_lookahead_iterator_reset_state((TSLookaheadIterator *) pointer,
                                                       state_id);
 }
@@ -94,7 +96,8 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_reset(
     jlong pointer,
     jlong language,
     jshort state_id) {
-
+  req_nnp(env, pointer);
+  req_nnp(env, language);
   return (jboolean) ts_lookahead_iterator_reset((TSLookaheadIterator *) pointer,
                                                 (TSLanguage *) language,
                                                 state_id);
@@ -106,5 +109,6 @@ Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_language(
     JNIEnv *env,
     jclass clazz,
     jlong pointer) {
+  req_nnp(env, pointer);
   return (jlong) ts_lookahead_iterator_language((TSLookaheadIterator *) pointer);
 }

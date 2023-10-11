@@ -46,9 +46,10 @@ add_library(android-tree-sitter SHARED
         utf16str/JavaUTF16StringFactory.cpp
         utf16str/UTF16String.cpp
         utils/jni_string.cpp
-        utils/jni_utils.cpp
-        utils/ts_obj_utils.cc
-        utils/utils.cpp)
+        utils/ts_exceptions.cpp
+        utils/ts_preconditions.cpp
+        utils/ts_obj_utils.cpp
+        )
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Android)
     # Find the log library and link it to android-tree-sitter

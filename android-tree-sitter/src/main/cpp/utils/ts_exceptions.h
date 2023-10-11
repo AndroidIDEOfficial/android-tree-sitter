@@ -15,18 +15,24 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <sstream>
+#ifndef ATS_TS_EXCEPTIONS_H
+#define ATS_TS_EXCEPTIONS_H
 
-#include "jni_utils.h"
-#include "utils.h"
+#include <jni.h>
 
-void validate_index(JNIEnv *env, int size, int index) {
-    if (index < 0 || index >= size) {
-        std::ostringstream stream;
-        stream << "size: ";
-        stream << size;
-        stream << ", index: ";
-        stream << index;
-        throw_ioob(env, stream.str().c_str());
-    }
-}
+/**
+ * Throws an exception in the JVM with the given class name and message.
+ * @param env The JNI environment.
+ * @param klass The class name of the exception.
+ * @param message The message for the exception.
+ */
+int throw_exception(JNIEnv *env, const char *klass, const char *message);
+
+/**
+ * Throws an `IllegalArgumentException` in the JVM with the given message.
+ * @param env The JNI environment.
+ * @param message The message for the exception.
+ */
+int throw_illegal_args(JNIEnv *env, const char *message);
+
+#endif //ATS_TS_EXCEPTIONS_H

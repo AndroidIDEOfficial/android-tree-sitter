@@ -15,11 +15,21 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ANDROIDTREESITTER_UTILS_H
-#define ANDROIDTREESITTER_UTILS_H
+#include "ts_exceptions.h"
+#include "ts_log.h"
 
-#include <vector>
+#define TS_EXCEPTIONS "TreeSitter_Exceptions"
 
-void validate_index(JNIEnv *env, int size, int index);
+int throw_exception(JNIEnv *env, const char *klass, const char *message) {
+  jclass exception = env->FindClass(klass);
+  if (exception == nullptr) {
+    LOGE(TS_EXCEPTIONS, "Unable to find exception class: %s", klass);
+    return -1;
+  }
 
-#endif //ANDROIDTREESITTER_UTILS_H
+  return env->ThrowNew(exception, message);
+}
+
+int throw_illegal_args(JNIEnv *env, const char *message) {
+  return throw_exception(env, "java/lang/IllegalArgumentException", message);
+}
