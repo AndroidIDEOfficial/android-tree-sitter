@@ -129,10 +129,10 @@ Java_com_my_app_MyClass_myLang(JNIEnv *env, jclass clazz) {
 - Create and use the `TSLanguage` instance :
 
 ```java
-final TSLanguage myLang = new TSLanguage("myLang", MyClass.myLang());
+final TSLanguage myLang = TSLanguage.create("myLang", MyClass.myLang());
 
 // use it with TSParser
-try (final var parser = new TSParser()) {
+try (final var parser = TSParser.create()) {
   parser.setLanguage(myLang);
   ...
 }
@@ -164,7 +164,7 @@ if (myLang != null) {
 
 Use this language :
 ```java
-try (final var parser = new TSParser()) {
+try (final var parser = TSParser.create()) {
   parser.setLanguage(myLang);
   ...
 }
