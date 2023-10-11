@@ -63,6 +63,10 @@ class NativeObjectFactory {
     return getFactory().createRange(startByte, endByte, start, end);
   }
 
+  static TSRange[] createRangeArr(int size) {
+    return getFactory().createRangeArr(size);
+  }
+
   static TSInputEdit createInputEdit(int startByte, int oldEndByte, int newEndByte, int startRow,
                                      int startColumn, int oldEndRow, int oldEndColumn,
                                      int newEndRow, int newEndColumn
@@ -91,5 +95,9 @@ class NativeObjectFactory {
   static TSQueryPredicateStep createQueryPredicateStep(int type, int valueId
   ) {
     return getFactory().createQueryPredicateStep(type, valueId);
+  }
+
+  static TSQueryPredicateStep[] createQueryPredicateStepArr(int size) {
+    return getFactory().createQueryPredicateStepArr(size);
   }
 }

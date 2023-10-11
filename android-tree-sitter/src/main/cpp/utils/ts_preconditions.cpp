@@ -28,14 +28,14 @@ void req_nnp(JNIEnv *env, jlong ref, const std::string& name) {
 void req_nnp(JNIEnv *env, void *p, const std::string& name) {
   if (p == nullptr) {
     std::string msg = name + " == nullptr";
-    throw_illegal_args(env, msg.c_str());
+    throw_npe(env, msg.c_str());
   }
 }
 
 void req_nnp(JNIEnv *env, jobject& obj, std::string& objName) {
   if (obj == nullptr) {
     objName += " == nullptr";
-    throw_illegal_args(env, objName.c_str());
+    throw_npe(env, objName.c_str());
   }
 }
 

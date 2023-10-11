@@ -22,21 +22,21 @@
 #include <jni.h>
 
 /**
- * Throws `IllegalArgumentException` in the JVM if the given object is `nullptr`.
+ * Throws `NullPointerException` in the JVM if the given object is `nullptr`.
  *
  * @param ref The object to check.
  */
 void req_nnp(JNIEnv *env, jobject& obj, std::string& objName);
 
 /**
- * Throws `IllegalArgumentException` in the JVM if the given object is `nullptr`.
+ * Throws `NullPointerException` in the JVM if the given object is `nullptr`.
  *
  * @param ref The object to check.
  */
 void req_nnp(JNIEnv *env, jobject& obj, const char* objName);
 
 /**
- * Throws `IllegalArgumentException` in the JVM if the pointer represented with
+ * Throws `NullPointerException` in the JVM if the pointer represented with
  * the given `jlong` is `nullptr`.
  *
  * @param ref The pointer reference to check. This is cast to `void*` before checking.
@@ -44,7 +44,7 @@ void req_nnp(JNIEnv *env, jobject& obj, const char* objName);
 void req_nnp(JNIEnv *env, jlong ref, const std::string& refName = "ref");
 
 /**
- * Throws `IllegalArgumentException` in the JVM if the given pointer is `nullptr`.
+ * Throws `NullPointerException` in the JVM if the given pointer is `nullptr`.
  * @param p The pointer to check.
  */
 void req_nnp(JNIEnv *env, void *p, const std::string& name = "p"); // Require non-null pointer

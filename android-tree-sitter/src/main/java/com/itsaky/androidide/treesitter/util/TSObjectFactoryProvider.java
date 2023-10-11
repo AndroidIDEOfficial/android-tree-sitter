@@ -18,7 +18,6 @@
 package com.itsaky.androidide.treesitter.util;
 
 import com.itsaky.androidide.treesitter.DefaultObjectFactory;
-import java.util.Objects;
 
 /**
  * Provides instance of {@link TSObjectFactory}.
@@ -28,7 +27,8 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public final class TSObjectFactoryProvider {
 
-  private static TSObjectFactory sFactory = DefaultObjectFactory.getInstance();
+  private static final NonNullTSObjectFactory sFactory = new NonNullTSObjectFactory(
+    DefaultObjectFactory.getInstance());
 
   /**
    * Set the {@link TSObjectFactory} used to create tree sitter objects.
@@ -37,13 +37,7 @@ public final class TSObjectFactoryProvider {
    * @throws IllegalArgumentException If the provided factory is null.
    */
   public static void setFactory(TSObjectFactory factory) {
-    synchronized (TSObjectFactoryProvider.class) {
-      if (factory == null) {
-        throw new IllegalArgumentException("TSObjectFactory cannot be null.");
-      }
-
-      sFactory = factory;
-    }
+    sFactory.setFactory(factory);
   }
 
   /**
@@ -52,8 +46,6 @@ public final class TSObjectFactoryProvider {
    * @return The {@link TSObjectFactory}.
    */
   public static TSObjectFactory getFactory() {
-    synchronized (TSObjectFactoryProvider.class) {
-      return Objects.requireNonNull(sFactory, "No factory instance is available");
-    }
+    return sFactory.getFactory();
   }
 }

@@ -71,6 +71,11 @@ public class DefaultObjectFactory implements TSObjectFactory {
   }
 
   @Override
+  public TSRange[] createRangeArr(int size) {
+    return new TSRange[size];
+  }
+
+  @Override
   public TSTree createTree(long pointer) {
     return new TSTree(pointer);
   }
@@ -101,6 +106,11 @@ public class DefaultObjectFactory implements TSObjectFactory {
   @Override
   public TSQueryPredicateStep createQueryPredicateStep(int type, int valueId) {
     return new TSQueryPredicateStep(type, valueId);
+  }
+
+  @Override
+  public TSQueryPredicateStep[] createQueryPredicateStepArr(int size) {
+    return new TSQueryPredicateStep[size];
   }
 
   @Override

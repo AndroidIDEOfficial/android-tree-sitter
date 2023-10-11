@@ -33,3 +33,6 @@ int throw_exception(JNIEnv *env, const char *klass, const char *message) {
 int throw_illegal_args(JNIEnv *env, const char *message) {
   return throw_exception(env, "java/lang/IllegalArgumentException", message);
 }
+int throw_npe(JNIEnv *env, const char *message) {
+  return throw_exception(env, "java/lang/NullPointerException", message);
+}

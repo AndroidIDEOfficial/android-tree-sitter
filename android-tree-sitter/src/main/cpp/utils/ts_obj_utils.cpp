@@ -80,10 +80,12 @@ static jmethodID factory_createNode;
 static jmethodID factory_createTreeCursorNode;
 static jmethodID factory_createPoint;
 static jmethodID factory_createRange;
+static jmethodID factory_createRangeArr;
 static jmethodID factory_createInputEdit;
 static jmethodID factory_createQueryMatch;
 static jmethodID factory_createQueryCapture;
 static jmethodID factory_createQueryPredicateStep;
+static jmethodID factory_createQueryPredicateStepArr;
 
 void onLoad(JNIEnv *env) {
 
@@ -110,6 +112,11 @@ void onLoad(JNIEnv *env) {
                     "createRange",
                     "(IIIIII)Lcom/itsaky/androidide/treesitter/TSRange;")
 
+  _loadStaticMethod(factory_createRangeArr,
+                    objectFactoryClass,
+                    "createRangeArr",
+                    "(I)[Lcom/itsaky/androidide/treesitter/TSRange;")
+
   _loadStaticMethod(factory_createInputEdit,
                     objectFactoryClass,
                     "createInputEdit",
@@ -129,6 +136,11 @@ void onLoad(JNIEnv *env) {
                     objectFactoryClass,
                     "createQueryPredicateStep",
                     "(II)Lcom/itsaky/androidide/treesitter/TSQueryPredicateStep;")
+
+  _loadStaticMethod(factory_createQueryPredicateStepArr,
+                    objectFactoryClass,
+                    "createQueryPredicateStepArr",
+                    "(I)[Lcom/itsaky/androidide/treesitter/TSQueryPredicateStep;")
 
   // Node
   _loadClass(nodeClass, "com/itsaky/androidide/treesitter/TSNode")
@@ -283,33 +295,33 @@ jobject _marshalMatch(JNIEnv *env, TSQueryMatch match) {
   }
 
   return env->CallStaticObjectMethod(objectFactoryClass,
-                               factory_createQueryMatch,
-                               (jint) match.id,
-                               (jint) match.pattern_index,
-                               captures);
+                                     factory_createQueryMatch,
+                                     (jint) match.id,
+                                     (jint) match.pattern_index,
+                                     captures);
 }
 
 jobject _marshalCapture(JNIEnv *env, TSQueryCapture capture) {
   auto node = capture.node;
   return env->CallStaticObjectMethod(objectFactoryClass,
-                               factory_createQueryCapture,
-                               (jint) capture.index,
-                               (jint) node.context[0],
-                               (jint) node.context[1],
-                               (jint) node.context[2],
-                               (jint) node.context[3],
-                               (jlong) node.id,
-                               (jlong) node.tree);
+                                     factory_createQueryCapture,
+                                     (jint) capture.index,
+                                     (jint) node.context[0],
+                                     (jint) node.context[1],
+                                     (jint) node.context[2],
+                                     (jint) node.context[3],
+                                     (jlong) node.id,
+                                     (jlong) node.tree);
 }
 
 jobject _marshalRange(JNIEnv *env, TSRange range) {
   return env->CallStaticObjectMethod(objectFactoryClass, factory_createRange,
-                               (jint) range.start_byte,
-                               (jint) range.end_byte,
-                               (jint) range.start_point.row,
-                               (jint) range.start_point.column,
-                               (jint) range.end_point.row,
-                               (jint) range.end_point.column);
+                                     (jint) range.start_byte,
+                                     (jint) range.end_byte,
+                                     (jint) range.start_point.row,
+                                     (jint) range.start_point.column,
+                                     (jint) range.end_point.row,
+                                     (jint) range.end_point.column);
 }
 
 TSRange _unmarshalRange(JNIEnv *env, jobject javaObject) {
@@ -322,12 +334,26 @@ TSRange _unmarshalRange(JNIEnv *env, jobject javaObject) {
       (uint32_t) env->GetIntField(javaObject, rangeClassEndByteField)};
 }
 
+jobjectArray createRangeArr(JNIEnv *env, jint size) {
+  return (jobjectArray) env->CallStaticObjectMethod(
+      objectFactoryClass,
+      factory_createRangeArr,
+      size);
+}
+
 jobject _marshalQueryPredicateStep(JNIEnv *env,
                                    const TSQueryPredicateStep *predicate) {
   return env->CallStaticObjectMethod(objectFactoryClass,
-                               factory_createQueryPredicateStep,
-                               (jint) getPredicateTypeId(predicate->type),
-                               (jint) predicate->value_id);
+                                     factory_createQueryPredicateStep,
+                                     (jint) getPredicateTypeId(predicate->type),
+                                     (jint) predicate->value_id);
+}
+
+jobjectArray createQueryPredicateStepArr(JNIEnv *env, jint size) {
+  return (jobjectArray) env->CallStaticObjectMethod(
+      objectFactoryClass,
+      factory_createQueryPredicateStepArr,
+      size);
 }
 
 jint getPredicateTypeId(TSQueryPredicateStepType type) {

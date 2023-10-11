@@ -23,99 +23,107 @@
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
-        JNIEnv *env, jclass self) {
-    return (jlong) ts_parser_new();
+    JNIEnv *env, jclass self) {
+  return (jlong) ts_parser_new();
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_delete(
-        JNIEnv *env, jclass self, jlong parser) {
-    req_nnp(env, parser);
-    ts_parser_delete((TSParser *) parser);
+    JNIEnv *env, jclass self, jlong parser) {
+  req_nnp(env, parser);
+  ts_parser_delete((TSParser *) parser);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setLanguage(
-        JNIEnv *env, jclass self, jlong parser, jlong language) {
-    req_nnp(env, parser, "parser");
-    req_nnp(env, language, "language");
-    ts_parser_set_language((TSParser *) parser, (TSLanguage *) language);
+    JNIEnv *env, jclass self, jlong parser, jlong language) {
+  req_nnp(env, parser, "parser");
+  req_nnp(env, language, "language");
+  ts_parser_set_language((TSParser *) parser, (TSLanguage *) language);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getLanguage(
-        JNIEnv *env, jclass self, jlong parser) {
-    req_nnp(env, parser);
-    return (jlong) ts_parser_language((TSParser *) parser);
+    JNIEnv *env, jclass self, jlong parser) {
+  req_nnp(env, parser);
+  return (jlong) ts_parser_language((TSParser *) parser);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_reset(JNIEnv *env,
                                                                  jclass self,
                                                                  jlong parser) {
-    req_nnp(env, parser);
-    ts_parser_reset((TSParser *) parser);
+  req_nnp(env, parser);
+  ts_parser_reset((TSParser *) parser);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setTimeout(
-        JNIEnv *env, jclass self, jlong parser, jlong macros) {
-    req_nnp(env, parser);
-    ts_parser_set_timeout_micros((TSParser *) parser, macros);
+    JNIEnv *env, jclass self, jlong parser, jlong macros) {
+  req_nnp(env, parser);
+  ts_parser_set_timeout_micros((TSParser *) parser, macros);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout(
-        JNIEnv *env, jclass self, jlong parser) {
-    req_nnp(env, parser);
-    return (jlong) ts_parser_timeout_micros((TSParser *) parser);
+    JNIEnv *env, jclass self, jlong parser) {
+  req_nnp(env, parser);
+  return (jlong) ts_parser_timeout_micros((TSParser *) parser);
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges(
-        JNIEnv *env, jclass self, jlong parser, jobjectArray ranges) {
-    req_nnp(env, parser);
-    int count = env->GetArrayLength(ranges);
-    TSRange tsRanges[count];
-    for (int i = 0; i < count; i++) {
-        jobject range = env->GetObjectArrayElement(ranges, i);
-        std::string msg = std::string("ranges[") + std::to_string(i) + "]";
-        req_nnp(env, range, msg);
-        tsRanges[i] = _unmarshalRange(env, range);
-    }
+    JNIEnv *env, jclass self, jlong parser, jobjectArray ranges) {
+  req_nnp(env, parser);
+  int count = env->GetArrayLength(ranges);
+  TSRange tsRanges[count];
+  for (int i = 0; i < count; i++) {
+    jobject range = env->GetObjectArrayElement(ranges, i);
+    std::string msg = std::string("ranges[") + std::to_string(i) + "]";
+    req_nnp(env, range, msg);
+    tsRanges[i] = _unmarshalRange(env, range);
+  }
 
-    const TSRange *r = tsRanges;
-    return (jboolean) ts_parser_set_included_ranges((TSParser *) parser, r, count);
+  const TSRange *r = tsRanges;
+  return (jboolean) ts_parser_set_included_ranges((TSParser *) parser,
+                                                  r,
+                                                  count);
 }
 
 extern "C" JNIEXPORT jobjectArray JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges(
-        JNIEnv *env, jclass self, jlong parser) {
-    req_nnp(env, parser);
-    jint count;
-    const TSRange *ranges = ts_parser_included_ranges((TSParser *) parser,
-                                                      reinterpret_cast<uint32_t *>(&count));
-    jclass klass = env->FindClass("com/itsaky/androidide/treesitter/TSRange");
-    jobjectArray result = env->NewObjectArray(count, klass, nullptr);
-    for (uint32_t i = 0; i < count; i++) {
-        const TSRange *r = (ranges + i);
-        env->SetObjectArrayElement(result, i, _marshalRange(env, *r));
-    }
-    return result;
+    JNIEnv *env, jclass self, jlong parser) {
+  req_nnp(env, parser);
+  jint count;
+  const TSRange *ranges = ts_parser_included_ranges((TSParser *) parser,
+                                                    reinterpret_cast<uint32_t *>(&count));
+  jobjectArray result = createRangeArr(env, count);
+  req_nnp(env, result, "TSRange[] from factory");
+
+  for (uint32_t i = 0; i < count; i++) {
+    const TSRange *r = (ranges + i);
+    env->SetObjectArrayElement(result, (jint) i, _marshalRange(env, *r));
+  }
+  return result;
 }
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env, jclass clazz,
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
+                                                                 jclass clazz,
                                                                  jlong parser,
                                                                  jlong tree_pointer,
                                                                  jlong str_pointer) {
-    req_nnp(env, parser);
-    req_nnp(env, str_pointer, "string");
-    auto *ts_parser = (TSParser *) parser;
-    TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
-    auto *source = as_str(str_pointer);
-    auto tree = ts_parser_parse_string_encoding(ts_parser, old_tree, source->to_cstring(),
-                                                source->byte_length(), TSInputEncodingUTF16);
-    return (jlong) tree;
+  req_nnp(env, parser);
+  req_nnp(env, str_pointer, "string");
+  auto *ts_parser = (TSParser *) parser;
+  TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
+  auto *source = as_str(str_pointer);
+  auto tree =
+      ts_parser_parse_string_encoding(ts_parser,
+                                      old_tree,
+                                      source->to_cstring(),
+                                      source->byte_length(),
+                                      TSInputEncodingUTF16);
+  return (jlong) tree;
 }

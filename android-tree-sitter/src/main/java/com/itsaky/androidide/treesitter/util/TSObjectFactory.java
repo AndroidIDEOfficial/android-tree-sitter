@@ -75,6 +75,10 @@ public interface TSObjectFactory {
     TSPoint endPoint
   );
 
+  TSRange[] createRangeArr(
+    int size
+  );
+
   TSNode createNode(
     int context0,
     int context1,
@@ -106,6 +110,10 @@ public interface TSObjectFactory {
   TSQueryPredicateStep createQueryPredicateStep(
     int type,
     int valueId
+  );
+
+  TSQueryPredicateStep[] createQueryPredicateStepArr(
+    int size
   );
 
   TSTreeCursorNode createTreeCursorNode(
