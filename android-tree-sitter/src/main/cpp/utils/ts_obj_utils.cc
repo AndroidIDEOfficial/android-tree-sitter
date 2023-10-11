@@ -282,7 +282,7 @@ jobject _marshalMatch(JNIEnv *env, TSQueryMatch match) {
     env->SetObjectArrayElement(captures, i, _marshalCapture(env, *c));
   }
 
-  return env->CallObjectMethod(objectFactoryClass,
+  return env->CallStaticObjectMethod(objectFactoryClass,
                                factory_createQueryMatch,
                                (jint) match.id,
                                (jint) match.pattern_index,
@@ -291,7 +291,7 @@ jobject _marshalMatch(JNIEnv *env, TSQueryMatch match) {
 
 jobject _marshalCapture(JNIEnv *env, TSQueryCapture capture) {
   auto node = capture.node;
-  return env->CallObjectMethod(objectFactoryClass,
+  return env->CallStaticObjectMethod(objectFactoryClass,
                                factory_createQueryCapture,
                                (jint) capture.index,
                                (jint) node.context[0],
@@ -303,7 +303,7 @@ jobject _marshalCapture(JNIEnv *env, TSQueryCapture capture) {
 }
 
 jobject _marshalRange(JNIEnv *env, TSRange range) {
-  return env->CallObjectMethod(objectFactoryClass, factory_createRange,
+  return env->CallStaticObjectMethod(objectFactoryClass, factory_createRange,
                                (jint) range.start_byte,
                                (jint) range.end_byte,
                                (jint) range.start_point.row,
@@ -324,7 +324,7 @@ TSRange _unmarshalRange(JNIEnv *env, jobject javaObject) {
 
 jobject _marshalQueryPredicateStep(JNIEnv *env,
                                    const TSQueryPredicateStep *predicate) {
-  return env->CallObjectMethod(objectFactoryClass,
+  return env->CallStaticObjectMethod(objectFactoryClass,
                                factory_createQueryPredicateStep,
                                (jint) getPredicateTypeId(predicate->type),
                                (jint) predicate->value_id);
