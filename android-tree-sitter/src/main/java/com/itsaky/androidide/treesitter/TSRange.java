@@ -24,10 +24,10 @@ import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
  */
 public class TSRange {
 
-  private int startByte;
-  private int endByte;
-  private TSPoint startPoint;
-  private TSPoint endPoint;
+  protected int startByte;
+  protected int endByte;
+  protected TSPoint startPoint;
+  protected TSPoint endPoint;
 
   protected TSRange() {
   }

@@ -30,7 +30,7 @@ public class TSQuery extends TSNativeObject {
   protected int errorOffset;
   protected int errorType;
 
-  private String[] captureNames = null;
+  protected String[] captureNames = null;
 
   /**
    * For internal use only!

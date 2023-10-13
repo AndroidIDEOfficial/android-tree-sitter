@@ -31,13 +31,13 @@ public class TSLanguage extends TSNativeObject {
 
   private static final Pattern LANG_NAME = Pattern.compile("^[a-zA-Z_]\\w*$");
 
-  private final String name;
+  protected String name;
 
   /**
    * The pointer to the library handle if this language was loaded using
    * {@link TSLanguage#loadLanguage(String, String)}.
    */
-  private long libHandle;
+  protected long libHandle;
 
   /**
    * Create a new {@link TSLanguage} instance with the given name and pointer.

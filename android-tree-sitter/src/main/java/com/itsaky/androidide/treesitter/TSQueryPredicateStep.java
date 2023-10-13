@@ -24,7 +24,7 @@ import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
  */
 public class TSQueryPredicateStep {
 
-  private Type cachedType = null;
+  protected Type cachedType = null;
   protected int type = -1;
   protected int valueId = -1;
 

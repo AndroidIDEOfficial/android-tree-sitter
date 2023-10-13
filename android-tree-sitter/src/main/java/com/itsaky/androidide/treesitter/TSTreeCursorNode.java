@@ -21,10 +21,10 @@ import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 
 public class TSTreeCursorNode {
 
-  private String type;
-  private String name;
-  private int startByte;
-  private int endByte;
+  protected String type;
+  protected String name;
+  protected int startByte;
+  protected int endByte;
 
   protected TSTreeCursorNode() {
   }

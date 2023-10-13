@@ -22,10 +22,10 @@ import java.util.Objects;
 
 public class TSTreeCursor extends TSNativeObject {
 
-  private int context0;
-  private int context1;
-  private long id;
-  private long tree;
+  protected int context0;
+  protected int context1;
+  protected long id;
+  protected long tree;
 
   protected TSTreeCursor(TSNode node) {
     this(Native.newCursor(node));

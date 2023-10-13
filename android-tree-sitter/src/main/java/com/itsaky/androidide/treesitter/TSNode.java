@@ -32,7 +32,7 @@ public class TSNode {
   public long id;
   public long tree;
 
-  private TSTree mTree;
+  protected TSTree mTree;
 
   protected TSNode() {
   }
