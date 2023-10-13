@@ -15,11 +15,12 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "utils/ts_exceptions.h"
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
 
 void fillQuery(JNIEnv *, jobject, uint32_t, TSQueryError);
-int query_quantifier_id(TSQuantifier quantifier);
+int query_quantifier_id(JNIEnv *env, TSQuantifier quantifier);
 jint getErrorType(TSQueryError);
 
 extern "C" JNIEXPORT jlong JNICALL
@@ -178,10 +179,10 @@ Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_captureQuantifierForId
   auto ts_query = (TSQuery *) query;
   auto quantifier =
       ts_query_capture_quantifier_for_id(ts_query, pattern, capture);
-  return query_quantifier_id(quantifier);
+  return query_quantifier_id(env, quantifier);
 }
 
-int query_quantifier_id(TSQuantifier quantifier) {
+int query_quantifier_id(JNIEnv *env, TSQuantifier quantifier) {
   switch (quantifier) {
     case TSQuantifierZero:
       return 0;
@@ -194,4 +195,7 @@ int query_quantifier_id(TSQuantifier quantifier) {
     case TSQuantifierOneOrMore:
       return 4;
   }
+
+  throw_illegal_args(env, "Unknown quantifier");
+  return -1;
 }
