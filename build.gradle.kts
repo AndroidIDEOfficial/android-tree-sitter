@@ -62,7 +62,11 @@ fun Project.configureBaseExtension() {
       }
     }
 
-    packaging.jniLibs.keepDebugSymbols += "**.so"
+    packagingOptions {
+      jniLibs {
+        keepDebugSymbols.add("**.so")
+      }
+    }
 
     configurations.getByName("coreLibraryDesugaring").dependencies.add(
       libs.common.coreLibDesugaring.get())
