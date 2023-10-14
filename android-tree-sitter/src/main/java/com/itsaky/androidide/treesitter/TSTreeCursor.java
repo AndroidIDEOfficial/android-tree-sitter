@@ -46,7 +46,7 @@ public class TSTreeCursor extends TSNativeObject {
 
   @Override
   protected void closeNativeObj() {
-    Native.delete(pointer);
+    Native.delete(getNativeObject());
   }
 
   /**
@@ -56,7 +56,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public TSNode getCurrentNode() {
     checkAccess();
-    return Native.currentNode(pointer);
+    return Native.currentNode(getNativeObject());
   }
 
   /**
@@ -66,7 +66,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public String getCurrentFieldName() {
     checkAccess();
-    return Native.currentFieldName(pointer);
+    return Native.currentFieldName(getNativeObject());
   }
 
   /**
@@ -76,7 +76,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public short getCurrentFieldId() {
     checkAccess();
-    return Native.currentFieldId(pointer);
+    return Native.currentFieldId(getNativeObject());
   }
 
   /**
@@ -86,7 +86,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public TSTreeCursorNode getCurrentTreeCursorNode() {
     checkAccess();
-    return Native.currentTreeCursorNode(pointer);
+    return Native.currentTreeCursorNode(getNativeObject());
   }
 
   /**
@@ -96,7 +96,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public boolean gotoFirstChild() {
     checkAccess();
-    return Native.gotoFirstChild(pointer);
+    return Native.gotoFirstChild(getNativeObject());
   }
 
   /**
@@ -108,7 +108,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public long gotoFirstChildForByte(int byteIndex) {
     checkAccess();
-    return Native.gotoFirstChildForByte(pointer, byteIndex);
+    return Native.gotoFirstChildForByte(getNativeObject(), byteIndex);
   }
 
   /**
@@ -119,7 +119,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public boolean gotoFirstChildForPoint(TSPoint point) {
     checkAccess();
-    return Native.gotoFirstChildForPoint(pointer, point);
+    return Native.gotoFirstChildForPoint(getNativeObject(), point);
   }
 
   /**
@@ -129,7 +129,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public boolean gotoLastChild() {
     checkAccess();
-    return Native.gotoLastChild(pointer);
+    return Native.gotoLastChild(getNativeObject());
   }
 
   /**
@@ -139,7 +139,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public boolean gotoNextSibling() {
     checkAccess();
-    return Native.gotoNextSibling(pointer);
+    return Native.gotoNextSibling(getNativeObject());
   }
 
   /**
@@ -149,7 +149,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public boolean gotoPreviousSibling() {
     checkAccess();
-    return Native.gotoPreviousSibling(pointer);
+    return Native.gotoPreviousSibling(getNativeObject());
   }
 
   /**
@@ -159,7 +159,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public boolean gotoParent() {
     checkAccess();
-    return Native.gotoParent(pointer);
+    return Native.gotoParent(getNativeObject());
   }
 
   /**
@@ -168,7 +168,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public void gotoDescendant(int descendantIndex) {
     checkAccess();
-    Native.gotoDescendant(pointer, descendantIndex);
+    Native.gotoDescendant(getNativeObject(), descendantIndex);
   }
 
   /**
@@ -177,7 +177,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public int getCurrentDescendantIndex() {
     checkAccess();
-    return Native.currentDescendantIndex(pointer);
+    return Native.currentDescendantIndex(getNativeObject());
   }
 
   /**
@@ -186,7 +186,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public int getDepth() {
     checkAccess();
-    return Native.depth(pointer);
+    return Native.depth(getNativeObject());
   }
 
   /**
@@ -194,7 +194,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public void reset(TSNode node) {
     checkAccess();
-    Native.reset(pointer, node);
+    Native.reset(getNativeObject(), node);
   }
 
   /**
@@ -206,7 +206,7 @@ public class TSTreeCursor extends TSNativeObject {
   public void resetTo(TSTreeCursor another) {
     checkAccess();
     another.checkAccess();
-    Native.resetTo(pointer, another.pointer);
+    Native.resetTo(getNativeObject(), another.getNativeObject());
   }
 
   /**
@@ -217,7 +217,7 @@ public class TSTreeCursor extends TSNativeObject {
    */
   public TSTreeCursor copy() {
     checkAccess();
-    final var pointer = Native.copy(this.pointer);
+    final var pointer = Native.copy(this.getNativeObject());
     if (pointer == 0) {
       return null;
     }

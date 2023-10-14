@@ -35,7 +35,7 @@ public class LanguageCacheTest extends TreeSitterTest {
   public void testCacheAndRetrieval() {
     final var lang = TSLanguageJava.getInstance();
     assertThat(lang).isEqualTo(TSLanguageCache.get("java"));
-    assertThat(lang).isEqualTo(TSLanguageCache.get(lang.pointer));
+    assertThat(lang).isEqualTo(TSLanguageCache.get(lang.getNativeObject()));
   }
 
   @Test
@@ -54,7 +54,7 @@ public class LanguageCacheTest extends TreeSitterTest {
       parser.setLanguage(lang);
       try (final var tree = parser.parseString("public class Main {}")) {
         assertThat(tree.getLanguage()).isEqualTo(lang);
-        assertThat(TSLanguageCache.get(lang.pointer)).isEqualTo(tree.getLanguage());
+        assertThat(TSLanguageCache.get(lang.getNativeObject())).isEqualTo(tree.getLanguage());
       }
     }
   }
@@ -66,7 +66,7 @@ public class LanguageCacheTest extends TreeSitterTest {
     assertThat(lang).isNotNull();
     assertThat(lang.canAccess()).isTrue();
     assertThat(TSLanguageCache.get("c")).isEqualTo(lang);
-    assertThat(TSLanguageCache.get(lang.pointer)).isEqualTo(lang);
+    assertThat(TSLanguageCache.get(lang.getNativeObject())).isEqualTo(lang);
     lang.close();
 
     assertThat(lang.canAccess()).isFalse();
@@ -80,7 +80,7 @@ public class LanguageCacheTest extends TreeSitterTest {
     assertThat(lang).isNotNull();
     assertThat(lang.canAccess()).isTrue();
     assertThat(TSLanguageCache.get("c")).isEqualTo(lang);
-    assertThat(TSLanguageCache.get(lang.pointer)).isEqualTo(lang);
+    assertThat(TSLanguageCache.get(lang.getNativeObject())).isEqualTo(lang);
 
     TSLanguageCache.closeExternal();
     assertThat(lang.canAccess()).isFalse();

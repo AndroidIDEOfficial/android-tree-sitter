@@ -36,7 +36,7 @@ public class NodeTest extends TreeSitterTest {
       final var sourceToParse = newString("def foo(bar, baz):\n  print(bar)\n  print(baz)");
       try (TSTree tree = parser.parseString(sourceToParse)) {
         var root = tree.getRootNode();
-        assertThat(root.getTree().pointer).isEqualTo(tree.pointer);
+        assertThat(root.getTree().getNativeObject()).isEqualTo(tree.getNativeObject());
 
         var symbol = root.getSymbol();
         assertThat(tree.getLanguage().getSymbolName(symbol)).isEqualTo("module");

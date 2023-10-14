@@ -46,7 +46,7 @@ public class TSLookaheadIterator extends TSNativeObject {
    */
   public static TSLookaheadIterator create(TSLanguage language, short stateId) {
     language.checkAccess();
-    final var pointer = Native.newIterator(language.pointer, stateId);
+    final var pointer = Native.newIterator(language.getNativeObject(), stateId);
     if (pointer == 0) {
       return null;
     }
@@ -74,7 +74,7 @@ public class TSLookaheadIterator extends TSNativeObject {
    */
   public boolean next() {
     checkAccess();
-    return Native.next(pointer);
+    return Native.next(getNativeObject());
   }
 
   /**
@@ -82,7 +82,7 @@ public class TSLookaheadIterator extends TSNativeObject {
    */
   public short getCurrentSymbol() {
     checkAccess();
-    return Native.currentSymbol(pointer);
+    return Native.currentSymbol(getNativeObject());
   }
 
   /**
@@ -90,7 +90,7 @@ public class TSLookaheadIterator extends TSNativeObject {
    */
   public String getCurrentSymbolName() {
     checkAccess();
-    return Native.currentSymbolName(pointer);
+    return Native.currentSymbolName(getNativeObject());
   }
 
   /**
@@ -100,7 +100,7 @@ public class TSLookaheadIterator extends TSNativeObject {
    */
   public boolean resetState(short stateId) {
     checkAccess();
-    return Native.resetState(pointer, stateId);
+    return Native.resetState(getNativeObject(), stateId);
   }
 
   /**
@@ -111,7 +111,7 @@ public class TSLookaheadIterator extends TSNativeObject {
   public boolean reset(TSLanguage language, short stateId) {
     checkAccess();
     language.checkAccess();
-    final var reset = Native.reset(pointer, language.pointer, stateId);
+    final var reset = Native.reset(getNativeObject(), language.getNativeObject(), stateId);
     if (reset) {
       langName = language.getName();
     }
@@ -128,7 +128,7 @@ public class TSLookaheadIterator extends TSNativeObject {
 
   @Override
   protected void closeNativeObj() {
-    Native.delete(pointer);
+    Native.delete(getNativeObject());
   }
 
   private static final class Native {

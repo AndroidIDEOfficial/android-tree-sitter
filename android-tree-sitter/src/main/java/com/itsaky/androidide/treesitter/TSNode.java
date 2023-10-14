@@ -78,7 +78,7 @@ public class TSNode {
    *
    * @return The syntax tree.
    */
-  public TSTree getTree() {
+  public synchronized TSTree getTree() {
     if (mTree == null) {
       mTree = TSTree.create(this.tree);
     }

@@ -48,7 +48,7 @@ public class TSQueryCursor extends TSNativeObject {
     if (query == null || !query.canAccess()) {
       throw new IllegalArgumentException("Cannot execute invalid query");
     }
-    Native.exec(this.pointer, query.pointer, node);
+    Native.exec(getNativeObject(), query.getNativeObject(), node);
   }
 
   /**
@@ -63,7 +63,7 @@ public class TSQueryCursor extends TSNativeObject {
    */
   public boolean didExceedMatchLimit() {
     checkAccess();
-    return Native.exceededMatchLimit(this.pointer);
+    return Native.exceededMatchLimit(getNativeObject());
   }
 
   /**
@@ -74,7 +74,7 @@ public class TSQueryCursor extends TSNativeObject {
    */
   public int getMatchLimit() {
     checkAccess();
-    return Native.matchLimit(this.pointer);
+    return Native.matchLimit(getNativeObject());
   }
 
   /**
@@ -85,32 +85,32 @@ public class TSQueryCursor extends TSNativeObject {
    */
   public void setMatchLimit(int newLimit) {
     checkAccess();
-    Native.matchLimit(this.pointer, newLimit);
+    Native.matchLimit(getNativeObject(), newLimit);
   }
 
   public void setByteRange(int start, int end) {
     checkAccess();
-    Native.setByteRange(this.pointer, start, end);
+    Native.setByteRange(getNativeObject(), start, end);
   }
 
   public void setPointRange(TSPoint start, TSPoint end) {
     checkAccess();
-    Native.setPointRange(this.pointer, start, end);
+    Native.setPointRange(getNativeObject(), start, end);
   }
 
   public TSQueryMatch nextMatch() {
     checkAccess();
-    return Native.nextMatch(this.pointer);
+    return Native.nextMatch(getNativeObject());
   }
 
   public void removeMatch(int id) {
     checkAccess();
-    Native.removeMatch(this.pointer, id);
+    Native.removeMatch(getNativeObject(), id);
   }
 
   @Override
   protected void closeNativeObj() {
-    Native.delete(this.pointer);
+    Native.delete(getNativeObject());
   }
 
   private static class Native {

@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.treesitter;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Represents a native object.
  *
@@ -24,7 +26,7 @@ package com.itsaky.androidide.treesitter;
  */
 public abstract class TSNativeObject implements TSClosable {
 
-  protected long pointer;
+  protected final AtomicLong pointer = new AtomicLong(0);
 
   /**
    * Creates a new {@link TSNativeObject} instance with the given pointer.
@@ -33,7 +35,19 @@ public abstract class TSNativeObject implements TSClosable {
    *                {@link TSNativeObject} with pointer set to 0 and then set the pointer lazily.
    */
   protected TSNativeObject(final long pointer) {
-    this.pointer = pointer;
+    setNativeObject(pointer);
+  }
+
+  /**
+   * Get the pointer to the native object.
+   * @return The pointer to the native object.
+   */
+  public long getNativeObject() {
+    return pointer.get();
+  }
+
+  protected void setNativeObject(long pointer) {
+    this.pointer.set(pointer);
   }
 
   /**
@@ -43,7 +57,7 @@ public abstract class TSNativeObject implements TSClosable {
    * @return Whether the native object can be accessed.
    */
   public boolean canAccess() {
-    return this.pointer != 0;
+    return getNativeObject() != 0;
   }
 
   protected void checkAccess() {
@@ -54,11 +68,11 @@ public abstract class TSNativeObject implements TSClosable {
 
   @Override
   public void close() {
-    if (this.pointer != 0) {
+    if (getNativeObject() != 0) {
       closeNativeObj();
     }
 
-    this.pointer = 0;
+    setNativeObject(0);
   }
 
   /**

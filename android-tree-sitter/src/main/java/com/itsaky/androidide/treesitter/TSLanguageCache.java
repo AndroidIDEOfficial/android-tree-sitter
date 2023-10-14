@@ -44,7 +44,7 @@ public final class TSLanguageCache {
    */
   public static void cache(String name, TSLanguage language) {
     languagesByName.computeIfAbsent(name, key -> language);
-    languagesByPtr.put(language.pointer, language);
+    languagesByPtr.put(language.getNativeObject(), language);
   }
 
   /**
@@ -84,7 +84,7 @@ public final class TSLanguageCache {
     final var toRemove = new HashSet<Pair<String, Long>>();
     languagesByName.forEach((name, lang) -> {
       if (lang.isExternal()) {
-        toRemove.add(Pair.of(name, lang.pointer));
+        toRemove.add(Pair.of(name, lang.getNativeObject()));
         lang.close();
       }
     });
@@ -114,9 +114,9 @@ public final class TSLanguageCache {
       languagesByName.entrySet().removeIf(entry -> language.equals(entry.getValue()));
     }
 
-    if (language.pointer != 0) {
+    if (language.getNativeObject() != 0) {
       //noinspection resource
-      languagesByPtr.remove(language.pointer);
+      languagesByPtr.remove(language.getNativeObject());
     } else {
       languagesByPtr.entrySet().removeIf(entry -> language.equals(entry.getValue()));
     }

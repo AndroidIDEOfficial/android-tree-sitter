@@ -66,7 +66,7 @@ public class TSQuery extends TSNativeObject {
    */
   public int getCaptureCount() {
     checkAccess();
-    return Native.captureCount(this.pointer);
+    return Native.captureCount(getNativeObject());
   }
 
   /**
@@ -76,7 +76,7 @@ public class TSQuery extends TSNativeObject {
    */
   public int getPatternCount() {
     checkAccess();
-    return Native.patternCount(this.pointer);
+    return Native.patternCount(getNativeObject());
   }
 
   /**
@@ -86,7 +86,7 @@ public class TSQuery extends TSNativeObject {
    */
   public int getStringCount() {
     checkAccess();
-    return Native.stringCount(this.pointer);
+    return Native.stringCount(getNativeObject());
   }
 
   public String[] getCaptureNames() {
@@ -102,51 +102,51 @@ public class TSQuery extends TSNativeObject {
   public int getStartByteForPattern(int pattern) {
     checkAccess();
     validatePatternIndex(pattern);
-    return Native.startByteForPattern(this.pointer, pattern);
+    return Native.startByteForPattern(getNativeObject(), pattern);
   }
 
   public TSQueryPredicateStep[] getPredicatesForPattern(int pattern) {
     checkAccess();
     validatePatternIndex(pattern);
-    return Native.predicatesForPattern(this.pointer, pattern);
+    return Native.predicatesForPattern(getNativeObject(), pattern);
   }
 
   public boolean isPatternRooted(int pattern) {
     checkAccess();
     validatePatternIndex(pattern);
-    return Native.patternRooted(this.pointer, pattern);
+    return Native.patternRooted(getNativeObject(), pattern);
   }
 
   public boolean isPatternNonLocal(int pattern) {
     checkAccess();
     validatePatternIndex(pattern);
-    return Native.patternNonLocal(this.pointer, pattern);
+    return Native.patternNonLocal(getNativeObject(), pattern);
   }
 
   public boolean isPatternGuaranteedAtStep(int offset) {
     checkAccess();
-    return Native.patternGuaranteedAtStep(this.pointer, offset);
+    return Native.patternGuaranteedAtStep(getNativeObject(), offset);
   }
 
   public String getCaptureNameForId(int id) {
     checkAccess();
-    return Native.captureNameForId(this.pointer, id);
+    return Native.captureNameForId(getNativeObject(), id);
   }
 
   public String getStringValueForId(int id) {
     checkAccess();
-    return Native.stringValueForId(this.pointer, id);
+    return Native.stringValueForId(getNativeObject(), id);
   }
 
   public TSQuantifier getCaptureQuantifierForId(int pattern, int capture) {
     checkAccess();
     validatePatternIndex(pattern);
-    return TSQuantifier.forId(Native.captureQuantifierForId(this.pointer, pattern, capture));
+    return TSQuantifier.forId(Native.captureQuantifierForId(getNativeObject(), pattern, capture));
   }
 
   @Override
   protected void closeNativeObj() {
-    Native.delete(this.pointer);
+    Native.delete(getNativeObject());
   }
 
   private void validatePatternIndex(int pattern) {
@@ -183,7 +183,7 @@ public class TSQuery extends TSNativeObject {
     }
 
     final var query = TSObjectFactoryProvider.getFactory().createQuery(0);
-    query.pointer = Native.newQuery(query, language.pointer, querySource);
+    query.setNativeObject(Native.newQuery(query, language.getNativeObject(), querySource));
     return query;
   }
 

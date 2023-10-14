@@ -55,7 +55,7 @@ public class TSParser extends TSNativeObject {
    */
   public void setLanguage(TSLanguage language) {
     checkAccess();
-    Native.setLanguage(pointer, language.pointer);
+    Native.setLanguage(getNativeObject(), language.getNativeObject());
   }
 
   /**
@@ -65,7 +65,7 @@ public class TSParser extends TSNativeObject {
    */
   public TSLanguage getLanguage() {
     checkAccess();
-    final var langPtr = Native.getLanguage(this.pointer);
+    final var langPtr = Native.getLanguage(this.getNativeObject());
     if (langPtr == 0) {
       return null;
     }
@@ -110,8 +110,8 @@ public class TSParser extends TSNativeObject {
     checkAccess();
 
     final var strPointer = source.getPointer();
-    final var oldTreePointer = oldTree != null ? oldTree.pointer : 0;
-    final var tree = Native.parse(this.pointer, oldTreePointer, strPointer);
+    final var oldTreePointer = oldTree != null ? oldTree.getNativeObject() : 0;
+    final var tree = Native.parse(this.getNativeObject(), oldTreePointer, strPointer);
     return createTree(tree);
   }
 
@@ -123,7 +123,7 @@ public class TSParser extends TSNativeObject {
    */
   public void setTimeout(long microseconds) {
     checkAccess();
-    Native.setTimeout(this.pointer, microseconds);
+    Native.setTimeout(getNativeObject(), microseconds);
   }
 
   /**
@@ -133,7 +133,7 @@ public class TSParser extends TSNativeObject {
    */
   public long getTimeout() {
     checkAccess();
-    return Native.getTimeout(this.pointer);
+    return Native.getTimeout(getNativeObject());
   }
 
   /**
@@ -154,12 +154,12 @@ public class TSParser extends TSNativeObject {
    */
   public boolean setIncludedRanges(TSRange[] ranges) {
     checkAccess();
-    return Native.setIncludedRanges(this.pointer, ranges);
+    return Native.setIncludedRanges(getNativeObject(), ranges);
   }
 
   public TSRange[] getIncludedRanges() {
     checkAccess();
-    return Native.getIncludedRanges(this.pointer);
+    return Native.getIncludedRanges(getNativeObject());
   }
 
   /**
@@ -172,12 +172,12 @@ public class TSParser extends TSNativeObject {
    */
   public void reset() {
     checkAccess();
-    Native.reset(this.pointer);
+    Native.reset(getNativeObject());
   }
 
   @Override
   protected void closeNativeObj() {
-    Native.delete(pointer);
+    Native.delete(getNativeObject());
   }
 
   private static class Native {

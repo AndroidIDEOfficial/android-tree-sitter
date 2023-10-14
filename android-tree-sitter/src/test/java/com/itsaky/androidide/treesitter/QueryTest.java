@@ -87,7 +87,7 @@ public class QueryTest extends TreeSitterTest {
   @Test
   public void testQuerySyntaxError() throws Exception {
     try (TSQuery query = TSQuery.create(TSLanguageJava.getInstance(), "(class_declaration")) {
-      assertThat(query.pointer).isEqualTo(0);
+      assertThat(query.getNativeObject()).isEqualTo(0);
       assertThat(query.getErrorOffset()).isEqualTo("(class_declaration".length());
       assertThat(query.getErrorType()).isEqualTo(TSQueryError.Syntax);
     }

@@ -31,7 +31,7 @@ public class TSTree extends TSNativeObject {
 
   @Override
   protected void closeNativeObj() {
-    Native.delete(pointer);
+    Native.delete(getNativeObject());
   }
 
   /**
@@ -41,14 +41,14 @@ public class TSTree extends TSNativeObject {
    */
   public TSNode getRootNode() {
     checkAccess();
-    return Native.rootNode(pointer);
+    return Native.rootNode(getNativeObject());
   }
 
   public TSRange[] getChangedRanges(TSTree oldTree) {
     checkAccess();
     oldTree.checkAccess();
 
-    TSRange[] ranges = Native.changedRanges(this.pointer, oldTree.pointer);
+    TSRange[] ranges = Native.changedRanges(getNativeObject(), oldTree.getNativeObject());
     if (ranges == null) {
       return new TSRange[0];
     }
@@ -62,7 +62,7 @@ public class TSTree extends TSNativeObject {
    */
   public TSTree copy() {
     checkAccess();
-    return TSTree.create(Native.copy(pointer));
+    return TSTree.create(Native.copy(getNativeObject()));
   }
 
   /**
@@ -72,7 +72,7 @@ public class TSTree extends TSNativeObject {
    */
   public void edit(TSInputEdit edit) {
     checkAccess();
-    Native.edit(pointer, edit);
+    Native.edit(getNativeObject(), edit);
   }
 
   /**
@@ -82,7 +82,7 @@ public class TSTree extends TSNativeObject {
    */
   public TSLanguage getLanguage() {
     checkAccess();
-    final var langPtr = Native.getLanguage(this.pointer);
+    final var langPtr = Native.getLanguage(getNativeObject());
     if (langPtr == 0) {
       return null;
     }

@@ -20,6 +20,7 @@ package com.itsaky.androidide.treesitter;
 import android.content.Context;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 /**
@@ -37,7 +38,7 @@ public class TSLanguage extends TSNativeObject {
    * The pointer to the library handle if this language was loaded using
    * {@link TSLanguage#loadLanguage(String, String)}.
    */
-  protected long libHandle;
+  private final AtomicLong libHandle = new AtomicLong(0);
 
   /**
    * Create a new {@link TSLanguage} instance with the given name and pointer.
@@ -62,8 +63,16 @@ public class TSLanguage extends TSNativeObject {
     }
 
     this.name = name;
-    this.pointer = pointers[0];
-    this.libHandle = pointers[1];
+    setNativeObject(pointers[0]);
+    setLibHandle(pointers[1]);
+  }
+
+  public long getLibHandle() {
+    return libHandle.get();
+  }
+
+  protected void setLibHandle(long libHandle) {
+    this.libHandle.set(libHandle);
   }
 
   public static TSLanguage create(String name, long pointer) {
@@ -90,39 +99,39 @@ public class TSLanguage extends TSNativeObject {
    */
   public int getSymbolCount() {
     checkAccess();
-    return Native.symCount(this.pointer);
+    return Native.symCount(getNativeObject());
   }
 
   public int getFieldCount() {
     checkAccess();
-    return Native.fldCount(this.pointer);
+    return Native.fldCount(getNativeObject());
   }
 
   public String getSymbolName(int symbol) {
     checkAccess();
-    return Native.symName(this.pointer, symbol);
+    return Native.symName(getNativeObject(), symbol);
   }
 
   public int getSymbolForTypeString(String name, boolean isNamed) {
     checkAccess();
     final var bytes = name.getBytes(StandardCharsets.UTF_8);
-    return Native.symForName(this.pointer, bytes, bytes.length, isNamed);
+    return Native.symForName(getNativeObject(), bytes, bytes.length, isNamed);
   }
 
   public String getFieldNameForId(int id) {
     checkAccess();
-    return Native.fldNameForId(this.pointer, id);
+    return Native.fldNameForId(getNativeObject(), id);
   }
 
   public int getFieldIdForName(String name) {
     checkAccess();
     final var bytes = name.getBytes(StandardCharsets.UTF_8);
-    return Native.fldIdForName(this.pointer, bytes, bytes.length);
+    return Native.fldIdForName(getNativeObject(), bytes, bytes.length);
   }
 
   public TSSymbolType getSymbolType(int symbol) {
     checkAccess();
-    return TSSymbolType.forId(Native.symType(this.pointer, symbol));
+    return TSSymbolType.forId(Native.symType(getNativeObject(), symbol));
   }
 
   /**
@@ -130,7 +139,7 @@ public class TSLanguage extends TSNativeObject {
    */
   public int getStateCount() {
     checkAccess();
-    return Native.stateCount(pointer);
+    return Native.stateCount(getNativeObject());
   }
 
   /**
@@ -139,12 +148,12 @@ public class TSLanguage extends TSNativeObject {
    */
   public short getNextState(short stateId, short symbol) {
     checkAccess();
-    return Native.nextState(pointer, stateId, symbol);
+    return Native.nextState(getNativeObject(), stateId, symbol);
   }
 
   public int getLanguageVersion() {
     checkAccess();
-    return Native.langVer(this.pointer);
+    return Native.langVer(getNativeObject());
   }
 
   /**
@@ -154,14 +163,14 @@ public class TSLanguage extends TSNativeObject {
    * @return <code>true</code> if this language is external, <code>false</code> otherwise.
    */
   public boolean isExternal() {
-    return this.libHandle != 0;
+    return getLibHandle() != 0;
   }
 
   @Override
   public void close() {
     if (isExternal()) {
-      Native.dlclose(this.libHandle);
-      this.libHandle = 0;
+      Native.dlclose(getLibHandle());
+      setLibHandle(0);
 
       // Language instance loading using loadLanguage(...) must not be reused
       TSLanguageCache.remove(this);

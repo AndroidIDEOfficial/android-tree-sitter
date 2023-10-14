@@ -84,7 +84,7 @@ public class ParserTest extends TreeSitterTest {
     final long start = System.currentTimeMillis();
     try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
-      assertThat(parser.getLanguage().pointer).isEqualTo(TSLanguageJava.getInstance().pointer);
+      assertThat(parser.getLanguage().getNativeObject()).isEqualTo(TSLanguageJava.getInstance().getNativeObject());
       try (var tree = parser.parseString(readResource("CodeEditor.java.txt"))) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println(

@@ -38,7 +38,7 @@ public class TreeTest extends TreeSitterTest {
     try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
       try (final var tree = parser.parseString("class Main { void main() {} }")) {
-        assertThat(tree.getLanguage().pointer).isEqualTo(TSLanguageJava.getInstance().pointer);
+        assertThat(tree.getLanguage().getNativeObject()).isEqualTo(TSLanguageJava.getInstance().getNativeObject());
         assertThat(tree.copy().getRootNode().getNodeString())
             .isEqualTo(tree.getRootNode().getNodeString());
       }
