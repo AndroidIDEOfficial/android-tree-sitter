@@ -25,12 +25,12 @@ import java.util.Objects;
 
 public class TSNode {
 
-  public int context0;
-  public int context1;
-  public int context2;
-  public int context3;
-  public long id;
-  public long tree;
+  protected int context0;
+  protected int context1;
+  protected int context2;
+  protected int context3;
+  protected long id;
+  protected long tree;
 
   protected TSTree mTree;
 
@@ -51,6 +51,26 @@ public class TSNode {
   ) {
     return TSObjectFactoryProvider.getFactory()
       .createNode(context0, context1, context2, context3, id, tree);
+  }
+
+  public int getContext0() {
+    return context0;
+  }
+
+  public int getContext1() {
+    return context1;
+  }
+
+  public int getContext2() {
+    return context2;
+  }
+
+  public int getContext3() {
+    return context3;
+  }
+
+  public long getId() {
+    return id;
   }
 
   /**

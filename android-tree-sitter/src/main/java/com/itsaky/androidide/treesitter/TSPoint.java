@@ -24,7 +24,7 @@ import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
  */
 public class TSPoint {
 
-  public int row, column;
+  protected int row, column;
 
   protected TSPoint() {
   }
@@ -32,6 +32,14 @@ public class TSPoint {
   protected TSPoint(int row, int column) {
     this.row = row;
     this.column = column;
+  }
+
+  public int getRow() {
+    return row;
+  }
+
+  public int getColumn() {
+    return column;
   }
 
   public static TSPoint create(int row, int column) {
