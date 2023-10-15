@@ -557,7 +557,7 @@ public class TSNode extends TSNativeObject {
 
   @Override
   public boolean canAccess() {
-    return super.canAccess() && Native.canAccess(this.getNodeId());
+    return Native.canAccess(this.getNodeId());
   }
 
   @Override
