@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 /**
  * Represents a native object.
@@ -40,6 +41,7 @@ public abstract class TSNativeObject implements TSClosable {
 
   /**
    * Get the pointer to the native object.
+   *
    * @return The pointer to the native object.
    */
   public long getNativeObject() {
@@ -64,6 +66,21 @@ public abstract class TSNativeObject implements TSClosable {
     if (!canAccess()) {
       throw new IllegalStateException("Cannot access native object");
     }
+  }
+
+  /**
+   * Checks whether the native object can be accessed and returns the result of the given
+   * {@link Supplier} if it can be accessed. Throws {@link IllegalStateException} if the native
+   * object cannot be accessed.
+   *
+   * @param supplier The {@link Supplier} which produces a result.
+   * @param <T>      The type of result.
+   * @return The result produced by the {@link Supplier}.
+   * @see #checkAccess()
+   */
+  protected <T> T checkAccessAndGet(Supplier<T> supplier) {
+    checkAccess();
+    return supplier.get();
   }
 
   @Override

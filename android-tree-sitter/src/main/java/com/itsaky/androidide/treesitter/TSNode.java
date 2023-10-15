@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class TSNode {
+public class TSNode extends TSNativeObject {
 
   protected int context0;
   protected int context1;
@@ -35,9 +35,11 @@ public class TSNode {
   protected TSTree mTree;
 
   protected TSNode() {
+    super(0);
   }
 
   protected TSNode(int context0, int context1, int context2, int context3, long id, long tree) {
+    super(id);
     this.context0 = context0;
     this.context1 = context1;
     this.context2 = context2;
@@ -69,7 +71,7 @@ public class TSNode {
     return context3;
   }
 
-  public long getId() {
+  public long getNodeId() {
     return id;
   }
 
@@ -79,6 +81,7 @@ public class TSNode {
    * @return The syntax tree.
    */
   public synchronized TSTree getTree() {
+    checkAccess();
     if (mTree == null) {
       mTree = TSTree.create(this.tree);
     }
@@ -92,6 +95,7 @@ public class TSNode {
    * @return The child at the child index.
    */
   public TSNode getChild(int index) {
+    checkAccess();
     final var count = getChildCount();
     if (index < 0 || index >= count) {
       throw new IndexOutOfBoundsException("count=" + count + ", index=" + index);
@@ -107,6 +111,7 @@ public class TSNode {
    * @return The named child node at the given index.
    */
   public TSNode getNamedChild(int index) {
+    checkAccess();
     final var count = getNamedChildCount();
     if (index < 0 || index >= count) {
       throw new IndexOutOfBoundsException("count=" + count + ", index=" + index);
@@ -122,15 +127,18 @@ public class TSNode {
    * @return The found node.
    */
   public TSNode getChildByFieldName(String fieldName) {
+    checkAccess();
     final var bytes = fieldName.getBytes(StandardCharsets.UTF_8);
     return getChildByFieldName(bytes, bytes.length);
   }
 
   public TSTreeCursor walk() {
+    checkAccess();
     return TSTreeCursor.create(this);
   }
 
   public TSNode findNodeWithType(final String type, final boolean namedOnly) {
+    checkAccess();
     for (int i = 0; i < (namedOnly ? getNamedChildCount() : getChildCount()); i++) {
       final var child = namedOnly ? getNamedChild(i) : getChild(i);
       if (child.isNull()) {
@@ -148,6 +156,7 @@ public class TSNode {
   public List<TSNode> findChildrenWithType(final String type, final boolean reverseSearch,
                                            final boolean namedOnly
   ) {
+    checkAccess();
     if (reverseSearch) {
       return findChildrenWithTypeReverse(type, namedOnly);
     }
@@ -168,6 +177,7 @@ public class TSNode {
   }
 
   public List<TSNode> findChildrenWithTypeReverse(final String type, final boolean namedOnly) {
+    checkAccess();
     final var result = new ArrayList<TSNode>();
     for (int i = (namedOnly ? getNamedChildCount() : getChildCount()) - 1; i > 0; --i) {
       final var child = namedOnly ? getNamedChild(i) : getChild(i);
@@ -193,13 +203,25 @@ public class TSNode {
    *
    * @return The parent node.
    */
-  public native TSNode getParent();
+  public TSNode getParent() {
+    checkAccess();
+    return Native.getParent(this);
+  }
 
-  private native TSNode getChildAt(int index);
+  private TSNode getChildAt(int index) {
+    checkAccess();
+    return Native.getChildAt(this, index);
+  }
 
-  private native TSNode getNamedChildAt(int index);
+  private TSNode getNamedChildAt(int index) {
+    checkAccess();
+    return Native.getNamedChildAt(this, index);
+  }
 
-  private native TSNode getChildByFieldName(byte[] bytes, int length);
+  private TSNode getChildByFieldName(byte[] bytes, int length) {
+    checkAccess();
+    return Native.getChildByFieldName(this, bytes, length);
+  }
 
   /**
    * Get the field name for node's child at the given index, where zero represents * the first
@@ -208,7 +230,10 @@ public class TSNode {
    * @param childIndex The index of the child.
    * @return The field name for the child or <code>null</code>.
    */
-  public native String getFieldNameForChild(int childIndex);
+  public String getFieldNameForChild(int childIndex) {
+    checkAccess();
+    return Native.getFieldNameForChild(this, childIndex);
+  }
 
   /**
    * Get the child for the given field id.
@@ -216,35 +241,49 @@ public class TSNode {
    * @param fieldId The field id.
    * @return The child node. Maybe <code>null</code>.
    */
-  public native TSNode getChildByFieldId(int fieldId);
+  public TSNode getChildByFieldId(int fieldId) {
+    checkAccess();
+    return Native.getChildByFieldId(this, fieldId);
+  }
 
   /**
    * Get the next sibling node of this node.
    *
    * @return The next sibling node.
    */
-  public native TSNode getNextSibling();
+  public TSNode getNextSibling() {
+    checkAccess();
+    return Native.getNextSibling(this);
+  }
 
   /**
    * Get the previous sibling node of this node.
    *
    * @return The previous sibling node.
    */
-  public native TSNode getPreviousSibling();
+  public TSNode getPreviousSibling() {
+    checkAccess();
+    return Native.getPreviousSibling(this);
+  }
 
   /**
    * Get the next named sibling node of this node.
    *
    * @return The next named sibling node.
    */
-  public native TSNode getNextNamedSibling();
+  public TSNode getNextNamedSibling() {
+    checkAccess();
+    return Native.getNextNamedSibling(this);
+  }
 
   /**
    * Get the previous named sibling node of this node.
    *
    * @return The previous named sibling node.
    */
-  public native TSNode getPreviousNamedSibling();
+  public TSNode getPreviousNamedSibling() {
+    return Native.getPreviousNamedSibling(this);
+  }
 
   /**
    * Get the node's first child that extends beyond the given byte offset.
@@ -252,7 +291,10 @@ public class TSNode {
    * @param byteOffset The byte offsest.
    * @return The first child beyond the byte offset.
    */
-  public native TSNode getFirstChildForByte(int byteOffset);
+  public TSNode getFirstChildForByte(int byteOffset) {
+    checkAccess();
+    return Native.getFirstChildForByte(this, byteOffset);
+  }
 
   /**
    * Get the node's first named child that extends beyond the given byte offset.
@@ -260,138 +302,255 @@ public class TSNode {
    * @param byteOffset The byte offsest.
    * @return The first named child beyond the byte offset.
    */
-  public native TSNode getFirstNamedChildForByte(int byteOffset);
+  public TSNode getFirstNamedChildForByte(int byteOffset) {
+    checkAccess();
+    return Native.getFirstNamedChildForByte(this, byteOffset);
+  }
 
   /**
    * Get the smallest node within this node that spans the given range of bytes or (row, column)
    * positions.
    */
-  public native TSNode getDescendantForByteRange(int start, int end);
+  public TSNode getDescendantForByteRange(int start, int end) {
+    checkAccess();
+    return Native.getDescendantForByteRange(this, start, end);
+  }
 
   /**
    * @see #getDescendantForByteRange(int, int)
    */
-  public native TSNode getDescendantForPointRange(TSPoint start, TSPoint end);
+  public TSNode getDescendantForPointRange(TSPoint start, TSPoint end) {
+    checkAccess();
+    return Native.getDescendantForPointRange(this, start, end);
+  }
 
   /**
    * Get the smallest node within this node that spans the given range of bytes or (row, column)
    * positions.
    */
-  public native TSNode getNamedDescendantForByteRange(int start, int end);
+  public TSNode getNamedDescendantForByteRange(int start, int end) {
+    checkAccess();
+    return Native.getNamedDescendantForByteRange(this, start, end);
+  }
 
   /**
    * @see #getNamedDescendantForByteRange(int, int)
    */
-  public native TSNode getNamedDescendantForPointRange(TSPoint start, TSPoint end);
+  public TSNode getNamedDescendantForPointRange(TSPoint start, TSPoint end) {
+    checkAccess();
+    return Native.getNamedDescendantForPointRange(this, start, end);
+  }
 
   /**
    * Check if this node and the other node are identical.
    *
    * @param another The node to check.
    */
-  public native boolean isEqualTo(TSNode another);
+  public boolean isEqualTo(TSNode another) {
+    checkAccess();
+    return Native.isEqualTo(this, another);
+  }
 
   /**
    * Get the number of children of the node.
    *
    * @return The number of children.
    */
-  public native int getChildCount();
+  public int getChildCount() {
+    checkAccess();
+    return Native.getChildCount(this);
+  }
 
   /**
    * Get the number of 'named' child nodes in the node.
    */
-  public native int getNamedChildCount();
+  public int getNamedChildCount() {
+    checkAccess();
+    return Native.getNamedChildCount(this);
+  }
 
   /**
    * Get the end byte of this node.
    *
    * @return End byte of node.
    */
-  public native int getEndByte();
+  public int getEndByte() {
+    checkAccess();
+    return Native.getEndByte(this);
+  }
 
   /**
    * Get the string representation of this node.
    *
    * @return The string representation of the node.
    */
-  public native String getNodeString();
+  public String getNodeString() {
+    checkAccess();
+    return Native.getNodeString(this);
+  }
 
   /**
    * Get the start byte of this node.
    *
    * @return Start byte of node.
    */
-  public native int getStartByte();
+  public int getStartByte() {
+    checkAccess();
+    return Native.getStartByte(this);
+  }
 
   /**
    * Get the start position of this node.
    *
    * @return The start position.
    */
-  public native TSPoint getStartPoint();
+  public TSPoint getStartPoint() {
+    checkAccess();
+    return Native.getStartPoint(this);
+  }
 
   /**
    * Get the end position of this node.
    *
    * @return The end position.
    */
-  public native TSPoint getEndPoint();
+  public TSPoint getEndPoint() {
+    checkAccess();
+    return Native.getEndPoint(this);
+  }
 
   /**
    * Get the type of this node.
    *
    * @return The type of the node.
    */
-  public native String getType();
+  public String getType() {
+    checkAccess();
+    return Native.getType(this);
+  }
 
   /**
    * Get the node's type as a numerical id.
    *
    * @return The node's type as a numerical id.
    */
-  public native int getSymbol();
+  public int getSymbol() {
+    checkAccess();
+    return Native.getSymbol(this);
+  }
 
   /**
    * Check if the node is null.
    */
-  public native boolean isNull();
+  public boolean isNull() {
+    checkAccess();
+    return Native.isNull(this);
+  }
 
   /**
    * Check if the node is *named*. Named nodes correspond to named rules in the grammar, whereas
    * *anonymous* nodes correspond to string literals in the grammar.
    */
-  public native boolean isNamed();
+  public boolean isNamed() {
+    checkAccess();
+    return Native.isNamed(this);
+  }
 
   /**
    * Check if the node is *extra*. Extra nodes represent things like comments, which are not
    * required the grammar, but can appear anywhere.
    */
-  public native boolean isExtra();
+  public boolean isExtra() {
+    checkAccess();
+    return Native.isExtra(this);
+  }
 
   /**
    * Check if the node is *missing*. Missing nodes are inserted by the parser in order to recover
    * from certain kinds of syntax errors.
    */
-  public native boolean isMissing();
+  public boolean isMissing() {
+    checkAccess();
+    return Native.isMissing(this);
+  }
 
   /**
    * Check if the given node has been edited.
    */
-  public native boolean hasChanges();
+  public boolean hasChanges() {
+    checkAccess();
+    return Native.hasChanges(this);
+  }
 
   /**
    * Check if the node is a syntax error or contains any syntax errors.
    */
-  public native boolean hasErrors();
+  public boolean hasErrors() {
+    checkAccess();
+    return Native.hasErrors(this);
+  }
 
   /**
    * Check if the node is an error.
    */
-  public native boolean isError();
+  public boolean isError() {
+    checkAccess();
+    return Native.isError(this);
+  }
 
   /**
    * Get this node's parse state.
    */
-  public native short getParseState();
+  public short getParseState() {
+    checkAccess();
+    return Native.getParseState(this);
+  }
+
+  @Override
+  public boolean canAccess() {
+    return super.canAccess() && Native.canAccess(this.getNodeId());
+  }
+
+  @Override
+  protected void closeNativeObj() {
+    // no need to do anything
+  }
+
+  private static final class Native {
+    static native boolean canAccess(long id);
+    static native TSNode getParent(TSNode self);
+    static native TSNode getChildAt(TSNode self, int index);
+    static native TSNode getNamedChildAt(TSNode self, int index);
+    static native TSNode getChildByFieldName(TSNode self, byte[] bytes, int length);
+    static native String getFieldNameForChild(TSNode self, int childIndex);
+    static native TSNode getChildByFieldId(TSNode self, int fieldId);
+    static native TSNode getNextSibling(TSNode self);
+    static native TSNode getPreviousSibling(TSNode self);
+    static native TSNode getNextNamedSibling(TSNode self);
+    static native TSNode getPreviousNamedSibling(TSNode self);
+    static native TSNode getFirstChildForByte(TSNode self, int byteOffset);
+    static native TSNode getFirstNamedChildForByte(TSNode self, int byteOffset);
+    static native TSNode getDescendantForByteRange(TSNode self, int start, int end);
+    static native TSNode getDescendantForPointRange(TSNode self, TSPoint start, TSPoint end);
+    static native TSNode getNamedDescendantForByteRange(TSNode self, int start, int end);
+    static native TSNode getNamedDescendantForPointRange(TSNode self, TSPoint start, TSPoint end);
+    static native boolean isEqualTo(TSNode self, TSNode another);
+    static native int getChildCount(TSNode self);
+    static native int getNamedChildCount(TSNode self);
+    static native int getEndByte(TSNode self);
+    static native String getNodeString(TSNode self);
+    static native int getStartByte(TSNode self);
+    static native TSPoint getStartPoint(TSNode self);
+    static native TSPoint getEndPoint(TSNode self);
+    static native String getType(TSNode self);
+    static native int getSymbol(TSNode self);
+    static native boolean isNull(TSNode self);
+    static native boolean isNamed(TSNode self);
+    static native boolean isExtra(TSNode self);
+    static native boolean isMissing(TSNode self);
+    static native boolean hasChanges(TSNode self);
+    static native boolean hasErrors(TSNode self);
+    static native boolean isError(TSNode self);
+    static native short getParseState(TSNode self);
+  }
 }

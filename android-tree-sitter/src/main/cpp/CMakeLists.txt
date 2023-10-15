@@ -25,6 +25,10 @@ set(PROJECT_DIR ../../../..)
 # Include common configuration
 include(../../../../cmake/common-config.cmake)
 
+# android-tree-sitter uses some internal APIs
+# headers for those are located in the tree-sitter sources
+include_directories("${TS_DIR}/lib/src")
+
 # add android-tree-sitter library
 add_library(android-tree-sitter SHARED
 

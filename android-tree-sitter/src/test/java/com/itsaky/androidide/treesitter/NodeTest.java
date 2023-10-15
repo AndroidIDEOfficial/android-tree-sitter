@@ -21,12 +21,13 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.itsaky.androidide.treesitter.string.UTF16StringFactory.newString;
 
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class NodeTest extends TreeSitterTest {
 
   @Test
@@ -110,13 +111,11 @@ public class NodeTest extends TreeSitterTest {
         assertThat(def.getNextNamedSibling().isEqualTo(def.getNextSibling())).isTrue();
         assertThat(def.getNextSibling().getNextSibling().getType()).isEqualTo("parameters");
         assertThat(def.getNextSibling().getNextSibling().getNextSibling().getType()).isEqualTo(":");
-        assertThat(
-                def.getNextSibling()
-                    .getNextSibling()
-                    .getNextSibling()
-                    .getPreviousSibling()
-                    .getType())
-            .isEqualTo("parameters");
+        assertThat(def.getNextSibling()
+          .getNextSibling()
+          .getNextSibling()
+          .getPreviousSibling()
+          .getType()).isEqualTo("parameters");
 
         function.getChildByFieldName("body");
 
