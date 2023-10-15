@@ -25,10 +25,10 @@ import java.util.Objects;
 
 public class TSNode extends TSNativeObject {
 
-  protected int context0;
-  protected int context1;
-  protected int context2;
-  protected int context3;
+  protected int context0; // start byte
+  protected int context1; // start point row
+  protected int context2; // start point column
+  protected int context3; // alias
   protected long id;
   protected long tree;
 
@@ -210,16 +210,19 @@ public class TSNode extends TSNativeObject {
 
   private TSNode getChildAt(int index) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getChildAt(this, index);
   }
 
   private TSNode getNamedChildAt(int index) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getNamedChildAt(this, index);
   }
 
   private TSNode getChildByFieldName(byte[] bytes, int length) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getChildByFieldName(this, bytes, length);
   }
 
@@ -232,6 +235,7 @@ public class TSNode extends TSNativeObject {
    */
   public String getFieldNameForChild(int childIndex) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getFieldNameForChild(this, childIndex);
   }
 
@@ -243,6 +247,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getChildByFieldId(int fieldId) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getChildByFieldId(this, fieldId);
   }
 
@@ -253,6 +258,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getNextSibling() {
     checkAccess();
+    getTree().checkAccess();
     return Native.getNextSibling(this);
   }
 
@@ -263,6 +269,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getPreviousSibling() {
     checkAccess();
+    getTree().checkAccess();
     return Native.getPreviousSibling(this);
   }
 
@@ -273,6 +280,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getNextNamedSibling() {
     checkAccess();
+    getTree().checkAccess();
     return Native.getNextNamedSibling(this);
   }
 
@@ -282,6 +290,8 @@ public class TSNode extends TSNativeObject {
    * @return The previous named sibling node.
    */
   public TSNode getPreviousNamedSibling() {
+    checkAccess();
+    getTree().checkAccess();
     return Native.getPreviousNamedSibling(this);
   }
 
@@ -293,6 +303,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getFirstChildForByte(int byteOffset) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getFirstChildForByte(this, byteOffset);
   }
 
@@ -304,6 +315,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getFirstNamedChildForByte(int byteOffset) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getFirstNamedChildForByte(this, byteOffset);
   }
 
@@ -313,6 +325,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getDescendantForByteRange(int start, int end) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getDescendantForByteRange(this, start, end);
   }
 
@@ -321,6 +334,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getDescendantForPointRange(TSPoint start, TSPoint end) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getDescendantForPointRange(this, start, end);
   }
 
@@ -330,6 +344,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getNamedDescendantForByteRange(int start, int end) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getNamedDescendantForByteRange(this, start, end);
   }
 
@@ -338,6 +353,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSNode getNamedDescendantForPointRange(TSPoint start, TSPoint end) {
     checkAccess();
+    getTree().checkAccess();
     return Native.getNamedDescendantForPointRange(this, start, end);
   }
 
@@ -348,6 +364,7 @@ public class TSNode extends TSNativeObject {
    */
   public boolean isEqualTo(TSNode another) {
     checkAccess();
+    getTree().checkAccess();
     return Native.isEqualTo(this, another);
   }
 
@@ -358,6 +375,7 @@ public class TSNode extends TSNativeObject {
    */
   public int getChildCount() {
     checkAccess();
+    getTree().checkAccess();
     return Native.getChildCount(this);
   }
 
@@ -366,17 +384,8 @@ public class TSNode extends TSNativeObject {
    */
   public int getNamedChildCount() {
     checkAccess();
+    getTree().checkAccess();
     return Native.getNamedChildCount(this);
-  }
-
-  /**
-   * Get the end byte of this node.
-   *
-   * @return End byte of node.
-   */
-  public int getEndByte() {
-    checkAccess();
-    return Native.getEndByte(this);
   }
 
   /**
@@ -386,25 +395,64 @@ public class TSNode extends TSNativeObject {
    */
   public String getNodeString() {
     checkAccess();
+    getTree().checkAccess();
     return Native.getNodeString(this);
   }
 
   /**
-   * Get the start byte of this node.
+   * Get the start byte of this node. This returns the <code>context[0]</code> value.
    *
    * @return Start byte of node.
+   * @see #getStartByteNative()
    */
   public int getStartByte() {
+    // ts_node_start_byte simply returns context[0]
+    return context0;
+//    checkAccess();
+//    return Native.getStartByte(this);
+  }
+
+  /**
+   * Get the start byte of this node from the native TSNode object.
+   *
+   * @return Start byte of the node.
+   */
+  public int getStartByteNative() {
     checkAccess();
     return Native.getStartByte(this);
   }
 
   /**
-   * Get the start position of this node.
+   * Get the end byte of this node.
+   *
+   * @return End byte of node.
+   */
+  public int getEndByte() {
+    checkAccess();
+    // tree is not accessed here
+    return Native.getEndByte(this);
+  }
+
+  /**
+   * Get the start position of this node. This uses the <code>context[1]</code> and
+   * <code>context[2]</code> values to create the {@link TSPoint} instance.
    *
    * @return The start position.
+   * @see #getStartPointNative()
    */
   public TSPoint getStartPoint() {
+    // ts_node_start_point simply returns TSPoint { .row = context[1], .column = context[2] }
+    return TSPoint.create(/*row*/context1, /*column*/context2);
+//    checkAccess();
+//    return Native.getStartPoint(this);
+  }
+
+  /**
+   * Get the start point of this node from the native TSNode object.
+   *
+   * @return Start point of the node.
+   */
+  public TSPoint getStartPointNative() {
     checkAccess();
     return Native.getStartPoint(this);
   }
@@ -416,6 +464,7 @@ public class TSNode extends TSNativeObject {
    */
   public TSPoint getEndPoint() {
     checkAccess();
+    // tree is not accessed here
     return Native.getEndPoint(this);
   }
 
@@ -517,40 +566,75 @@ public class TSNode extends TSNativeObject {
   }
 
   private static final class Native {
+
     static native boolean canAccess(long id);
+
     static native TSNode getParent(TSNode self);
+
     static native TSNode getChildAt(TSNode self, int index);
+
     static native TSNode getNamedChildAt(TSNode self, int index);
+
     static native TSNode getChildByFieldName(TSNode self, byte[] bytes, int length);
+
     static native String getFieldNameForChild(TSNode self, int childIndex);
+
     static native TSNode getChildByFieldId(TSNode self, int fieldId);
+
     static native TSNode getNextSibling(TSNode self);
+
     static native TSNode getPreviousSibling(TSNode self);
+
     static native TSNode getNextNamedSibling(TSNode self);
+
     static native TSNode getPreviousNamedSibling(TSNode self);
+
     static native TSNode getFirstChildForByte(TSNode self, int byteOffset);
+
     static native TSNode getFirstNamedChildForByte(TSNode self, int byteOffset);
+
     static native TSNode getDescendantForByteRange(TSNode self, int start, int end);
+
     static native TSNode getDescendantForPointRange(TSNode self, TSPoint start, TSPoint end);
+
     static native TSNode getNamedDescendantForByteRange(TSNode self, int start, int end);
+
     static native TSNode getNamedDescendantForPointRange(TSNode self, TSPoint start, TSPoint end);
+
     static native boolean isEqualTo(TSNode self, TSNode another);
+
     static native int getChildCount(TSNode self);
+
     static native int getNamedChildCount(TSNode self);
-    static native int getEndByte(TSNode self);
+
     static native String getNodeString(TSNode self);
+
     static native int getStartByte(TSNode self);
+
+    static native int getEndByte(TSNode self);
+
     static native TSPoint getStartPoint(TSNode self);
+
     static native TSPoint getEndPoint(TSNode self);
+
     static native String getType(TSNode self);
+
     static native int getSymbol(TSNode self);
+
     static native boolean isNull(TSNode self);
+
     static native boolean isNamed(TSNode self);
+
     static native boolean isExtra(TSNode self);
+
     static native boolean isMissing(TSNode self);
+
     static native boolean hasChanges(TSNode self);
+
     static native boolean hasErrors(TSNode self);
+
     static native boolean isError(TSNode self);
+
     static native short getParseState(TSNode self);
   }
 }

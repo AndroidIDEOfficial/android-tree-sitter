@@ -17,8 +17,11 @@
 
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
+#include "utils/ts_log.h"
 
 #include "subtree.h"
+
+#define TS_NODE "TSNode"
 
 extern "C"
 JNIEXPORT jboolean JNICALL
@@ -27,10 +30,14 @@ Java_com_itsaky_androidide_treesitter_TSNode_00024Native_canAccess(JNIEnv *env,
                                                                    jlong id) {
   const auto *subtree = (const Subtree *)id;
   if (subtree == nullptr) {
+    LOGD(TS_NODE, "canAccess() = false, node.id == nullptr");
     return (jboolean) false;
   }
 
-  return (jboolean) (subtree->data.is_inline || subtree->ptr != nullptr);
+  auto result = subtree->data.is_inline || subtree->ptr != nullptr;
+  LOGD(TS_NODE, "canAccess(): is_inline: %d, ptr=%p", subtree->data.is_inline, subtree->ptr);
+  LOGD(TS_NODE, "canAccess() = %d", result);
+  return (jboolean) (result);
 }
 
 extern "C" JNIEXPORT jobject JNICALL
