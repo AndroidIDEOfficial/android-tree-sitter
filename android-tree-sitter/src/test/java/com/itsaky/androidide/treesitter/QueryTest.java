@@ -25,6 +25,7 @@ import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.xml.TSLanguageXml;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -362,11 +363,53 @@ public class QueryTest extends TreeSitterTest {
 
         cursor.exec(query, tree.getRootNode());
 
+        var count = 0;
+        while (cursor.nextMatch() != null) ++count;
+
+        assertThat(count).isEqualTo(5); // 5 methods have been declared
+
         // pattern 0 -> method_declaration
         // capture 0 -> @method_name
         final var quantifier = query.getCaptureQuantifierForId(0, 0);
         assertThat(quantifier).isNotNull();
         assertThat(quantifier).isEqualTo(TSQuantifier.OneOrMore);
+      }
+    }
+  }
+
+  @Test
+  public void testQueryCursorIterator() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = TSParser.create()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (identifier)+ @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        cursor.exec(query, tree.getRootNode());
+
+        var count = 0;
+        var iterator = cursor.iterator();
+        while (iterator.hasNext()) {
+          iterator.next();
+          ++count;
+        }
+
+        // 5 methods have been declared
+        // so iterator should return exactly 5 elements
+        assertThat(count).isEqualTo(5);
+
+        try {
+          iterator.next();
+          throw new IllegalStateException("Iterator should not have thrown NoSuchElementException");
+        } catch (NoSuchElementException e) {
+          // ignored
+        }
       }
     }
   }

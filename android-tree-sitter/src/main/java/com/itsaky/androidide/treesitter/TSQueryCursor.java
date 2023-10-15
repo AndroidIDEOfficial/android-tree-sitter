@@ -18,6 +18,8 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * @author Akash Yadav
@@ -52,6 +54,31 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
     }
     Native.exec(getNativeObject(), query.getNativeObject(), node);
     isExecuted = true;
+  }
+
+  /** @noinspection NullableProblems*/
+  @Override
+  public Iterator<TSQueryMatch> iterator() {
+
+    return new Iterator<>() {
+
+      private TSQueryMatch nextMatch = null;
+
+      @Override
+      public boolean hasNext() {
+        nextMatch = canAccess() && isExecuted ? nextMatch() : null;
+        return nextMatch != null;
+      }
+
+      @Override
+      public TSQueryMatch next() {
+        if (nextMatch == null) {
+          throw new NoSuchElementException();
+        }
+
+        return nextMatch;
+      }
+    };
   }
 
   /**
