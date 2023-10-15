@@ -27,6 +27,9 @@ import java.util.NoSuchElementException;
 public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMatch> {
 
   protected boolean isExecuted = false;
+  protected TSNode targetNode = null;
+
+  private boolean allowChangedNodes = false;
 
   protected TSQueryCursor() {
     this(Native.newCursor());
@@ -45,6 +48,30 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
   }
 
   /**
+   * Whether the cursor should accept {@link TSNode}s whose {@link TSNode#hasChanges()} returns
+   * true. This is set to <code>false</code> by default. Setting it to <code>true</code> is risky,
+   * especially in cases when the node or the tree is accessed/edited from multiple threads. This
+   * could result in
+   * <code>SEGV_MAPERR</code> issues.
+   *
+   * @param allowChangedNodes Whether changed nodes should be allowed.
+   */
+  public void setAllowChangedNodes(boolean allowChangedNodes) {
+    this.allowChangedNodes = allowChangedNodes;
+  }
+
+  /**
+   * Whether the cursor accepts {@link TSNode} whose {@link TSNode#hasChanges()} returns true.
+   *
+   * @return Whether the cursor accepts {@link TSNode} whose {@link TSNode#hasChanges()} returns
+   * true.
+   * @see #setAllowChangedNodes(boolean)
+   */
+  public boolean isAllowChangedNodes() {
+    return allowChangedNodes;
+  }
+
+  /**
    * Start running the given query on the given node.
    */
   public void exec(TSQuery query, TSNode node) {
@@ -52,11 +79,31 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
     if (query == null || !query.canAccess()) {
       throw new IllegalArgumentException("Cannot execute invalid query");
     }
+    if (node == null || !node.canAccess() || !node.getTree().canAccess() || (!isAllowChangedNodes() && node.hasChanges())) {
+      final var msg = new StringBuilder();
+      msg.append("Cannot execute query on invalid node. node=");
+      msg.append(node);
+      if (node != null) {
+        msg.append(" node.canAccess=");
+        msg.append(node.canAccess());
+        msg.append(" node.tree.canAccess=");
+        msg.append(node.getTree().canAccess());
+        msg.append(" node.hasChanges=");
+        msg.append(node.hasChanges());
+        msg.append(" isAllowChangedNodes=");
+        msg.append(isAllowChangedNodes());
+      }
+
+      throw new IllegalArgumentException(msg.toString());
+    }
     Native.exec(getNativeObject(), query.getNativeObject(), node);
     isExecuted = true;
+    targetNode = node;
   }
 
-  /** @noinspection NullableProblems*/
+  /**
+   * @noinspection NullableProblems
+   */
   @Override
   public Iterator<TSQueryMatch> iterator() {
 
@@ -66,7 +113,14 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
 
       @Override
       public boolean hasNext() {
-        nextMatch = canAccess() && isExecuted ? nextMatch() : null;
+        boolean shouldFetchNextMatch = canAccess() // query cursor must be accessible
+          && isExecuted // at least one query should have been executed
+          && targetNode != null // query should have been executed on a non-null node
+
+          // the target node's tree should not have been changed since query execution
+          // if the user has explicitly opted to allow changed nodes, allow those changes
+          && (isAllowChangedNodes() || !targetNode.hasChanges());
+        nextMatch = shouldFetchNextMatch ? nextMatch() : null;
         return nextMatch != null;
       }
 
@@ -142,8 +196,9 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
 
   @Override
   public void close() {
-    super.close();
     isExecuted = false;
+    targetNode = null;
+    super.close();
   }
 
   @Override
@@ -153,7 +208,8 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
 
   protected void checkExecuted(String name) {
     if (!isExecuted) {
-      throw new IllegalStateException("TSQueryCursor.exec() must be called before accessing '" + name + "'");
+      throw new IllegalStateException(
+        "TSQueryCursor.exec() must be called before accessing '" + name + "'");
     }
   }
 

@@ -364,7 +364,9 @@ public class QueryTest extends TreeSitterTest {
         cursor.exec(query, tree.getRootNode());
 
         var count = 0;
-        while (cursor.nextMatch() != null) ++count;
+        while (cursor.nextMatch() != null) {
+          ++count;
+        }
 
         assertThat(count).isEqualTo(5); // 5 methods have been declared
 
@@ -410,6 +412,150 @@ public class QueryTest extends TreeSitterTest {
         } catch (NoSuchElementException e) {
           // ignored
         }
+      }
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void cursorShouldFailOnNullNode() {
+    final var lang = TSLanguageJava.getInstance();
+    String querySource = "(method_declaration name: (identifier)+ @method_name)";
+
+    try (final var query = TSQuery.create(lang,
+      querySource); final var cursor = TSQueryCursor.create()) {
+
+      assertThat(query.canAccess()).isTrue();
+      assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+      cursor.exec(query, null);
+
+      throw new IllegalStateException("TSQueryCursor should have failed on null node");
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void cursorShouldFailOnEditedNode() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = TSParser.create()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (identifier)+ @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        final var rootNode = tree.getRootNode();
+
+        tree.edit(TSInputEdit.create(0, 0, 1, TSPoint.create(0, 0), TSPoint.create(0, 0),
+          TSPoint.create(0, 1)));
+
+        assertThat(rootNode.hasChanges()).isTrue();
+
+        cursor.exec(query, rootNode);
+
+        throw new IllegalStateException("TSQueryCursor should have failed on null node");
+      }
+    }
+  }
+
+  @Test
+  public void cursorIteratorShouldFailOnEditedNode() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = TSParser.create()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (identifier)+ @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        final var rootNode = tree.getRootNode();
+
+        assertThat(rootNode.hasChanges()).isFalse();
+
+        // execute query before edition
+        cursor.exec(query, rootNode);
+
+        // should return elements while not edited
+        final var iterator = cursor.iterator();
+        assertThat(iterator.hasNext()).isTrue();
+
+        // edit tree
+        tree.edit(TSInputEdit.create(0, 0, 1, TSPoint.create(0, 0), TSPoint.create(0, 0),
+          TSPoint.create(0, 1)));
+
+        // should NOT return elements after edition
+        assertThat(iterator.hasNext()).isFalse();
+      }
+    }
+  }
+
+  @Test
+  public void cursorShouldAllowEditedNodeIfExplicitlyOpted() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = TSParser.create()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (identifier)+ @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        final var rootNode = tree.getRootNode();
+
+        tree.edit(TSInputEdit.create(0, 0, 1, TSPoint.create(0, 0), TSPoint.create(0, 0),
+          TSPoint.create(0, 1)));
+
+        assertThat(rootNode.hasChanges()).isTrue();
+
+        // executing the query not should throw exception if explicitly opted for changed node queries
+        cursor.setAllowChangedNodes(true);
+        cursor.exec(query, rootNode);
+      }
+    }
+  }
+
+  @Test
+  public void cursorIteratorShouldAllowEditedNodeIfExplicitlyOpted() {
+    final var lang = TSLanguageJava.getInstance();
+    try (final var parser = TSParser.create()) {
+      parser.setLanguage(lang);
+      String javaSource = "public class Main { void a() {} void b() {} void c() {} void d() {} void e() {} }";
+      String querySource = "(method_declaration name: (identifier)+ @method_name)";
+
+      try (final var tree = parser.parseString(javaSource); final var query = TSQuery.create(lang,
+        querySource); final var cursor = TSQueryCursor.create()) {
+
+        assertThat(query.canAccess()).isTrue();
+        assertThat(query.getErrorType()).isEqualTo(TSQueryError.None);
+
+        final var rootNode = tree.getRootNode();
+
+        assertThat(rootNode.hasChanges()).isFalse();
+
+        // opt-in for changed node queries and execute the query
+        cursor.setAllowChangedNodes(true);
+        cursor.exec(query, rootNode);
+
+        // should return elements while not edited
+        final var iterator = cursor.iterator();
+        assertThat(iterator.hasNext()).isTrue();
+
+        // edit tree
+        tree.edit(TSInputEdit.create(0, 0, 1, TSPoint.create(0, 0), TSPoint.create(0, 0),
+          TSPoint.create(0, 1)));
+
+        // should NOT return elements after edition
+        assertThat(iterator.hasNext()).isTrue();
       }
     }
   }
