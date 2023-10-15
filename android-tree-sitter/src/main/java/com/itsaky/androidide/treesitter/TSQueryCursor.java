@@ -22,7 +22,9 @@ import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 /**
  * @author Akash Yadav
  */
-public class TSQueryCursor extends TSNativeObject {
+public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMatch> {
+
+  protected boolean isExecuted = false;
 
   protected TSQueryCursor() {
     this(Native.newCursor());
@@ -49,6 +51,7 @@ public class TSQueryCursor extends TSNativeObject {
       throw new IllegalArgumentException("Cannot execute invalid query");
     }
     Native.exec(getNativeObject(), query.getNativeObject(), node);
+    isExecuted = true;
   }
 
   /**
@@ -100,17 +103,31 @@ public class TSQueryCursor extends TSNativeObject {
 
   public TSQueryMatch nextMatch() {
     checkAccess();
+    checkExecuted("nextMatch");
     return Native.nextMatch(getNativeObject());
   }
 
   public void removeMatch(int id) {
     checkAccess();
+    checkExecuted("removeMatch");
     Native.removeMatch(getNativeObject(), id);
+  }
+
+  @Override
+  public void close() {
+    super.close();
+    isExecuted = false;
   }
 
   @Override
   protected void closeNativeObj() {
     Native.delete(getNativeObject());
+  }
+
+  protected void checkExecuted(String name) {
+    if (!isExecuted) {
+      throw new IllegalStateException("TSQueryCursor.exec() must be called before accessing '" + name + "'");
+    }
   }
 
   private static class Native {
