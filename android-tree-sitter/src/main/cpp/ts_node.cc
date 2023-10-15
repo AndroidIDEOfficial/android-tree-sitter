@@ -21,23 +21,17 @@
 
 #include "subtree.h"
 
-#define TS_NODE "TSNode"
-
 extern "C"
 JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSNode_00024Native_canAccess(JNIEnv *env,
                                                                    jclass clazz,
                                                                    jlong id) {
-  const auto *subtree = (const Subtree *)id;
+  const auto *subtree = (const Subtree *) id;
   if (subtree == nullptr) {
-    LOGD(TS_NODE, "canAccess() = false, node.id == nullptr");
     return (jboolean) false;
   }
 
-  auto result = subtree->data.is_inline || subtree->ptr != nullptr;
-  LOGD(TS_NODE, "canAccess(): is_inline: %d, ptr=%p", subtree->data.is_inline, subtree->ptr);
-  LOGD(TS_NODE, "canAccess() = %d", result);
-  return (jboolean) (result);
+  return (jboolean) (subtree->data.is_inline || subtree->ptr != nullptr);
 }
 
 extern "C" JNIEXPORT jobject JNICALL
@@ -345,4 +339,58 @@ Java_com_itsaky_androidide_treesitter_TSNode_00024Native_getParseState(JNIEnv *e
                                                                        jclass clazz,
                                                                        jobject self) {
   return (jshort) ts_node_parse_state(_unmarshalNode(env, self));
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_00024Native_edit(JNIEnv *env,
+                                                              jclass clazz,
+                                                              jobject self,
+                                                              jobject edit) {
+  TSNode node = _unmarshalNode(env, self);
+  TSInputEdit inputEdit = _unmarshalInputEdit(env, edit);
+  ts_node_edit(&node, &inputEdit);
+}
+
+extern "C"
+JNIEXPORT jshort JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_00024Native_getNextParseState(
+    JNIEnv *env,
+    jclass clazz,
+    jobject self) {
+
+  TSNode node = _unmarshalNode(env, self);
+  return (jshort) ts_node_next_parse_state(node);
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_00024Native_getDescendantCount(
+    JNIEnv *env,
+    jclass clazz,
+    jobject self) {
+
+  TSNode node = _unmarshalNode(env, self);
+  return (jint) ts_node_descendant_count(node);
+}
+
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_00024Native_getGrammarType(JNIEnv *env,
+                                                                        jclass clazz,
+                                                                        jobject self) {
+  TSNode node = _unmarshalNode(env, self);
+  const char *grammar_type = ts_node_grammar_type(node);
+  jstring result = env->NewStringUTF(grammar_type);
+  return result;
+}
+
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_itsaky_androidide_treesitter_TSNode_00024Native_getLanguage(JNIEnv *env,
+                                                                     jclass clazz,
+                                                                     jobject self) {
+  TSNode node = _unmarshalNode(env, self);
+  return (jlong) ts_node_language(node);
 }

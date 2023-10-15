@@ -89,6 +89,41 @@ public class TSNode extends TSNativeObject {
   }
 
   /**
+   * Edit the node to keep it in-sync with source code that has been edited.
+   * <p>
+   * This function is only rarely needed. When you edit a syntax tree with the
+   * {@link TSTree#edit(TSInputEdit)} function, all of the nodes that you retrieve from the tree
+   * afterward will already reflect the edit. You only need to use this method when you have a
+   * {@link TSNode} instance that you want to keep and continue to use after an edit.
+   */
+  public void edit(TSInputEdit edit) {
+    checkAccess();
+    getTree().checkAccess();
+    Native.edit(this, edit);
+  }
+
+  /**
+   * Get this node's language.
+   */
+  public TSLanguage getLanguage() {
+    checkAccess();
+    final var lang = Native.getLanguage(this);
+    if (lang == 0) {
+      return null;
+    }
+
+    return TSLanguageCache.get(lang);
+  }
+
+  /**
+   * Get the node's type as it appears in the grammar ignoring aliases.
+   */
+  public String getGrammarTypes() {
+    checkAccess();
+    return Native.getGrammarType(this);
+  }
+
+  /**
    * Get the child of the given node at the child index.
    *
    * @param index The index of the child.
@@ -317,6 +352,15 @@ public class TSNode extends TSNativeObject {
     checkAccess();
     getTree().checkAccess();
     return Native.getFirstNamedChildForByte(this, byteOffset);
+  }
+
+  /**
+   * Get the node's number of descendants, including one for the node itself.
+   */
+  public int getDescendantCount() {
+    checkAccess();
+    getTree().checkAccess();
+    return Native.getDescendantCount(this);
   }
 
   /**
@@ -555,6 +599,15 @@ public class TSNode extends TSNativeObject {
     return Native.getParseState(this);
   }
 
+  /**
+   * Get the parse state after this node.
+   */
+  public short getNextParseState() {
+    checkAccess();
+    getTree().checkAccess();
+    return Native.getNextParseState(this);
+  }
+
   @Override
   public boolean canAccess() {
     return Native.canAccess(this.getNodeId());
@@ -636,5 +689,15 @@ public class TSNode extends TSNativeObject {
     static native boolean isError(TSNode self);
 
     static native short getParseState(TSNode self);
+
+    static native void edit(TSNode self, TSInputEdit edit);
+
+    static native short getNextParseState(TSNode self);
+
+    public static native int getDescendantCount(TSNode self);
+
+    public static native String getGrammarType(TSNode self);
+
+    public static native long getLanguage(TSNode self);
   }
 }
