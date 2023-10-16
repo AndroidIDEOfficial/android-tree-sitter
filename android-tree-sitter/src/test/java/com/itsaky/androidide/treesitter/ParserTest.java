@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
@@ -84,7 +87,8 @@ public class ParserTest extends TreeSitterTest {
     final long start = System.currentTimeMillis();
     try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguageJava.getInstance());
-      assertThat(parser.getLanguage().getNativeObject()).isEqualTo(TSLanguageJava.getInstance().getNativeObject());
+      assertThat(parser.getLanguage().getNativeObject()).isEqualTo(
+        TSLanguageJava.getInstance().getNativeObject());
       try (var tree = parser.parseString(readResource("CodeEditor.java.txt"))) {
         System.out.println(tree.getRootNode().getNodeString());
         System.out.println(
@@ -304,6 +308,67 @@ public class ParserTest extends TreeSitterTest {
           execQueryGroupByCaptures("(variable_declarator name: (_) @variable)",
             TSLanguageAidl.getInstance(), rootNode).get("variable"), source);
         assertThat(variables).containsExactly("hasField", "orFields", "isIt");
+      }
+    }
+  }
+
+  @Test
+  public void testParserCancellation() {
+    try (TSParser parser = TSParser.create()) {
+      parser.setLanguage(TSLanguageJava.getInstance());
+
+      final var executor = Executors.newScheduledThreadPool(2);
+      final var parseFuture = executor.schedule(() -> {
+
+        // cancel the parsing after 200ms
+        executor.schedule(() -> assertThat(parser.cancelIfParsing()).isTrue(), 200,
+          TimeUnit.MILLISECONDS);
+
+        // parsing the View.java.txt file takes 300-600ms
+        try (var tree = parser.parseString(readResource("View.java.txt"))) {
+          // if the parsing is cancelled, then the tree must be null
+          assertThat(tree).isNull();
+        }
+      }, 0, TimeUnit.MICROSECONDS);
+
+      try {
+        parseFuture.get();
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @Test
+  public void testParserParseCallShouldFailIfAnotherParseIsInProgress() {
+    try (TSParser parser = TSParser.create()) {
+      parser.setLanguage(TSLanguageJava.getInstance());
+
+      final var executor = Executors.newScheduledThreadPool(2);
+      final var parseFuture1 = executor.schedule(() -> {
+        try (var tree = parser.parseString(readResource("View.java.txt"))) {
+          // This parse was already in progress before another parse was requested
+          // so this should return a valid tree
+          assertThat(tree).isNotNull();
+          assertThat(tree.canAccess()).isTrue();
+        }
+      }, 0, TimeUnit.MICROSECONDS);
+
+      final var parseFuture2 = executor.schedule(() -> {
+        try (var tree = parser.parseString(readResource("View.java.txt"))) {
+          // A parse was already in progress when this parse was requested
+          // so this should return null
+          assertThat(tree).isNull();
+        } catch (IllegalStateException e) {
+          assertThat(e).hasMessageThat().contains("Parser is already parsing another syntax tree!");
+        }
+      }, 100, TimeUnit.MICROSECONDS);
+
+      try {
+        parseFuture1.get();
+        parseFuture2.get();
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
       }
     }
   }

@@ -137,6 +137,15 @@ public class TSParser extends TSNativeObject {
   }
 
   /**
+   * Cancels the parsing operation if the parser is in the process of parsing a syntax tree.
+   *
+   * @return <code>true</code> if the cancellation was requested successfully, <code>false</code> otherwise.
+   */
+  public boolean cancelIfParsing() {
+    return Native.cancelIfParsing();
+  }
+
+  /**
    * Set the ranges of text that the parser should include when parsing.
    *
    * <p>By default, the parser will always include entire documents. This function allows you to
@@ -201,5 +210,7 @@ public class TSParser extends TSNativeObject {
     public static native TSRange[] getIncludedRanges(long parser);
 
     public static native long parse(long parser, long treePointer, long strPointer);
+
+    public static native boolean cancelIfParsing();
   }
 }

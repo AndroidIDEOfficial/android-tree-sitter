@@ -19,7 +19,11 @@
 
 #include "utf16str/UTF16String.h"
 #include "utils/ts_obj_utils.h"
+#include "utils/ts_exceptions.h"
 #include "utils/ts_preconditions.h"
+#include "utils/ts_log.h"
+
+static size_t *parser_cancellation_flag = nullptr;
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
@@ -119,11 +123,68 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
   auto *ts_parser = (TSParser *) parser;
   TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
   auto *source = as_str(str_pointer);
+
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ConstantConditionsOC"
+#pragma ide diagnostic ignored "UnreachableCode"
+
+  if (parser_cancellation_flag) {
+    throw_illegal_state(env, "Parser is already parsing another syntax tree! You must cancel the current parse first!");
+    return 0;
+  }
+
+#pragma clang diagnostic pop
+
+  // allocate a new cancellation flag
+  parser_cancellation_flag = (size_t *) malloc(sizeof(int));
+
+  // set the cancellation flag to '0' to indicate that the parser should continue parsing
+  *parser_cancellation_flag = 0;
+  ts_parser_set_cancellation_flag(ts_parser, parser_cancellation_flag);
+
+  // start parsing
+  // if the user cancels the parse while this method is being executed
+  // then this will return nullptr
   auto tree =
       ts_parser_parse_string_encoding(ts_parser,
                                       old_tree,
                                       source->to_cstring(),
                                       source->byte_length(),
                                       TSInputEncodingUTF16);
+
+  // release the cancellation flag
+  free(parser_cancellation_flag);
+  parser_cancellation_flag = nullptr;
+
   return (jlong) tree;
 }
+
+// <editor-fold desc="Pragma to disable misleading code warning">
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnreachableCode"
+#pragma ide diagnostic ignored "ConstantConditionsOC"
+#pragma ide diagnostic ignored "ConstantFunctionResult"
+// </editor-fold>
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_cancelIfParsing(
+    JNIEnv *env,
+    jclass clazz) {
+
+  // no parse is in progress
+  if (parser_cancellation_flag == nullptr) {
+    LOGD("TSParser", "Cannot cancel parsing, no parse is in progress (cancellation flag is nullptr).");
+    return false;
+  }
+
+  // set the cancellation flag to a non-zero value to indicate that the parse
+  // operation has been cancelled
+  *parser_cancellation_flag = 1;
+  return true;
+}
+
+// <editor-fold desc="Pragma to disable misleading code warning">
+#pragma clang diagnostic pop
+// </editor-fold>

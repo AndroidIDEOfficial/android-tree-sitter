@@ -36,6 +36,13 @@ int throw_exception(JNIEnv *env, const char *klass, const char *message);
 int throw_illegal_args(JNIEnv *env, const char *message);
 
 /**
+ * Throws an `IllegalStateException` in the JVM with the given message.
+ * @param env The JNI environment.
+ * @param message The message for the exception.
+ */
+int throw_illegal_state(JNIEnv *env, const char *message);
+
+/**
  * Throws an `NullPointerException` in the JVM with the given message.
  * @param env The JNI environment.
  * @param message The message for the exception.
