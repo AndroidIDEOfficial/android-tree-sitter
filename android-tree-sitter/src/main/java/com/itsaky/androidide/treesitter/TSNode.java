@@ -230,7 +230,10 @@ public class TSNode extends TSNativeObject {
 
   @Override
   public String toString() {
-    return "TSNode{" + "id=" + id + ", type=" + (isNull() ? "<null>" : getType()) + '}';
+    final var canAccess = canAccess();
+    final var isNull = canAccess && isNull();
+    final var type = canAccess ? getType() : "<unknown>";
+    return "TSNode{" + "id=" + id + ", canAccess=" + canAccess + ", type=" + (isNull ? "<null>" : type) + '}';
   }
 
   /**
