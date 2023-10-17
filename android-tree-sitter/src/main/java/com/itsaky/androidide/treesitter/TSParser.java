@@ -21,8 +21,11 @@ import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.io.UnsupportedEncodingException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TSParser extends TSNativeObject {
+
+  protected final AtomicBoolean isParsing = new AtomicBoolean(false);
 
   protected TSParser(long pointer) {
     super(pointer);
@@ -81,6 +84,7 @@ public class TSParser extends TSNativeObject {
    * @return The parsed tree.
    */
   public TSTree parseString(String source) {
+    throwIfParsing();
     try (final var str = UTF16StringFactory.newString(source)) {
       return parseString(str);
     }
@@ -95,12 +99,14 @@ public class TSParser extends TSNativeObject {
   }
 
   public TSTree parseBytes(byte[] bytes, int off, int len) {
+    throwIfParsing();
     try (final var source = UTF16StringFactory.newString(bytes, off, len)) {
       return parseString(source);
     }
   }
 
   public TSTree parseString(TSTree oldTree, String source) throws UnsupportedEncodingException {
+    throwIfParsing();
     try (final var str = UTF16StringFactory.newString(source)) {
       return parseString(oldTree, str);
     }
@@ -108,11 +114,17 @@ public class TSParser extends TSNativeObject {
 
   public TSTree parseString(TSTree oldTree, UTF16String source) {
     checkAccess();
+    throwIfParsing();
 
-    final var strPointer = source.getPointer();
-    final var oldTreePointer = oldTree != null ? oldTree.getNativeObject() : 0;
-    final var tree = Native.parse(this.getNativeObject(), oldTreePointer, strPointer);
-    return createTree(tree);
+    setParsing(true);
+    try {
+      final var strPointer = source.getPointer();
+      final var oldTreePointer = oldTree != null ? oldTree.getNativeObject() : 0;
+      final var tree = Native.parse(this.getNativeObject(), oldTreePointer, strPointer);
+      return createTree(tree);
+    } finally {
+      setParsing(false);
+    }
   }
 
   /**
@@ -137,9 +149,28 @@ public class TSParser extends TSNativeObject {
   }
 
   /**
+   * Check whether the parser is in the process of parsing a syntax tree.
+   *
+   * @return <code>true</code> if the parser is parsing a syntax tree, <code>false</code> otherwise.
+   */
+  public boolean isParsing() {
+    return isParsing.get();
+  }
+
+  /**
+   * Set whether the parser is in the process of parsing a syntax tree.
+   *
+   * @param isParsing Whether the parser is parsing.
+   */
+  protected void setParsing(boolean isParsing) {
+    this.isParsing.set(isParsing);
+  }
+
+  /**
    * Cancels the parsing operation if the parser is in the process of parsing a syntax tree.
    *
-   * @return <code>true</code> if the cancellation was requested successfully, <code>false</code> otherwise.
+   * @return <code>true</code> if the cancellation was requested successfully, <code>false</code>
+   * otherwise.
    */
   public boolean cancelIfParsing() {
     return Native.cancelIfParsing();
@@ -187,6 +218,40 @@ public class TSParser extends TSNativeObject {
   @Override
   protected void closeNativeObj() {
     Native.delete(getNativeObject());
+  }
+
+  private void throwIfParsing() {
+    if (isParsing()) {
+      throw new ParseInProgressException("Parser is already parsing another syntax tree!");
+    }
+  }
+
+  /**
+   * Base class the {@link TSParser} exceptions.
+   */
+  protected static class TSParserException extends RuntimeException {
+
+    public TSParserException(String message) {
+      super(message);
+    }
+
+    public TSParserException(String message, Throwable cause) {
+      super(message, cause);
+    }
+
+    public TSParserException(Throwable cause) {
+      super(cause);
+    }
+  }
+
+  /**
+   * Thrown when a parse is requested while another parse is already in progress.
+   */
+  protected static final class ParseInProgressException extends TSParserException {
+
+    public ParseInProgressException(String message) {
+      super(message);
+    }
   }
 
   private static class Native {

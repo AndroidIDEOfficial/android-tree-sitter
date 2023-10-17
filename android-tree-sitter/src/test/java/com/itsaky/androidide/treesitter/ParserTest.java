@@ -27,6 +27,7 @@ import com.itsaky.androidide.treesitter.json.TSLanguageJson;
 import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin;
 import com.itsaky.androidide.treesitter.log.TSLanguageLog;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
+import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -341,12 +342,20 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testParserParseCallShouldFailIfAnotherParseIsInProgress() {
-    try (TSParser parser = TSParser.create()) {
+    try (final var parser = TSParser.create(); final var mainParseContent = UTF16StringFactory.newString()) {
       parser.setLanguage(TSLanguageJava.getInstance());
 
+      // Read the content before starting the threads
+      final var fileContent = readResource("View.java.txt");
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+
       final var executor = Executors.newScheduledThreadPool(2);
+
+      // start the main parse operation immediately
       final var parseFuture1 = executor.schedule(() -> {
-        try (var tree = parser.parseString(readResource("View.java.txt"))) {
+        try (final var tree = parser.parseString(mainParseContent)) {
           // This parse was already in progress before another parse was requested
           // so this should return a valid tree
           assertThat(tree).isNotNull();
@@ -354,15 +363,22 @@ public class ParserTest extends TreeSitterTest {
         }
       }, 0, TimeUnit.MICROSECONDS);
 
+      // delay the second parse so that the parser is in the 'parsing' state when this is executed
+      final var secondParseDelayMs = 100;
       final var parseFuture2 = executor.schedule(() -> {
-        try (var tree = parser.parseString(readResource("View.java.txt"))) {
+
+        // the parser should be in the 'parsing' state by now
+        assertThat(parser.isParsing()).isTrue();
+
+        try (var tree = parser.parseString(fileContent)) {
           // A parse was already in progress when this parse was requested
-          // so this should return null
+          // so the parseString call should never succeed
           assertThat(tree).isNull();
-        } catch (IllegalStateException e) {
-          assertThat(e).hasMessageThat().contains("Parser is already parsing another syntax tree!");
+          throw new IllegalStateException("Second parse was supposed to fail!");
+        } catch (Throwable e) {
+          assertThat(e).isInstanceOf(TSParser.ParseInProgressException.class);
         }
-      }, 100, TimeUnit.MICROSECONDS);
+      }, secondParseDelayMs, TimeUnit.MILLISECONDS);
 
       try {
         parseFuture1.get();
