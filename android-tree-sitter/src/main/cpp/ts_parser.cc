@@ -15,6 +15,7 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <atomic>
 #include <iostream>
 
 #include "utf16str/UTF16String.h"
@@ -23,7 +24,7 @@
 #include "utils/ts_preconditions.h"
 #include "utils/ts_log.h"
 
-static size_t *parser_cancellation_flag = nullptr;
+static std::atomic<size_t *> cancellation_flag(nullptr);
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
@@ -124,12 +125,13 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
   TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
   auto *source = as_str(str_pointer);
 
+  auto flag = cancellation_flag.load();
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "ConstantConditionsOC"
 #pragma ide diagnostic ignored "UnreachableCode"
 
-  if (parser_cancellation_flag) {
+  if (flag) {
     throw_illegal_state(env, "Parser is already parsing another syntax tree! You must cancel the current parse first!");
     return 0;
   }
@@ -137,11 +139,12 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
 #pragma clang diagnostic pop
 
   // allocate a new cancellation flag
-  parser_cancellation_flag = (size_t *) malloc(sizeof(int));
+  flag = (size_t *) malloc(sizeof(int));
+  cancellation_flag.store(flag);
 
   // set the cancellation flag to '0' to indicate that the parser should continue parsing
-  *parser_cancellation_flag = 0;
-  ts_parser_set_cancellation_flag(ts_parser, parser_cancellation_flag);
+  *flag = 0;
+  ts_parser_set_cancellation_flag(ts_parser, flag);
 
   // start parsing
   // if the user cancels the parse while this method is being executed
@@ -154,8 +157,8 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
                                       TSInputEncodingUTF16);
 
   // release the cancellation flag
-  free(parser_cancellation_flag);
-  parser_cancellation_flag = nullptr;
+  free((size_t*) flag);
+  cancellation_flag.store(nullptr);
 
   return (jlong) tree;
 }
@@ -173,15 +176,17 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_cancelIfParsing(
     JNIEnv *env,
     jclass clazz) {
 
+  auto flag = cancellation_flag.load();
+
   // no parse is in progress
-  if (parser_cancellation_flag == nullptr) {
+  if (flag == nullptr) {
     LOGD("TSParser", "Cannot cancel parsing, no parse is in progress (cancellation flag is nullptr).");
     return false;
   }
 
   // set the cancellation flag to a non-zero value to indicate that the parse
   // operation has been cancelled
-  *parser_cancellation_flag = 1;
+  *flag = 1;
   return true;
 }
 
