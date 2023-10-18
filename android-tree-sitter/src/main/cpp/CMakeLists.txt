@@ -17,8 +17,10 @@
 
 cmake_minimum_required(VERSION 3.22.1)
 
+set(TS_LIBRARY_NAME android-tree-sitter)
+
 # Project name
-project("android-tree-sitter")
+project("${TS_LIBRARY_NAME}")
 
 set(PROJECT_DIR ../../../..)
 
@@ -30,7 +32,7 @@ include(../../../../cmake/common-config.cmake)
 include_directories("${TS_DIR}/lib/src")
 
 # add android-tree-sitter library
-add_library(android-tree-sitter SHARED
+add_library(${TS_LIBRARY_NAME} SHARED
 
         # tree-sitter-sources
         "${TS_DIR}/lib/src/lib.c"
@@ -60,3 +62,6 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Android)
     find_library(log log)
     target_link_libraries(android-tree-sitter ${log})
 endif()
+
+# Extract debugging information
+include(../../../../cmake/extract-debuginfo.cmake)

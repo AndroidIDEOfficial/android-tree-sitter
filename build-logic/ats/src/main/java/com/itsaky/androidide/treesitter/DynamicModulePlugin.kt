@@ -124,6 +124,7 @@ private fun TsGrammar.cmakeListsSrc(rootDir: File,
       "Source directory for grammar '$name' not found")
   }
 
+  val tsLibName = "tree-sitter-$name"
   val sources = srcExtra.joinToString(
     separator = "\n        ") { "${grammarDir.absolutePath}/${it}" }
   return """
@@ -131,7 +132,9 @@ $cmakeLicense
 
 cmake_minimum_required(VERSION 3.22.1)
 
-project("tree-sitter-$name")
+set(TS_LIBRARY_NAME "$tsLibName")
+
+project("$tsLibName")
 
 # Set the root project directory
 set(PROJECT_DIR ${rootDir.absolutePath})
@@ -143,10 +146,13 @@ include(${rootDir.absolutePath}/cmake/common-config.cmake)
 include_directories(${grammarDir.absolutePath}/src)
 
 # add tree-sitter-java library
-add_library(${'$'}{CMAKE_PROJECT_NAME} SHARED
+add_library($tsLibName SHARED
         ${grammarDir.absolutePath}/src/parser.c
         $sources
-        tree-sitter-${name}.cpp)
+        $tsLibName.cpp)
+
+# Extract debugging information
+include(${rootDir.absolutePath}/cmake/extract-debuginfo.cmake)
 """.trimIndent()
 }
 
