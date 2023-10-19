@@ -53,7 +53,7 @@ abstract class BuildForHostTask : DefaultTask() {
     }
 
     val soName = "lib${libName}.so"
-    val so = File("${workingDir}/libs", soName)
+    val so = File(workingDir, soName)
     val out = project.rootProject.file("build/host/${soName}")
 
     out.parentFile.mkdirs()
