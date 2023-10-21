@@ -142,6 +142,11 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install build-essential cargo nodejs cmake ninja-build
 
+      - name: Download sample APK
+        uses: actions/download-artifact@v3
+        with:
+          name: app-release
+
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
 
