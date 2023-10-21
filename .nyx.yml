@@ -19,6 +19,11 @@ releaseAssets:
     description: "Sample Android application for android-tree-sitter {{version}}"
     path: app/build/outputs/apk/release/app-release.apk
     type: application/octet-stream
+  debug_syms:
+    fileName: "shared-library-debug-symbols"
+    description: "Debug symbols (debug_info) for shared libraries (.so)"
+    path: debug-symbols.zip
+    type: application/zip
 
 releaseTypes:
   enabled:
