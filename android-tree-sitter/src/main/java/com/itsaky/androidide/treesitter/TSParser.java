@@ -22,10 +22,13 @@ import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TSParser extends TSNativeObject {
 
+  protected final ReentrantLock parseLock = new ReentrantLock();
   protected final AtomicBoolean isParsing = new AtomicBoolean(false);
+  protected final AtomicBoolean isCancellationRequested = new AtomicBoolean(false);
 
   protected TSParser(long pointer) {
     super(pointer);
@@ -84,7 +87,7 @@ public class TSParser extends TSNativeObject {
    * @return The parsed tree.
    */
   public TSTree parseString(String source) {
-    throwIfParsing();
+    throwIfParseNotCancelled();
     try (final var str = UTF16StringFactory.newString(source)) {
       return parseString(str);
     }
@@ -99,14 +102,14 @@ public class TSParser extends TSNativeObject {
   }
 
   public TSTree parseBytes(byte[] bytes, int off, int len) {
-    throwIfParsing();
+    throwIfParseNotCancelled();
     try (final var source = UTF16StringFactory.newString(bytes, off, len)) {
       return parseString(source);
     }
   }
 
   public TSTree parseString(TSTree oldTree, String source) throws UnsupportedEncodingException {
-    throwIfParsing();
+    throwIfParseNotCancelled();
     try (final var str = UTF16StringFactory.newString(source)) {
       return parseString(oldTree, str);
     }
@@ -114,16 +117,25 @@ public class TSParser extends TSNativeObject {
 
   public TSTree parseString(TSTree oldTree, UTF16String source) {
     checkAccess();
-    throwIfParsing();
 
-    setParsing(true);
+    // if the parser is currently parsing a syntax tree and the cancellation
+    // was not requested, throw an error
+    throwIfParseNotCancelled();
+
+    // acquire the lock
+    // this will wait until the cancelled parse call returns
+    parseLock.lock();
+    isCancellationRequested.compareAndSet(true, false);
+    setParsingFlag();
     try {
       final var strPointer = source.getPointer();
       final var oldTreePointer = oldTree != null ? oldTree.getNativeObject() : 0;
       final var tree = Native.parse(this.getNativeObject(), oldTreePointer, strPointer);
       return createTree(tree);
     } finally {
-      setParsing(false);
+      unsetParsingFlag();
+      isCancellationRequested.compareAndSet(true, false);
+      parseLock.unlock();
     }
   }
 
@@ -158,22 +170,32 @@ public class TSParser extends TSNativeObject {
   }
 
   /**
-   * Set whether the parser is in the process of parsing a syntax tree.
-   *
-   * @param isParsing Whether the parser is parsing.
+   * Sets the 'parsing' flag to indicate that the parser is in the process of parsing a syntax tree.
    */
-  protected void setParsing(boolean isParsing) {
-    this.isParsing.set(isParsing);
+  protected boolean setParsingFlag() {
+    return this.isParsing.compareAndSet(false, true);
   }
 
   /**
-   * Cancels the parsing operation if the parser is in the process of parsing a syntax tree.
+   * Sets the 'parsing' flag to indicate that the parsing operation is NOT in progress.
+   */
+  protected boolean unsetParsingFlag() {
+    return this.isParsing.compareAndSet(true, false);
+  }
+
+  /**
+   * Request the parsing operation to be cancelled if the parser is in the process of parsing a
+   * syntax tree.
+   * <p>
+   * The parse operation is NOT immediately cancelled.
    *
    * @return <code>true</code> if the cancellation was requested successfully, <code>false</code>
    * otherwise.
    */
-  public boolean cancelIfParsing() {
-    return Native.cancelIfParsing();
+  public boolean requestCancellation() {
+    final var requested = Native.requestCancellation();
+    isCancellationRequested.set(requested);
+    return requested;
   }
 
   /**
@@ -220,9 +242,9 @@ public class TSParser extends TSNativeObject {
     Native.delete(getNativeObject());
   }
 
-  private void throwIfParsing() {
-    if (isParsing()) {
-      throw new ParseInProgressException("Parser is already parsing another syntax tree!");
+  private void throwIfParseNotCancelled() {
+    if (isParsing() && !isCancellationRequested.get()) {
+      throw new ParseInProgressException("Parser is already parsing another syntax tree! Cancel the previous parse before starting another.");
     }
   }
 
@@ -276,6 +298,6 @@ public class TSParser extends TSNativeObject {
 
     public static native long parse(long parser, long treePointer, long strPointer);
 
-    public static native boolean cancelIfParsing();
+    public static native boolean requestCancellation();
   }
 }

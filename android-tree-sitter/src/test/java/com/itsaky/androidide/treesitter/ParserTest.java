@@ -322,7 +322,7 @@ public class ParserTest extends TreeSitterTest {
       final var parseFuture = executor.schedule(() -> {
 
         // cancel the parsing after 200ms
-        executor.schedule(() -> assertThat(parser.cancelIfParsing()).isTrue(), 200,
+        executor.schedule(() -> assertThat(parser.requestCancellation()).isTrue(), 200,
           TimeUnit.MILLISECONDS);
 
         // parsing the View.java.txt file takes 300-600ms
@@ -376,6 +376,109 @@ public class ParserTest extends TreeSitterTest {
           assertThat(tree).isNull();
           throw new IllegalStateException("Second parse was supposed to fail!");
         } catch (Throwable e) {
+          assertThat(e).isInstanceOf(TSParser.ParseInProgressException.class);
+        }
+      }, secondParseDelayMs, TimeUnit.MILLISECONDS);
+
+      try {
+        parseFuture1.get();
+        parseFuture2.get();
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @Test
+  public void testParserParseCallShouldSucceedIfAnotherParseIsInProgressAndCancellationWasRequested() {
+    try (final var parser = TSParser.create(); final var mainParseContent = UTF16StringFactory.newString()) {
+      parser.setLanguage(TSLanguageJava.getInstance());
+
+      // Read the content before starting the threads
+      final var fileContent = readResource("View.java.txt");
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+
+      final var executor = Executors.newScheduledThreadPool(2);
+
+      // start the main parse operation immediately
+      final var parseFuture1 = executor.schedule(() -> {
+        try (final var tree = parser.parseString(mainParseContent)) {
+          // This parse was cancelled and another parse was requested
+          // so this should not return a valid tree
+          assertThat(tree).isNull();
+        }
+      }, 0, TimeUnit.MICROSECONDS);
+
+      // delay the second parse so that the parser is in the 'parsing' state when this is executed
+      final var secondParseDelayMs = 100;
+      final var parseFuture2 = executor.schedule(() -> {
+
+        // the parser should be in the 'parsing' state by now
+        assertThat(parser.isParsing()).isTrue();
+
+        // request the cancellation
+        assertThat(parser.requestCancellation()).isTrue();
+
+        // the next parse call should wait for the previous parse call to return
+        try (var tree = parser.parseString(fileContent)) {
+          // A parse was already in progress when this parse was requested
+          // so the parseString call should never succeed
+          assertThat(tree).isNotNull();
+        } catch (Throwable e) {
+          throw new RuntimeException(e);
+        }
+      }, secondParseDelayMs, TimeUnit.MILLISECONDS);
+
+      try {
+        parseFuture1.get();
+        parseFuture2.get();
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @Test
+  public void testParserParseCallShouldFailIfAnotherParseIsInProgressAndCancellationWasNotRequested() {
+    try (final var parser = TSParser.create(); final var mainParseContent = UTF16StringFactory.newString()) {
+      parser.setLanguage(TSLanguageJava.getInstance());
+
+      // Read the content before starting the threads
+      final var fileContent = readResource("View.java.txt");
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+
+      final var executor = Executors.newScheduledThreadPool(2);
+
+      // start the main parse operation immediately
+      final var parseFuture1 = executor.schedule(() -> {
+        try (final var tree = parser.parseString(mainParseContent)) {
+          // This parse was already in progress before another parse was requested
+          // so this should return a valid tree
+          assertThat(tree).isNotNull();
+          assertThat(tree.canAccess()).isTrue();
+        }
+      }, 0, TimeUnit.MICROSECONDS);
+
+      // delay the second parse so that the parser is in the 'parsing' state when this is executed
+      final var secondParseDelayMs = 100;
+      final var parseFuture2 = executor.schedule(() -> {
+
+        // the parser should be in the 'parsing' state by now
+        assertThat(parser.isParsing()).isTrue();
+
+        // request another parse WITHOUT cancelling the previous parse
+        try (var tree = parser.parseString(fileContent)) {
+          // A parse was already in progress when this parse was requested
+          // and no cancellation was requested
+          // so the parseString call should never succeed
+          assertThat(tree).isNull();
+          throw new IllegalStateException("Second parse was supposed to fail!");
+        } catch (Throwable e) {
+          e.printStackTrace();
           assertThat(e).isInstanceOf(TSParser.ParseInProgressException.class);
         }
       }, secondParseDelayMs, TimeUnit.MILLISECONDS);

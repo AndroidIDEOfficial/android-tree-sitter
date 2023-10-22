@@ -16,6 +16,7 @@
  */
 
 #include <atomic>
+#include <mutex>
 #include <iostream>
 
 #include "utf16str/UTF16String.h"
@@ -24,7 +25,18 @@
 #include "utils/ts_preconditions.h"
 #include "utils/ts_log.h"
 
+static std::mutex cancellation_flag_mutex;
 static std::atomic<size_t *> cancellation_flag(nullptr);
+
+static size_t *get_cancellation_flag() {
+  std::lock_guard<std::mutex> get_lock(cancellation_flag_mutex);
+  return cancellation_flag.load();
+}
+
+static void set_cancellation_flag(size_t *flag) {
+  std::lock_guard<std::mutex> set_lock(cancellation_flag_mutex);
+  cancellation_flag.store(flag);
+}
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
@@ -125,22 +137,17 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
   TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
   auto *source = as_str(str_pointer);
 
-  auto flag = cancellation_flag.load();
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "ConstantConditionsOC"
-#pragma ide diagnostic ignored "UnreachableCode"
+  auto flag = get_cancellation_flag();
 
   if (flag) {
-    throw_illegal_state(env, "Parser is already parsing another syntax tree! You must cancel the current parse first!");
+    throw_illegal_state(env,
+                        "Parser is already parsing another syntax tree! You must cancel the current parse first!");
     return 0;
   }
 
-#pragma clang diagnostic pop
-
   // allocate a new cancellation flag
   flag = (size_t *) malloc(sizeof(int));
-  cancellation_flag.store(flag);
+  set_cancellation_flag(flag);
 
   // set the cancellation flag to '0' to indicate that the parser should continue parsing
   *flag = 0;
@@ -157,39 +164,31 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
                                       TSInputEncodingUTF16);
 
   // release the cancellation flag
-  free((size_t*) flag);
-  cancellation_flag.store(nullptr);
+  free((size_t *) flag);
+  set_cancellation_flag(nullptr);
+  ts_parser_set_cancellation_flag(ts_parser, nullptr);
 
   return (jlong) tree;
 }
 
-// <editor-fold desc="Pragma to disable misleading code warning">
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnreachableCode"
-#pragma ide diagnostic ignored "ConstantConditionsOC"
-#pragma ide diagnostic ignored "ConstantFunctionResult"
-// </editor-fold>
-
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_cancelIfParsing(
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_requestCancellation(
     JNIEnv *env,
     jclass clazz) {
 
-  auto flag = cancellation_flag.load();
+  auto flag = get_cancellation_flag();
 
   // no parse is in progress
   if (flag == nullptr) {
-    LOGD("TSParser", "Cannot cancel parsing, no parse is in progress (cancellation flag is nullptr).");
+    LOGD("TSParser",
+         "Cannot cancel parsing, no parse is in progress (cancellation flag is nullptr).");
     return false;
   }
 
   // set the cancellation flag to a non-zero value to indicate that the parse
   // operation has been cancelled
   *flag = 1;
+  LOGD("TSParser", "Cancellation flag has been set");
   return true;
 }
-
-// <editor-fold desc="Pragma to disable misleading code warning">
-#pragma clang diagnostic pop
-// </editor-fold>
