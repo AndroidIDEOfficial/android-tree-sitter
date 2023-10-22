@@ -41,6 +41,8 @@ public class UTF16StringFactory {
   }
 
   public static UTF16String newString(byte[] bytes, int offset, int len) {
+    Assertions.checkIndex(offset, bytes.length);
+    Assertions.checkUpperBound(offset + len, bytes.length);
     return new UTF16String(Native.newStringBytes(bytes, offset, len));
   }
 

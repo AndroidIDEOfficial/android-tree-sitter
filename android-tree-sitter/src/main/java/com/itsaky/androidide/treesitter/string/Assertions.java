@@ -35,6 +35,12 @@ class Assertions {
     }
   }
 
+  public static void checkUpperBound(int index, int size) {
+    if (index > size) {
+      throw new IndexOutOfBoundsException("upper bound " + index + " out of bounds, size = " + size);
+    }
+  }
+
   public static void checkStringRange(String str, int off, int len) {
     if (off < 0 || off + len > str.length()) {
       throw new StringIndexOutOfBoundsException(
