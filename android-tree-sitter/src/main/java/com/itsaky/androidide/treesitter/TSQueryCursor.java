@@ -20,6 +20,7 @@ package com.itsaky.androidide.treesitter;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * @author Akash Yadav
@@ -75,26 +76,18 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
    * Start running the given query on the given node.
    */
   public void exec(TSQuery query, TSNode node) {
+    Objects.requireNonNull(node, "TSNode cannot be null");
     checkAccess();
     if (query == null || !query.canAccess()) {
       throw new IllegalArgumentException("Cannot execute invalid query");
     }
-    if (node == null || !node.canAccess() || !node.getTree().canAccess() || (!isAllowChangedNodes() && node.hasChanges())) {
-      final var msg = new StringBuilder();
-      msg.append("Cannot execute query on invalid node. node=");
-      msg.append(node);
-      if (node != null) {
-        msg.append(" node.canAccess=");
-        msg.append(node.canAccess());
-        msg.append(" node.tree.canAccess=");
-        msg.append(node.getTree().canAccess());
-        msg.append(" node.hasChanges=");
-        msg.append(node.hasChanges());
-        msg.append(" isAllowChangedNodes=");
-        msg.append(isAllowChangedNodes());
-      }
+    if (!node.canAccess() || !node.getTree().canAccess() ||
+      !isAllowChangedNodes() && node.hasChanges()) {
+      String msg = "Cannot execute query on invalid node. node=" + node + " node.canAccess=" +
+        node.canAccess() + " node.tree.canAccess=" + node.getTree().canAccess() +
+        " node.hasChanges=" + node.hasChanges() + " isAllowChangedNodes=" + isAllowChangedNodes();
 
-      throw new IllegalArgumentException(msg.toString());
+      throw new IllegalArgumentException(msg);
     }
     Native.exec(getNativeObject(), query.getNativeObject(), node);
     isExecuted = true;

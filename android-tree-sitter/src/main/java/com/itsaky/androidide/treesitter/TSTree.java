@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Objects;
 
 public class TSTree extends TSNativeObject {
 
@@ -71,6 +72,7 @@ public class TSTree extends TSNativeObject {
    * @param edit The edit.
    */
   public void edit(TSInputEdit edit) {
+    Objects.requireNonNull(edit, "TSInputEdit cannot be null");
     checkAccess();
     Native.edit(getNativeObject(), edit);
   }

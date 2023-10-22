@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Objects;
 
 /**
  * @author Akash Yadav
@@ -36,6 +37,7 @@ public class TSQueryCapture {
   }
 
   public static TSQueryCapture create(TSNode node, int index) {
+    Objects.requireNonNull(node, "TSNode cannot be null");
     return TSObjectFactoryProvider.getFactory().createQueryCapture(node, index);
   }
 

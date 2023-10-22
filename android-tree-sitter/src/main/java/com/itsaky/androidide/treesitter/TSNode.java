@@ -97,6 +97,7 @@ public class TSNode extends TSNativeObject {
    * {@link TSNode} instance that you want to keep and continue to use after an edit.
    */
   public void edit(TSInputEdit edit) {
+    Objects.requireNonNull(edit, "TSInputEdit cannot be null");
     checkAccess();
     getTree().checkAccess();
     Native.edit(this, edit);
@@ -410,6 +411,7 @@ public class TSNode extends TSNativeObject {
    * @param another The node to check.
    */
   public boolean isEqualTo(TSNode another) {
+    Objects.requireNonNull(another, "TSNode (another) cannot be null");
     checkAccess();
     getTree().checkAccess();
     return Native.isEqualTo(this, another);

@@ -28,7 +28,7 @@ public class TSTreeCursor extends TSNativeObject {
   protected long tree;
 
   protected TSTreeCursor(TSNode node) {
-    this(Native.newCursor(node));
+    this(Native.newCursor(Objects.requireNonNull(node, "TSNode cannot be null")));
   }
 
   protected TSTreeCursor(long pointer) {
@@ -40,7 +40,7 @@ public class TSTreeCursor extends TSNativeObject {
   }
 
   public static TSTreeCursor create(TSNode node) {
-    Objects.requireNonNull(node);
+    Objects.requireNonNull(node, "TSNode cannot be null");
     return TSTreeCursor.create(Native.newCursor(node));
   }
 
@@ -193,6 +193,7 @@ public class TSTreeCursor extends TSNativeObject {
    * Re-initialize a tree cursor to start at a different node.
    */
   public void reset(TSNode node) {
+    Objects.requireNonNull(node, "TSNode cannot be null");
     checkAccess();
     Native.reset(getNativeObject(), node);
   }
