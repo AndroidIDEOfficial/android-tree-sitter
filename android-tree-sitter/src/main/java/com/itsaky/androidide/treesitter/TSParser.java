@@ -187,7 +187,6 @@ public class TSParser extends TSNativeObject {
       return createTree(tree);
     } finally {
       unsetParsingFlag();
-      isCancellationRequested.compareAndSet(true, false);
       parseLock.unlock();
     }
   }
