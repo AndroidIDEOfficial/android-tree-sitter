@@ -178,7 +178,7 @@ public class TSParser extends TSNativeObject {
     // acquire the lock
     // this will wait until the cancelled parse call returns
     parseLock.lock();
-    isCancellationRequested.compareAndSet(true, false);
+    setCancellationRequested(false);
     setParsingFlag();
     try {
       final var strPointer = source.getPointer();
@@ -247,8 +247,16 @@ public class TSParser extends TSNativeObject {
    */
   public boolean requestCancellation() {
     final var requested = Native.requestCancellation();
-    isCancellationRequested.set(requested);
+    setCancellationRequested(requested);
     return requested;
+  }
+
+  protected synchronized void setCancellationRequested(boolean isRequested) {
+    this.isCancellationRequested.set(isRequested);
+  }
+
+  protected synchronized boolean isCancellationRequested() {
+    return this.isCancellationRequested.get();
   }
 
   /**
@@ -296,7 +304,7 @@ public class TSParser extends TSNativeObject {
   }
 
   private void throwIfParseNotCancelled() {
-    if (isParsing() && !isCancellationRequested.get()) {
+    if (isParsing() && !isCancellationRequested()) {
       throw new ParseInProgressException(
         "Parser is already parsing another syntax tree! Cancel the previous parse before starting another.");
     }
