@@ -20,10 +20,13 @@ package com.itsaky.androidide.treesitter;
 import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Implementation of tree sitter's <code>TSParser</code> APIs. This implementation always converts
+ * the input source code to {@link UTF16String UTF-16 string}.
+ */
 public class TSParser extends TSNativeObject {
 
   protected final ReentrantLock parseLock = new ReentrantLock();
@@ -80,11 +83,11 @@ public class TSParser extends TSNativeObject {
   }
 
   /**
-   * Parses the given String source. Uses {@link TSInputEncoding#TSInputEncodingUTF8} as the default
-   * encoding.
+   * Parses the given String source. See {@link #parseString(TSTree, UTF16String)} for more
+   * details.
    *
    * @param source The source code to parse.
-   * @return The parsed tree.
+   * @return The parsed tree, or <code>null</code> if the parse failed or was cancelled.
    */
   public TSTree parseString(String source) {
     throwIfParseNotCancelled();
@@ -93,28 +96,78 @@ public class TSParser extends TSNativeObject {
     }
   }
 
+  /**
+   * Parses the given {@link UTF16String} source. See {@link #parseString(TSTree, UTF16String)} for
+   * more details.
+   *
+   * @param source The source code to parse.
+   * @return The parsed tree, or <code>null</code> if the parse failed or was cancelled.
+   */
   public TSTree parseString(UTF16String source) {
     return parseString(null, source);
   }
 
+  /**
+   * Parses the given source code bytes. See {@link #parseString(TSTree, UTF16String)} for more
+   * details.
+   *
+   * @param bytes The source code to parse.
+   * @return The parsed tree, or <code>null</code> if the parse failed or was cancelled.
+   * @see #parseBytes(byte[], int, int)
+   */
   public TSTree parseBytes(byte[] bytes) {
     return parseBytes(bytes, 0, bytes.length);
   }
 
-  public TSTree parseBytes(byte[] bytes, int off, int len) {
+  /**
+   * Parses the given source code bytes. See {@link #parseString(TSTree, UTF16String)} for more
+   * details. See {@link #parseString(TSTree, UTF16String)} for more details.
+   *
+   * @param bytes  The source code to parse.
+   * @param offset The start offset in <code>bytes</code>.
+   * @param len    The number of bytes to from <code>offset</code> to parse.
+   * @return The parsed tree, or <code>null</code> if the parse failed or was cancelled.
+   */
+  public TSTree parseBytes(byte[] bytes, int offset, int len) {
     throwIfParseNotCancelled();
-    try (final var source = UTF16StringFactory.newString(bytes, off, len)) {
+    try (final var source = UTF16StringFactory.newString(bytes, offset, len)) {
       return parseString(source);
     }
   }
 
-  public TSTree parseString(TSTree oldTree, String source) throws UnsupportedEncodingException {
+  /**
+   * Parse the given edited source code using the previously parsed syntax tree. The given
+   * {@link TSTree} must have been edited using {@link TSTree#edit(TSInputEdit)} before calling this
+   * method. See {@link #parseString(TSTree, UTF16String)} for more details.
+   *
+   * @param oldTree The previously parsed syntax tree.
+   * @param source  The source code to parse.
+   * @return The parsed tree, or <code>null</code> if the parse failed or was cancelled.
+   */
+  public TSTree parseString(TSTree oldTree, String source) {
     throwIfParseNotCancelled();
     try (final var str = UTF16StringFactory.newString(source)) {
       return parseString(oldTree, str);
     }
   }
 
+  /**
+   * Parse the given edited source code using the previously parsed syntax tree. The given
+   * {@link TSTree} must have been edited using {@link TSTree#edit(TSInputEdit)} before calling this
+   * method.
+   * <p>
+   * Throws {@link ParseInProgressException} if the parser is currently parsing a syntax tree and
+   * the cancellation was NOT requested using {@link #requestCancellation()}. This method blocks the
+   * current thread if the previous parse was requested to be cancelled but the parse operation has
+   * not been cancelled yet.
+   *
+   * @param oldTree The previously parsed syntax tree.
+   * @param source  The source code to parse.
+   * @return The parsed tree, or <code>null</code> if the parse failed or was cancelled.
+   * @throws IllegalStateException    If the parser is not accessible. See
+   *                                  {@link TSNativeObject#canAccess()} for more details.
+   * @throws ParseInProgressException If the parser is currently parsing another syntax tree.
+   */
   public TSTree parseString(TSTree oldTree, UTF16String source) {
     checkAccess();
 
@@ -170,7 +223,8 @@ public class TSParser extends TSNativeObject {
   }
 
   /**
-   * Sets the 'parsing' flag to indicate that the parser is in the process of parsing a syntax tree.
+   * Sets the 'parsing' flag to indicate that the parser is in the process of parsing a syntax
+   * tree.
    */
   protected boolean setParsingFlag() {
     return this.isParsing.compareAndSet(false, true);
@@ -244,7 +298,8 @@ public class TSParser extends TSNativeObject {
 
   private void throwIfParseNotCancelled() {
     if (isParsing() && !isCancellationRequested.get()) {
-      throw new ParseInProgressException("Parser is already parsing another syntax tree! Cancel the previous parse before starting another.");
+      throw new ParseInProgressException(
+        "Parser is already parsing another syntax tree! Cancel the previous parse before starting another.");
     }
   }
 
