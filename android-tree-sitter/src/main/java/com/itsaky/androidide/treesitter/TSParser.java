@@ -172,6 +172,11 @@ public class TSParser extends TSNativeObject {
   public TSTree parseString(TSTree oldTree, UTF16String source) {
     checkAccess();
 
+    // Check for reentrancy (same thread calling this method again, before the previous call returned)
+    if (parseLock.isHeldByCurrentThread()) {
+      throw new IllegalStateException("Reentrancy detected");
+    }
+
     // if the parser is currently parsing a syntax tree and the cancellation
     // was not requested, throw an error
     throwIfParseNotCancelled();
