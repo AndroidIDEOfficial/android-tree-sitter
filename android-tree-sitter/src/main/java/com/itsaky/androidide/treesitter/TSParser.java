@@ -29,8 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TSParser extends TSNativeObject {
 
-  protected final ReentrantLock parseLock = new ReentrantLock(true);
-  protected final ReentrantLock cancellationLock = new ReentrantLock(true);
+  protected final ReentrantLock parseLock = new ReentrantLock();
   protected final AtomicBoolean isParsing = new AtomicBoolean(false);
   protected final AtomicBoolean isCancellationRequested = new AtomicBoolean(false);
 
@@ -257,22 +256,12 @@ public class TSParser extends TSNativeObject {
     return requested;
   }
 
-  protected void setCancellationRequested(boolean isRequested) {
-    cancellationLock.lock();
-    try {
-      this.isCancellationRequested.set(isRequested);
-    } finally {
-      cancellationLock.unlock();
-    }
+  protected synchronized void setCancellationRequested(boolean isRequested) {
+    this.isCancellationRequested.set(isRequested);
   }
 
   protected synchronized boolean isCancellationRequested() {
-    cancellationLock.lock();
-    try {
-      return this.isCancellationRequested.get();
-    } finally {
-      cancellationLock.unlock();
-    }
+    return this.isCancellationRequested.get();
   }
 
   /**
