@@ -21,6 +21,7 @@ import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -30,6 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TSParser extends TSNativeObject {
 
   protected final ReentrantLock parseLock = new ReentrantLock();
+  protected final Condition parseCondition = parseLock.newCondition();
   protected final AtomicBoolean isParsing = new AtomicBoolean(false);
   protected final AtomicBoolean isCancellationRequested = new AtomicBoolean(false);
 
@@ -157,9 +159,9 @@ public class TSParser extends TSNativeObject {
    * method.
    * <p>
    * Throws {@link ParseInProgressException} if the parser is currently parsing a syntax tree and
-   * the cancellation was NOT requested using {@link #requestCancellation()}. This method blocks the
-   * current thread if the previous parse was requested to be cancelled but the parse operation has
-   * not been cancelled yet.
+   * the cancellation was NOT requested using {@link #requestCancellationAsync()}. This method
+   * blocks the current thread if the previous parse was requested to be cancelled but the parse
+   * operation has not been cancelled yet.
    *
    * @param oldTree The previously parsed syntax tree.
    * @param source  The source code to parse.
@@ -192,6 +194,7 @@ public class TSParser extends TSNativeObject {
       return createTree(tree);
     } finally {
       unsetParsingFlag();
+      parseCondition.signalAll();
       parseLock.unlock();
     }
   }
@@ -245,15 +248,36 @@ public class TSParser extends TSNativeObject {
    * Request the parsing operation to be cancelled if the parser is in the process of parsing a
    * syntax tree.
    * <p>
-   * The parse operation is NOT immediately cancelled.
+   * This is an asynchronous operation and the previous parse call may NOT be cancelled immediately.
+   * Use {@link #requestCancellationAndWait()} for a blocking cancellation request.
    *
    * @return <code>true</code> if the cancellation was requested successfully, <code>false</code>
    * otherwise.
    */
-  public boolean requestCancellation() {
+  public boolean requestCancellationAsync() {
     final var requested = Native.requestCancellation();
     setCancellationRequested(requested);
     return requested;
+  }
+
+  /**
+   * If the parser is parsing syntax tree, sets the cancellation flag and blocks the current thread
+   * until the parse operation returns. Does nothing if {@link #requestCancellationAsync()} returns
+   * false.
+   */
+  public void requestCancellationAndWait() {
+    if (requestCancellationAsync()) {
+      parseLock.lock();
+      try {
+        while (isParsing()) {
+          parseCondition.await();
+        }
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      } finally {
+        parseLock.unlock();
+      }
+    }
   }
 
   protected synchronized void setCancellationRequested(boolean isRequested) {

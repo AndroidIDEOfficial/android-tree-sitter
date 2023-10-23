@@ -322,7 +322,7 @@ public class ParserTest extends TreeSitterTest {
       final var parseFuture = executor.schedule(() -> {
 
         // cancel the parsing after 200ms
-        executor.schedule(() -> assertThat(parser.requestCancellation()).isTrue(), 200,
+        executor.schedule(() -> assertThat(parser.requestCancellationAsync()).isTrue(), 200,
           TimeUnit.MILLISECONDS);
 
         // parsing the View.java.txt file takes 300-600ms
@@ -336,6 +336,8 @@ public class ParserTest extends TreeSitterTest {
         parseFuture.get();
       } catch (InterruptedException | ExecutionException e) {
         throw new RuntimeException(e);
+      } finally {
+        executor.shutdownNow();
       }
     }
   }
@@ -385,6 +387,8 @@ public class ParserTest extends TreeSitterTest {
         parseFuture2.get();
       } catch (Throwable e) {
         throw new RuntimeException(e);
+      } finally {
+        executor.shutdownNow();
       }
     }
   }
@@ -419,7 +423,7 @@ public class ParserTest extends TreeSitterTest {
         assertThat(parser.isParsing()).isTrue();
 
         // request the cancellation
-        assertThat(parser.requestCancellation()).isTrue();
+        assertThat(parser.requestCancellationAsync()).isTrue();
 
         // the next parse call should wait for the previous parse call to return
         try (var tree = parser.parseString(fileContent)) {
@@ -436,6 +440,8 @@ public class ParserTest extends TreeSitterTest {
         parseFuture2.get();
       } catch (Throwable e) {
         throw new RuntimeException(e);
+      } finally {
+        executor.shutdownNow();
       }
     }
   }
@@ -488,6 +494,63 @@ public class ParserTest extends TreeSitterTest {
         parseFuture2.get();
       } catch (Throwable e) {
         throw new RuntimeException(e);
+      } finally {
+        executor.shutdownNow();
+      }
+    }
+  }
+
+  @Test
+  public void testAwaitedCancellation() {
+    try (final var parser = TSParser.create(); final var mainParseContent = UTF16StringFactory.newString()) {
+      parser.setLanguage(TSLanguageJava.getInstance());
+
+      // Read the content before starting the threads
+      final var fileContent = readResource("View.java.txt");
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+
+      final var executor = Executors.newScheduledThreadPool(20);
+
+      // start the main parse operation immediately
+      final var parseFuture1 = executor.schedule(() -> {
+        try (final var tree = parser.parseString(mainParseContent)) {
+          // This parse was cancelled and another parse was requested
+          // so this should fail
+          assertThat(tree).isNull();
+        }
+      }, 0, TimeUnit.MICROSECONDS);
+
+      // delay the second parse so that the parser is in the 'parsing' state when this is executed
+      final var secondParseDelayMs = 100;
+      final var parseFuture2 = executor.schedule(() -> {
+
+        // the parser should be in the 'parsing' state by now
+        assertThat(parser.isParsing()).isTrue();
+
+        // request parse cancellation and wait till the parse returns
+        final var start = System.currentTimeMillis();
+        parser.requestCancellationAndWait();
+        System.err.println("cancelAndWait() waited for " + (System.currentTimeMillis() - start) + "ms");
+
+        // request another parse
+        try (var tree = parser.parseString(fileContent)) {
+          // A parse was already in progress when this parse was requested
+          // however, we cancelled that parse and requested this one
+          // so this parseString call should succeed
+          assertThat(tree).isNotNull();
+          assertThat(tree.canAccess()).isTrue();
+        }
+      }, secondParseDelayMs, TimeUnit.MILLISECONDS);
+
+      try {
+        parseFuture1.get();
+        parseFuture2.get();
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      } finally {
+        executor.shutdownNow();
       }
     }
   }
