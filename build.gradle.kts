@@ -22,6 +22,8 @@ import com.itsaky.androidide.treesitter.BuildTreeSitterTask
 import com.itsaky.androidide.treesitter.CleanTreeSitterBuildTask
 import com.itsaky.androidide.treesitter.projectVersionCode
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost
 
@@ -134,7 +136,12 @@ subprojects {
       coordinates(project.group.toString(), project.name, versionName)
       publishToMavenCentral(host = SonatypeHost.S01)
       signAllPublications()
-      configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
+      if (plugins.hasPlugin("java-library")) {
+        configure(
+          JavaLibrary(javadocJar = JavadocJar.Javadoc(), sourcesJar = true))
+      } else {
+        configure(AndroidSingleVariantLibrary(publishJavadocJar = false))
+      }
     }
   }
 }

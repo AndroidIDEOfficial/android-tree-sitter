@@ -18,4 +18,7 @@
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
   id("java-library")
+  id("com.vanniktech.maven.publish.base")
 }
+
+description = "Annotations for Android Tree Sitter."
