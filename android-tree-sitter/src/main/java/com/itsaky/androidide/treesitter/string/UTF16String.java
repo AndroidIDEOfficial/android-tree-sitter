@@ -44,6 +44,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    */
   public byte byteAt(int index) {
     checkIndex(index, byteLength());
+    checkAccess();
     return Native.byteAt(getNativeObject(), index);
   }
 
@@ -54,6 +55,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    */
   public void setByteAt(int index, byte b) {
     checkIndex(index, byteLength());
+    checkAccess();
     Native.setByteAt(getNativeObject(), index, b);
   }
 
@@ -66,6 +68,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   @Override
   public char charAt(int index) {
     checkIndex(index, length());
+    checkAccess();
     return Native.chatAt(getNativeObject(), index);
   }
 
@@ -76,6 +79,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    */
   public void setCharAt(int index, char c) {
     checkIndex(index, length());
+    checkAccess();
     Native.setCharAt(getNativeObject(), index, c);
   }
 
@@ -85,6 +89,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    * @param string The string to append.
    */
   public void append(String string) {
+    checkAccess();
     Native.append(getNativeObject(), string);
   }
 
@@ -98,6 +103,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    */
   public void append(String string, int fromIndex, int length) {
     checkStringRange(string, fromIndex, length);
+    checkAccess();
     Native.appendPart(getNativeObject(), string, fromIndex, length);
   }
 
@@ -113,7 +119,9 @@ public class UTF16String extends TSNativeObject implements CharSequence {
       append(string);
       return;
     }
+
     checkIndex(index, length());
+    checkAccess();
     Native.insert(getNativeObject(), string, index);
   }
 
@@ -128,6 +136,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = length();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
+
+    checkAccess();
     Native.deleteChars(getNativeObject(), fromIndex, toIndex);
   }
 
@@ -141,6 +151,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = byteLength();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
+
+    checkAccess();
     Native.deleteBytes(getNativeObject(), fromIndex, toIndex);
   }
 
@@ -161,6 +173,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = length();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
+
+    checkAccess();
     Native.replaceChars(getNativeObject(), fromIndex, toIndex, str);
   }
 
@@ -181,6 +195,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = byteLength();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
+
+    checkAccess();
     Native.replaceBytes(getNativeObject(), fromIndex, toIndex, str);
   }
 
@@ -206,6 +222,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = length();
     checkIndex(start, size);
     checkIndex(end, size + 1);
+
+    checkAccess();
     return UTF16StringFactory.createString(Native.substring_chars(getNativeObject(), start, end));
   }
 
@@ -232,6 +250,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = byteLength();
     checkIndex(start, size);
     checkIndex(end, size + 1);
+
+    checkAccess();
     return UTF16StringFactory.createString(Native.substring_bytes(getNativeObject(), start, end));
   }
 
@@ -258,6 +278,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = length();
     checkIndex(start, size);
     checkIndex(end, size + 1);
+
+    checkAccess();
     return Native.subjstring_chars(getNativeObject(), start, end);
   }
 
@@ -284,6 +306,8 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     int size = byteLength();
     checkIndex(start, size);
     checkIndex(end, size + 1);
+
+    checkAccess();
     return Native.subjstring_bytes(getNativeObject(), start, end);
   }
 
@@ -293,6 +317,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    * @return The length in characters.
    */
   public int length() {
+    checkAccess();
     return Native.length(getNativeObject());
   }
 
@@ -302,6 +327,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    * @return The length in bytes.
    */
   public int byteLength() {
+    checkAccess();
     return Native.byteLength(getNativeObject());
   }
 
@@ -323,6 +349,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
 
   @Override
   public String toString() {
+    checkAccess();
     return Native.toString(getNativeObject());
   }
 
