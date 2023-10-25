@@ -32,6 +32,7 @@ import com.itsaky.androidide.treesitter.TSRange;
 import com.itsaky.androidide.treesitter.TSTree;
 import com.itsaky.androidide.treesitter.TSTreeCursor;
 import com.itsaky.androidide.treesitter.TSTreeCursorNode;
+import com.itsaky.androidide.treesitter.string.UTF16String;
 import java.util.Objects;
 
 /**
@@ -157,5 +158,10 @@ class NonNullTSObjectFactory implements TSObjectFactory {
   @Override
   public TSLanguage createLanguage(String name, long[] pointers) {
     return requireNonNull(factory.createLanguage(name, pointers));
+  }
+
+  @Override
+  public UTF16String createString(long pointer, boolean isSynchronized) {
+    return requireNonNull(factory.createString(pointer, isSynchronized));
   }
 }

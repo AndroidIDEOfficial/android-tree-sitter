@@ -188,7 +188,7 @@ public class TSParser extends TSNativeObject {
     setCancellationRequested(false);
     setParsingFlag();
     try {
-      final var strPointer = source.getPointer();
+      final var strPointer = source.getNativeObject();
       final var oldTreePointer = oldTree != null ? oldTree.getNativeObject() : 0;
       final var tree = Native.parse(this.getNativeObject(), oldTreePointer, strPointer);
       return createTree(tree);

@@ -15,31 +15,19 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-  id("com.android.library")
-  id("com.vanniktech.maven.publish.base")
-  id("android-tree-sitter.ts")
-}
-
-description = "Android Java bindings for Tree Sitter."
-
-android {
-  namespace = "com.itsaky.androidide.treesitter"
+  id("java-library")
 }
 
 dependencies {
   implementation(projects.annotations)
-  annotationProcessor(projects.annotationProcessors)
+  implementation(libs.javapoet)
 
-  testImplementation(projects.treeSitterAidl)
-  testImplementation(projects.treeSitterJava)
-  testImplementation(projects.treeSitterJson)
-  testImplementation(projects.treeSitterKotlin)
-  testImplementation(projects.treeSitterLog)
-  testImplementation(projects.treeSitterXml)
-  testImplementation(projects.treeSitterPython)
-  testImplementation(libs.tests.google.truth)
-  testImplementation(libs.tests.junit)
-  testImplementation(libs.tests.robolectric)
-  testImplementation(libs.tests.mockito)
+  implementation(libs.google.auto.service.annotations)
+  annotationProcessor(libs.google.auto.service)
+
+  // Generates the required META-INF descriptor to make the processor incremental.
+  compileOnly(libs.incap)
+  annotationProcessor(libs.incap.processor)
 }

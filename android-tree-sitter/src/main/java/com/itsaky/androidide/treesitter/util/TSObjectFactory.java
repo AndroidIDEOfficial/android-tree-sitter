@@ -32,6 +32,7 @@ import com.itsaky.androidide.treesitter.TSRange;
 import com.itsaky.androidide.treesitter.TSTree;
 import com.itsaky.androidide.treesitter.TSTreeCursor;
 import com.itsaky.androidide.treesitter.TSTreeCursorNode;
+import com.itsaky.androidide.treesitter.string.UTF16String;
 
 /**
  * An object factory is responsible for creating and destroying tree sitter objects. A factory can be
@@ -131,4 +132,6 @@ public interface TSObjectFactory {
     String name,
     long[] pointers
   );
+
+  UTF16String createString(long pointer, boolean isSynchronized);
 }

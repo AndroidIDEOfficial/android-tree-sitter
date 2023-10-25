@@ -48,8 +48,8 @@ fun Project.configureBaseExtension() {
     }
 
     compileOptions {
-      sourceCompatibility = JavaVersion.VERSION_11
-      targetCompatibility = JavaVersion.VERSION_11
+      sourceCompatibility = BuildConfig.JAVA_VERSION
+      targetCompatibility = BuildConfig.JAVA_VERSION
 
       isCoreLibraryDesugaringEnabled = true
     }
@@ -70,6 +70,12 @@ fun Project.configureBaseExtension() {
 subprojects {
   plugins.withId("com.android.application") { configureBaseExtension() }
   plugins.withId("com.android.library") { configureBaseExtension() }
+  plugins.withId("java-library") {
+    tasks.withType(JavaCompile::class.java) {
+      sourceCompatibility = BuildConfig.JAVA_VERSION.majorVersion
+      targetCompatibility = BuildConfig.JAVA_VERSION.majorVersion
+    }
+  }
   plugins.withId("android-tree-sitter.ts") {
     configureTsModule()
 

@@ -416,7 +416,7 @@ public class QueryTest extends TreeSitterTest {
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = NullPointerException.class)
   public void cursorShouldFailOnNullNode() {
     final var lang = TSLanguageJava.getInstance();
     String querySource = "(method_declaration name: (identifier)+ @method_name)";

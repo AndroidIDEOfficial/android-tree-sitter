@@ -20,16 +20,20 @@ package com.itsaky.androidide.treesitter.string;
 import static com.itsaky.androidide.treesitter.string.Assertions.checkIndex;
 import static com.itsaky.androidide.treesitter.string.Assertions.checkStringRange;
 
+import com.itsaky.androidide.treesitter.TSNativeObject;
+import com.itsaky.androidide.treesitter.annotations.DontSynchronize;
+import com.itsaky.androidide.treesitter.annotations.Synchronized;
+import com.itsaky.androidide.treesitter.util.Consumer;
 import java.util.Objects;
 
 /**
  * @author Akash Yadav
  */
-public class UTF16String implements CharSequence, AutoCloseable {
-  private final long pointer;
+@Synchronized(packagePrivateConstructor = false)
+public class UTF16String extends TSNativeObject implements CharSequence {
 
-  UTF16String(long pointer) {
-    this.pointer = pointer;
+  public UTF16String(long pointer) {
+    super(pointer);
   }
 
   /**
@@ -40,7 +44,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
    */
   public byte byteAt(int index) {
     checkIndex(index, byteLength());
-    return Native.byteAt(this.pointer, index);
+    return Native.byteAt(getNativeObject(), index);
   }
 
   /**
@@ -50,7 +54,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
    */
   public void setByteAt(int index, byte b) {
     checkIndex(index, byteLength());
-    Native.setByteAt(this.pointer, index, b);
+    Native.setByteAt(getNativeObject(), index, b);
   }
 
   /**
@@ -62,7 +66,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
   @Override
   public char charAt(int index) {
     checkIndex(index, length());
-    return Native.chatAt(this.pointer, index);
+    return Native.chatAt(getNativeObject(), index);
   }
 
   /**
@@ -72,7 +76,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
    */
   public void setCharAt(int index, char c) {
     checkIndex(index, length());
-    Native.setCharAt(this.pointer, index, c);
+    Native.setCharAt(getNativeObject(), index, c);
   }
 
   /**
@@ -81,27 +85,27 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * @param string The string to append.
    */
   public void append(String string) {
-    Native.append(this.pointer, string);
+    Native.append(getNativeObject(), string);
   }
 
   /**
    * Appends the given string to the end of this {@link UTF16String}.
    *
-   * @param string The string to append.
+   * @param string    The string to append.
    * @param fromIndex The start offset to append from. This should be Java {@code char}-based index
-   *     in the given string.
-   * @param length The number of character to append from the given string.
+   *                  in the given string.
+   * @param length    The number of character to append from the given string.
    */
   public void append(String string, int fromIndex, int length) {
     checkStringRange(string, fromIndex, length);
-    Native.appendPart(this.pointer, string, fromIndex, length);
+    Native.appendPart(getNativeObject(), string, fromIndex, length);
   }
 
   /**
    * Inserts the given string at the given index.
    *
-   * @param index The index to insert at. This should be Java {@code char}-based index * in the
-   *     given string.
+   * @param index  The index to insert at. This should be Java {@code char}-based index * in the
+   *               given string.
    * @param string The string to insert.
    */
   public void insert(int index, String string) {
@@ -110,7 +114,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
       return;
     }
     checkIndex(index, length());
-    Native.insert(this.pointer, string, index);
+    Native.insert(getNativeObject(), string, index);
   }
 
   /**
@@ -118,26 +122,26 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * Java {@code char} based.
    *
    * @param fromIndex The index to delete from.
-   * @param toIndex The index to delete to.
+   * @param toIndex   The index to delete to.
    */
   public void delete(int fromIndex, int toIndex) {
     int size = length();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
-    Native.deleteChars(this.pointer, fromIndex, toIndex);
+    Native.deleteChars(getNativeObject(), fromIndex, toIndex);
   }
 
   /**
    * Deletes the contents of this string between the given byte indices.
    *
    * @param fromIndex The byte index to delete from.
-   * @param toIndex The byte index to delete to.
+   * @param toIndex   The byte index to delete to.
    */
   public void deleteBytes(int fromIndex, int toIndex) {
     int size = byteLength();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
-    Native.deleteBytes(this.pointer, fromIndex, toIndex);
+    Native.deleteBytes(getNativeObject(), fromIndex, toIndex);
   }
 
   /**
@@ -145,8 +149,8 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * string. The indices should be Java {@code char}-based indices in the given string.
    *
    * @param fromIndex The index to replace from.
-   * @param toIndex The index to replace to.
-   * @param str The string to replace with.
+   * @param toIndex   The index to replace to.
+   * @param str       The string to replace with.
    */
   public void replaceChars(int fromIndex, int toIndex, String str) {
     if (str.length() == 0) {
@@ -157,7 +161,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
     int size = length();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
-    Native.replaceChars(this.pointer, fromIndex, toIndex, str);
+    Native.replaceChars(getNativeObject(), fromIndex, toIndex, str);
   }
 
   /**
@@ -165,8 +169,8 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * string. The indices should be Java {@code byte}-based indices in the given string.
    *
    * @param fromIndex The index to replace from.
-   * @param toIndex The index to replace to.
-   * @param str The string to replace with.
+   * @param toIndex   The index to replace to.
+   * @param str       The string to replace with.
    */
   public void replaceBytes(int fromIndex, int toIndex, String str) {
     if (str.length() == 0) {
@@ -177,7 +181,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
     int size = byteLength();
     checkIndex(fromIndex, size);
     checkIndex(toIndex, size + 1);
-    Native.replaceBytes(this.pointer, fromIndex, toIndex, str);
+    Native.replaceBytes(getNativeObject(), fromIndex, toIndex, str);
   }
 
   /**
@@ -186,8 +190,8 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * @param start The start index of the substring in characters.
    * @return The subsequence.
    */
+  @DontSynchronize
   public UTF16String subseqChars(int start) {
-    checkIndex(start, length());
     return subseqChars(start, length());
   }
 
@@ -195,14 +199,14 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * Get the subsequence of this string.
    *
    * @param start The start index of the substring in characters.
-   * @param end The start index of the substring in characters (exclusive).
+   * @param end   The start index of the substring in characters (exclusive).
    * @return The subsequence.
    */
   public UTF16String subseqChars(int start, int end) {
     int size = length();
     checkIndex(start, size);
     checkIndex(end, size + 1);
-    return new UTF16String(Native.substring_chars(this.pointer, start, end));
+    return UTF16StringFactory.createString(Native.substring_chars(getNativeObject(), start, end));
   }
 
   /**
@@ -221,14 +225,14 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * Get the subsequence of this string.
    *
    * @param start The start index of the substring in bytes.
-   * @param end The start index of the substring in bytes (exclusive).
+   * @param end   The start index of the substring in bytes (exclusive).
    * @return The subsequence.
    */
   public UTF16String subseqBytes(int start, int end) {
     int size = byteLength();
     checkIndex(start, size);
     checkIndex(end, size + 1);
-    return new UTF16String(Native.substring_bytes(this.pointer, start, end));
+    return UTF16StringFactory.createString(Native.substring_bytes(getNativeObject(), start, end));
   }
 
   /**
@@ -247,14 +251,14 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * Get the substring of this string.
    *
    * @param start The start index of the substring in characters.
-   * @param end The start index of the substring in characters (exclusive).
+   * @param end   The start index of the substring in characters (exclusive).
    * @return The substring.
    */
   public String substringChars(int start, int end) {
     int size = length();
     checkIndex(start, size);
     checkIndex(end, size + 1);
-    return Native.subjstring_chars(this.pointer, start, end);
+    return Native.subjstring_chars(getNativeObject(), start, end);
   }
 
   /**
@@ -273,14 +277,14 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * Get the substring of this string.
    *
    * @param start The start index of the substring in bytes.
-   * @param end The start index of the substring in bytes (exclusive).
+   * @param end   The start index of the substring in bytes (exclusive).
    * @return The substring.
    */
   public String substringBytes(int start, int end) {
     int size = byteLength();
     checkIndex(start, size);
     checkIndex(end, size + 1);
-    return Native.subjstring_bytes(this.pointer, start, end);
+    return Native.subjstring_bytes(getNativeObject(), start, end);
   }
 
   /**
@@ -289,7 +293,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * @return The length in characters.
    */
   public int length() {
-    return Native.length(this.pointer);
+    return Native.length(getNativeObject());
   }
 
   /**
@@ -298,7 +302,7 @@ public class UTF16String implements CharSequence, AutoCloseable {
    * @return The length in bytes.
    */
   public int byteLength() {
-    return Native.byteLength(this.pointer);
+    return Native.byteLength(getNativeObject());
   }
 
   @Override
@@ -309,37 +313,101 @@ public class UTF16String implements CharSequence, AutoCloseable {
     return subseqChars(start, end);
   }
 
-  /** Close this string and release resources. */
+  /**
+   * Close this string and release resources.
+   */
   @Override
-  public void close() {
-    Native.erase(this.pointer);
+  public void closeNativeObj() {
+    Native.erase(getNativeObject());
   }
 
   @Override
   public String toString() {
-    return Native.toString(this.pointer);
+    return Native.toString(getNativeObject());
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof UTF16String)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof UTF16String)) {
+      return false;
+    }
     UTF16String that = (UTF16String) o;
-    return pointer == that.pointer;
-  }
-
-  /**
-   * Get the pointer to the native UTF16String object.
-   *
-   * @return The pointer.
-   */
-  public long getPointer() {
-    return pointer;
+    return getNativeObject() == that.getNativeObject();
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pointer);
+    return Objects.hash(getNativeObject());
+  }
+
+  /**
+   * Iterate over the characters in this string.
+   *
+   * @param consumer The consumer to consume the characters.
+   */
+  @DontSynchronize
+  public void forEachChar(Consumer<Character> consumer) {
+    forEachChar(0, length(), consumer);
+  }
+
+  /**
+   * Iterate over the characters in this string.
+   *
+   * @param from     The start index (inclusive).
+   * @param to       The end index (exclusive).
+   * @param consumer The consumer to consume the characters.
+   */
+  public void forEachChar(int from, int to, Consumer<Character> consumer) {
+    final var length = length();
+    Assertions.checkIndex(from, length);
+    Assertions.checkUpperBound(to, length);
+    for (int i = from; i < to; i++) {
+      consumer.accept(charAt(i));
+    }
+  }
+
+  /**
+   * Iterate over the bytes in this string.
+   *
+   * @param consumer The consumer to consume the bytes.
+   */
+  @DontSynchronize
+  public void forEachByte(Consumer<Byte> consumer) {
+    forEachByte(0, byteLength(), consumer);
+  }
+
+  /**
+   * Iterate over the bytes in this string.
+   *
+   * @param from     The start byte index (inclusive).
+   * @param to       The end byte index (exclusive).
+   * @param consumer The consumer to consume the bytes.
+   */
+  public void forEachByte(int from, int to, Consumer<Byte> consumer) {
+    final var length = length();
+    Assertions.checkIndex(from, length);
+    Assertions.checkUpperBound(to, length);
+    for (int i = from; i < to; i++) {
+      consumer.accept(byteAt(i));
+    }
+  }
+
+  /**
+   * Returns a new synchronized version of this string. Please note that the returned string will
+   * still use the same native object as this string and hence, changes made to either of the
+   * strings will be reflected in both.
+   *
+   * @return A new synchronized version of this string, or <code>this</code> object if it is a
+   * {@link SynchronizedUTF16String} instance.
+   */
+  public UTF16String synchronizedString() {
+    if (this instanceof SynchronizedUTF16String) {
+      return this;
+    }
+    return UTF16StringFactory.createString(getNativeObject(), true);
   }
 
   private static class Native {

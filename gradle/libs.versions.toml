@@ -1,5 +1,6 @@
 [versions]
 agp = "8.1.1"
+incap = "1.0.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1"}
@@ -9,6 +10,13 @@ common-coreLibDesugaring = { module = "com.android.tools:desugar_jdk_libs", vers
 
 google-material = { module = "com.google.android.material:material", version = "1.9.0"}
 google-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
+google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
+google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
+
+incap = { module = "net.ltgt.gradle.incap:incap", version.ref = "incap" }
+incap-processor = { module = "net.ltgt.gradle.incap:incap-processor", version.ref = "incap" }
+
+javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
 
 tests-junit = { module = "junit:junit", version = "4.13.2" }
 tests-google-truth = { module = "com.google.truth:truth", version = "1.1.5" }

@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.string.SynchronizedUTF16String;
+import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.util.TSObjectFactory;
 
 /**
@@ -127,5 +129,14 @@ public class DefaultObjectFactory implements TSObjectFactory {
   @Override
   public TSLanguage createLanguage(String name, long[] pointers) {
     return new TSLanguage(name, pointers);
+  }
+
+  @Override
+  public UTF16String createString(long pointer, boolean isSynchronized) {
+    if (isSynchronized) {
+      return new SynchronizedUTF16String(pointer);
+    }
+
+    return new UTF16String(pointer);
   }
 }
