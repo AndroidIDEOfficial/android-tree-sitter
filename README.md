@@ -4,15 +4,15 @@ Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitte
 
 ## Add to your project
 
-![Latest maven release](https://img.shields.io/maven-central/v/com.itsaky.androidide/android-tree-sitter)
+![Latest maven release](https://img.shields.io/maven-central/v/com.itsaky.androidide.treesitter/android-tree-sitter)
 
 ```gradle
 // main library
-implementation 'com.itsaky.androidide:android-tree-sitter:<version>'
+implementation 'com.itsaky.androidide.treesitter:android-tree-sitter:<version>'
 
 // grammar libraries
 // <language> is the name of the language grammar. e.g. 'java', 'python', 'xml', etc.
-implementation 'com.itsaky.androidide:tree-sitter-<language>:<version>'
+implementation 'com.itsaky.androidide.treesitter:tree-sitter-<language>:<version>'
 ```
 
 The following grammars have been published to Maven central :

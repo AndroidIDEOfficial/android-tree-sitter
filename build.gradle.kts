@@ -90,7 +90,7 @@ subprojects {
 
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<MavenPublishBaseExtension> {
-      group = "com.itsaky.androidide"
+      group = "com.itsaky.androidide.treesitter"
       var versionName = rootProject.version.toString()
       if (System.getenv("PublishToMaven").isNullOrBlank()) {
         versionName = "$versionName-SNAPSHOT"
