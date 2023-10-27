@@ -63,12 +63,6 @@ jobs:
           PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
           TS_INCLUDE_DBG_SYMS_IN_APK: true
 
-      - name: Collect debug symbols
-        run: |
-          rm -rf ./build/debug_info
-          mkdir -p ./build/debug_info
-          find **/ts_debug_symbols/release/out -mindepth 1 -maxdepth 1 -exec cp -r {} ./build/debug_info/ \;
-
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
@@ -79,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: debug-symbols
-          path: build/debug_info/*.debug_info
+          path: '**/ts_debug_symbols/release/out'
 
   unit_test_debug:
     name: Run local tests
