@@ -224,7 +224,9 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
   TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
   auto *source = as_str(str_pointer);
 
-  ts_parser_internal->begin_round(env);
+  if (!ts_parser_internal->begin_round(env)) {
+    return 0;
+  }
 
   // start parsing
   // if the user cancels the parse while this method is being executed
