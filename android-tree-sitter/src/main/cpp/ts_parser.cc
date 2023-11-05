@@ -25,30 +25,116 @@
 #include "utils/ts_preconditions.h"
 #include "utils/ts_log.h"
 
-static std::mutex cancellation_flag_mutex;
-static std::atomic<size_t *> cancellation_flag(nullptr);
+/**
+ * `TSParserInternal` stores the actual tree sitter parser instance along
+ * with the cancellation flag and the cancellation flag mutex.
+ */
+class TSParserInternal {
+ public:
 
-static size_t *get_cancellation_flag() {
-  std::lock_guard<std::mutex> get_lock(cancellation_flag_mutex);
-  return cancellation_flag.load();
-}
+  TSParserInternal() {
+    cancellation_flag_mutex = new std::mutex();
+    cancellation_flag = new std::atomic<size_t *>(nullptr);
+    parser = ts_parser_new();
+  }
 
-static void set_cancellation_flag(size_t *flag) {
-  std::lock_guard<std::mutex> set_lock(cancellation_flag_mutex);
-  cancellation_flag.store(flag);
-}
+  ~TSParserInternal() {
+    delete cancellation_flag_mutex;
+    delete cancellation_flag;
+
+    ts_parser_delete(parser);
+
+    cancellation_flag_mutex = nullptr;
+    cancellation_flag = nullptr;
+    parser = nullptr;
+  }
+
+  TSParser *getParser(JNIEnv *env) {
+    if (check_destroyed(env)) {
+      return nullptr;
+    }
+
+    return this->parser;
+  }
+
+  bool begin_round(JNIEnv *env) {
+    auto flag = get_cancellation_flag(env);
+
+    if (flag) {
+      throw_illegal_state(env,
+                          "Parser is already parsing another syntax tree! You must cancel the current parse first!");
+      return false;
+    }
+
+    // allocate a new cancellation flag
+    flag = (size_t *) malloc(sizeof(int));
+    set_cancellation_flag(env, flag);
+
+    // set the cancellation flag to '0' to indicate that the parser should continue parsing
+    *flag = 0;
+    ts_parser_set_cancellation_flag(getParser(env), flag);
+
+    return true;
+  }
+
+  void end_round(JNIEnv *env) {
+
+    size_t *flag = get_cancellation_flag(env);
+
+    // release the cancellation flag
+    free((size_t *) flag);
+    set_cancellation_flag(env, nullptr);
+    ts_parser_set_cancellation_flag(getParser(env), nullptr);
+  }
+
+  size_t *get_cancellation_flag(JNIEnv *env) {
+    if (check_destroyed(env)) {
+      return nullptr;
+    }
+
+    std::lock_guard<std::mutex> get_lock(*cancellation_flag_mutex);
+    return cancellation_flag->load();
+  }
+
+  void set_cancellation_flag(JNIEnv *env, size_t *flag) {
+    if (check_destroyed(env)) {
+      return;
+    }
+
+    std::lock_guard<std::mutex> set_lock(*cancellation_flag_mutex);
+    cancellation_flag->store(flag);
+  }
+
+ private:
+  std::mutex *cancellation_flag_mutex;
+  std::atomic<size_t *> *cancellation_flag;
+
+  TSParser *parser;
+
+  bool check_destroyed(JNIEnv *env) {
+    if (cancellation_flag_mutex == nullptr || cancellation_flag == nullptr || parser == nullptr) {
+      throw_illegal_state(env, "TSParserInternal has already been destroyed");
+      return true;
+    }
+
+    return false;
+  }
+};
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
     JNIEnv *env, jclass self) {
-  return (jlong) ts_parser_new();
+  auto parser = new TSParserInternal;
+  return (jlong) parser;
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_delete(
-    JNIEnv *env, jclass self, jlong parser) {
-  req_nnp(env, parser);
-  ts_parser_delete((TSParser *) parser);
+    JNIEnv *env, jclass self, jlong parser_ptr) {
+  req_nnp(env, parser_ptr);
+
+  auto parser = (TSParserInternal *) parser_ptr;
+  delete parser;
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -56,14 +142,14 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setLanguage(
     JNIEnv *env, jclass self, jlong parser, jlong language) {
   req_nnp(env, parser, "parser");
   req_nnp(env, language, "language");
-  ts_parser_set_language((TSParser *) parser, (TSLanguage *) language);
+  ts_parser_set_language(((TSParserInternal *) parser)->getParser(env), (TSLanguage *) language);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getLanguage(
     JNIEnv *env, jclass self, jlong parser) {
   req_nnp(env, parser);
-  return (jlong) ts_parser_language((TSParser *) parser);
+  return (jlong) ts_parser_language(((TSParserInternal *) parser)->getParser(env));
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -71,21 +157,21 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_reset(JNIEnv *env,
                                                                  jclass self,
                                                                  jlong parser) {
   req_nnp(env, parser);
-  ts_parser_reset((TSParser *) parser);
+  ts_parser_reset(((TSParserInternal *) parser)->getParser(env));
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setTimeout(
     JNIEnv *env, jclass self, jlong parser, jlong macros) {
   req_nnp(env, parser);
-  ts_parser_set_timeout_micros((TSParser *) parser, macros);
+  ts_parser_set_timeout_micros(((TSParserInternal *) parser)->getParser(env), macros);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout(
     JNIEnv *env, jclass self, jlong parser) {
   req_nnp(env, parser);
-  return (jlong) ts_parser_timeout_micros((TSParser *) parser);
+  return (jlong) ts_parser_timeout_micros(((TSParserInternal *) parser)->getParser(env));
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
@@ -102,7 +188,7 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges(
   }
 
   const TSRange *r = tsRanges;
-  return (jboolean) ts_parser_set_included_ranges((TSParser *) parser,
+  return (jboolean) ts_parser_set_included_ranges(((TSParserInternal *) parser)->getParser(env),
                                                   r,
                                                   count);
 }
@@ -112,7 +198,7 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges(
     JNIEnv *env, jclass self, jlong parser) {
   req_nnp(env, parser);
   jint count;
-  const TSRange *ranges = ts_parser_included_ranges((TSParser *) parser,
+  const TSRange *ranges = ts_parser_included_ranges(((TSParserInternal *) parser)->getParser(env),
                                                     reinterpret_cast<uint32_t *>(&count));
   jobjectArray result = createRangeArr(env, count);
   req_nnp(env, result, "TSRange[] from factory");
@@ -133,25 +219,12 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
                                                                  jlong str_pointer) {
   req_nnp(env, parser);
   req_nnp(env, str_pointer, "string");
-  auto *ts_parser = (TSParser *) parser;
+  auto *ts_parser_internal = (TSParserInternal *) parser;
+  TSParser *ts_parser = ts_parser_internal->getParser(env);
   TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
   auto *source = as_str(str_pointer);
 
-  auto flag = get_cancellation_flag();
-
-  if (flag) {
-    throw_illegal_state(env,
-                        "Parser is already parsing another syntax tree! You must cancel the current parse first!");
-    return 0;
-  }
-
-  // allocate a new cancellation flag
-  flag = (size_t *) malloc(sizeof(int));
-  set_cancellation_flag(flag);
-
-  // set the cancellation flag to '0' to indicate that the parser should continue parsing
-  *flag = 0;
-  ts_parser_set_cancellation_flag(ts_parser, flag);
+  ts_parser_internal->begin_round(env);
 
   // start parsing
   // if the user cancels the parse while this method is being executed
@@ -163,10 +236,7 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
                                       source->byte_length(),
                                       TSInputEncodingUTF16);
 
-  // release the cancellation flag
-  free((size_t *) flag);
-  set_cancellation_flag(nullptr);
-  ts_parser_set_cancellation_flag(ts_parser, nullptr);
+  ts_parser_internal->end_round(env);
 
   return (jlong) tree;
 }
@@ -175,9 +245,11 @@ extern "C"
 JNIEXPORT jboolean JNICALL
 Java_com_itsaky_androidide_treesitter_TSParser_00024Native_requestCancellation(
     JNIEnv *env,
-    jclass clazz) {
+    jclass clazz,
+    jlong parser) {
 
-  auto flag = get_cancellation_flag();
+  auto *parserInternal = (TSParserInternal *) parser;
+  auto flag = parserInternal->get_cancellation_flag(env);
 
   // no parse is in progress
   if (flag == nullptr) {

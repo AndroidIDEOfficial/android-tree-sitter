@@ -255,7 +255,7 @@ public class TSParser extends TSNativeObject {
    * otherwise.
    */
   public boolean requestCancellationAsync() {
-    final var requested = Native.requestCancellation();
+    final var requested = Native.requestCancellation(getNativeObject());
     setCancellationRequested(requested);
     return requested;
   }
@@ -389,6 +389,6 @@ public class TSParser extends TSNativeObject {
 
     public static native long parse(long parser, long treePointer, long strPointer);
 
-    public static native boolean requestCancellation();
+    public static native boolean requestCancellation(long parser);
   }
 }

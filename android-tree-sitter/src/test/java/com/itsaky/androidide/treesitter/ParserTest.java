@@ -447,6 +447,52 @@ public class ParserTest extends TreeSitterTest {
   }
 
   @Test
+  public void testParserParseCallShouldNotFailIfWhenMultipleParsersAreParsing() {
+    try (final var parser1 = TSParser.create();
+      final var parser2 = TSParser.create();
+      final var mainParseContent = UTF16StringFactory.newString()
+    ) {
+      parser1.setLanguage(TSLanguageJava.getInstance());
+      parser2.setLanguage(TSLanguageJava.getInstance());
+
+      // Read the content before starting the threads
+      final var fileContent = readResource("View.java.txt");
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+      mainParseContent.append(fileContent);
+
+      final var executor = Executors.newScheduledThreadPool(2);
+
+      final var parseFuture1 = executor.schedule(() -> {
+        assertThat(parser1.isParsing()).isFalse();
+        try (final var tree = parser1.parseString(mainParseContent)) {
+          assertThat(tree).isNotNull();
+        }
+      }, 0, TimeUnit.MICROSECONDS);
+
+      final var secondParseDelayMs = 1;
+      final var parseFuture2 = executor.schedule(() -> {
+        assertThat(parser2.isParsing()).isFalse();
+        try (var tree = parser2.parseString(fileContent)) {
+          assertThat(tree).isNotNull();
+        } catch (Throwable e) {
+          throw new RuntimeException(e);
+        }
+      }, secondParseDelayMs, TimeUnit.MILLISECONDS);
+
+      try {
+        // both parser instances are independent and hence, both of them must succeed
+        parseFuture1.get();
+        parseFuture2.get();
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      } finally {
+        executor.shutdownNow();
+      }
+    }
+  }
+
+  @Test
   public void testParserParseCallShouldFailIfAnotherParseIsInProgressAndCancellationWasNotRequested() {
     try (final var parser = TSParser.create(); final var mainParseContent = UTF16StringFactory.newString()) {
       parser.setLanguage(TSLanguageJava.getInstance());
