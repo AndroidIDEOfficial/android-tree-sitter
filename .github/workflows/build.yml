@@ -73,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: debug-symbols
-          path: '**/ts_debug_symbols/release/out'
+          path: '**/build/intermediates/ts_debug_symbols'
 
   unit_test_debug:
     name: Run local tests
