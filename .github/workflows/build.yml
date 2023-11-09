@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: debug-symbols
-          path: '**/*.debug_info'
+          path: '**/build/generated/**/*.debug_info'
 
   unit_test_debug:
     name: Run local tests
