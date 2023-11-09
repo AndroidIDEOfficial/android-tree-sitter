@@ -61,7 +61,6 @@ jobs:
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
-          TS_INCLUDE_DBG_SYMS_IN_APK: true
 
       - name: Upload APK
         uses: actions/upload-artifact@v3

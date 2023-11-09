@@ -73,6 +73,7 @@ class TreeSitterPlugin : Plugin<Project> {
               Locale.ROOT) else name.toString()
           }
 
+          @Suppress("UnstableApiUsage")
           val generateDebugSymbolsTask =
             tasks.register("generateDebugSymbols$variantName",
               GenerateDebugSymbolsTask::class.java) {
@@ -81,17 +82,13 @@ class TreeSitterPlugin : Plugin<Project> {
 
               this.inputDirectory.set(
                 variant.artifacts.get(SingleArtifact.MERGED_NATIVE_LIBS))
-              this.outputDirectory.set(project.layout.buildDirectory.dir(
-                "intermediates/ts_debug_symbols/${variant.name}/out"))
               this.ndkInfo.set(ndkPlatform.get().ndkInfo)
             }
 
-          // include the debug symbols in the APK if specified
-          if (System.getenv("TS_INCLUDE_DBG_SYMS_IN_APK").toBoolean()) {
-            variant.sources.assets?.addGeneratedSourceDirectory(
-              generateDebugSymbolsTask,
-              GenerateDebugSymbolsTask::outputDirectory)
-          }
+          variant.sources.assets?.addGeneratedSourceDirectory(
+            generateDebugSymbolsTask,
+            GenerateDebugSymbolsTask::outputDirectory
+          )
         }
       }
     }
