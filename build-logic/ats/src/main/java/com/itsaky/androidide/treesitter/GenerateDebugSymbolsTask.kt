@@ -51,7 +51,9 @@ abstract class GenerateDebugSymbolsTask : DefaultTask() {
 
   @TaskAction
   fun generateDebugSymbols() {
-    inputDirectory.asFileTree.files.forEach { generateDebugSymbolsForFile(it) }
+    inputDirectory.asFileTree.files.forEach {
+      generateDebugSymbolsForFile(it)
+    }
   }
 
   private fun generateDebugSymbolsForFile(input: File?) {
