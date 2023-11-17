@@ -17,23 +17,27 @@
 
 package com.itsaky.androidide.treesitter
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.tasks.compile.JavaCompile
+import org.gradle.api.DefaultTask
+import org.gradle.api.logging.LogLevel.LIFECYCLE
+import org.gradle.api.tasks.TaskAction
 
 /**
- * Plugin applied to grammar modules.
- *
  * @author Akash Yadav
  */
-class TsGrammarPlugin : Plugin<Project> {
+class GenerateTreeSitterGrammarTask : DefaultTask() {
 
-  override fun apply(target: Project) {
-    target.run {
-
-      val generateTask = tasks.register("generateTreeSitterGrammar",
-        GenerateTreeSitterGrammarTask::class.java)
-      tasks.withType(JavaCompile::class.java) { dependsOn(generateTask) }
+  @TaskAction
+  fun generateGrammar() {
+    val grammarDir = project.rootProject.file(
+      "grammars/${project.name.substringAfterLast('-')}").absolutePath
+    var tsCmd = project.rootProject.file(
+      "tree-sitter-lib/cli/build/release/tree-sitter").absolutePath
+    if (!BUILD_TS_CLI_FROM_SOURCE) {
+      tsCmd = "tree-sitter"
     }
+
+    project.logger.log(LIFECYCLE,
+      "Using '$tsCmd' to generate '${project.name}' grammar")
+    project.executeCommand(grammarDir, tsCmd, "generate")
   }
 }
