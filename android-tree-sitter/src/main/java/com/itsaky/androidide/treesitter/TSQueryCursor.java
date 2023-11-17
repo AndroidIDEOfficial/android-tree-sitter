@@ -82,7 +82,7 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
       throw new IllegalArgumentException("Cannot execute invalid query");
     }
     if (!node.canAccess() || !node.getTree().canAccess() ||
-      !isAllowChangedNodes() && node.hasChanges()) {
+      (!isAllowChangedNodes() && node.hasChanges())) {
       String msg = "Cannot execute query on invalid node. node=" + node + " node.canAccess=" +
         node.canAccess() + " node.tree.canAccess=" + node.getTree().canAccess() +
         " node.hasChanges=" + node.hasChanges() + " isAllowChangedNodes=" + isAllowChangedNodes();
