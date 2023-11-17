@@ -119,7 +119,7 @@ public class TSNode extends TSNativeObject {
   /**
    * Get the node's type as it appears in the grammar ignoring aliases.
    */
-  public String getGrammarTypes() {
+  public String getGrammarType() {
     checkAccess();
     return Native.getGrammarType(this);
   }
