@@ -113,7 +113,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run debug tests
-        run: ./gradlew runTestsInCI --continue
+        run: ./gradlew testDebug --continue --parallel
         env:
           ANDROIDIDE_TEST: true
       - name: Upload Test Reports
