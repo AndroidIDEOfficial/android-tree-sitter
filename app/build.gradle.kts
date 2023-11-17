@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  *  This file is part of android-tree-sitter.
  *
@@ -16,6 +18,7 @@
  */
 plugins {
     id("com.android.application")
+    id("kotlin-android")
 }
 
 android {
@@ -25,7 +28,6 @@ android {
     defaultConfig {
         applicationId = "com.itsaky.androidide.androidtreesitter"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        minSdk = 24
     }
 
     val commonSigning = signingConfigs.create("common") {
@@ -55,10 +57,17 @@ android {
     }
 }
 
+tasks.withType(KotlinCompile::class.java) {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
 dependencies {
     implementation(libs.androidx.appcompat)
-    implementation(libs.google.material)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.common.kotlin.coroutines.android)
+    implementation(libs.google.material)
 
     implementation(projects.androidTreeSitter)
     implementation(projects.treeSitterJava)

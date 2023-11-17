@@ -35,6 +35,7 @@ buildscript {
 
 @Suppress("DSL_SCOPE_VIOLATION") plugins {
   id("build-logic.root-project")
+  alias(libs.plugins.kotlin) apply false
   alias(libs.plugins.maven.publish) apply false
 }
 
