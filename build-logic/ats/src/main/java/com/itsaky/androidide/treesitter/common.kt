@@ -20,6 +20,7 @@ package com.itsaky.androidide.treesitter
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.provideDelegate
+import java.io.ByteArrayOutputStream
 
 /**
  * @author Akash Yadav
@@ -32,14 +33,16 @@ val BUILD_TS_CLI_FROM_SOURCE by lazy {
 }
 
 fun Project.executeCommand(workingDir: String, vararg command: String) {
+  val out = ByteArrayOutputStream()
   val result = exec {
     workingDir(workingDir)
     commandLine(*command)
-    standardOutput = System.out
-    errorOutput = System.err
+    standardOutput = out
+    errorOutput = out
+    isIgnoreExitValue = true
   }
 
   if (result.exitValue != 0) {
-    throw GradleException("Failed to execute '${command.joinToString(" ")}'")
+    throw GradleException("Failed to execute '${command.joinToString(" ")}': $out")
   }
 }

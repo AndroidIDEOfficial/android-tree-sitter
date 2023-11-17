@@ -24,7 +24,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * @author Akash Yadav
  */
-class GenerateTreeSitterGrammarTask : DefaultTask() {
+abstract class GenerateTreeSitterGrammarTask : DefaultTask() {
 
   @TaskAction
   fun generateGrammar() {
