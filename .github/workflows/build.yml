@@ -66,7 +66,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Assemble Release
-        run: ./gradlew assembleRelease generateDebugSymbolsRelease --parallel
+        run: ./gradlew assembleRelease generateDebugSymbolsRelease --parallel --stacktrace
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
       - name: Upload APK
@@ -113,7 +113,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run debug tests
-        run: ./gradlew testDebug --continue --parallel
+        run: ./gradlew testDebug --continue --parallel --stacktrace
         env:
           ANDROIDIDE_TEST: true
       - name: Upload Test Reports
