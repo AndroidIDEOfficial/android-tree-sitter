@@ -32,7 +32,9 @@ class TsGrammarPlugin : Plugin<Project> {
     target.run {
 
       val generateTask = tasks.register("generateTreeSitterGrammar",
-        GenerateTreeSitterGrammarTask::class.java)
+        GenerateTreeSitterGrammarTask::class.java) {
+        dependsOn(rootProject.tasks.getByName("buildTreeSitter"))
+      }
       tasks.withType(JavaCompile::class.java) { dependsOn(generateTask) }
     }
   }
