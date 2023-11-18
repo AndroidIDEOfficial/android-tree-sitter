@@ -45,7 +45,7 @@ abstract class BuildForHostTask : DefaultTask() {
             }
             .absolutePath
 
-    project.executeCommand(workingDir, "cmake", cppDir)
+    project.executeCommand(workingDir, "cmake", cppDir, "-DAUTOGEN_HEADERS=${project.layout.buildDirectory.dir("generated/native_headers").get().asFile.absolutePath}")
     project.executeCommand(workingDir, "make")
 
     if (libName.isEmpty()) {

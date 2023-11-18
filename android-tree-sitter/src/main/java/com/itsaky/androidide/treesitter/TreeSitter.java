@@ -17,10 +17,14 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
+
 /**
  * @author Akash Yadav
  */
 public class TreeSitter {
+
+  private static int sLangVer = -1, sMinCompatLangVer = -1;
 
   /**
    * Loads the <code>android-tree-sitter</code> native library using
@@ -28,7 +32,9 @@ public class TreeSitter {
    */
   public static void loadLibrary() {
     System.loadLibrary("android-tree-sitter");
+    Native.registerNatives();
   }
+
 
   /**
    * The latest ABI version that is supported by the current version of the library. When Languages
@@ -36,10 +42,39 @@ public class TreeSitter {
    * to the current CLI version. The Tree-sitter library is generally backwards-compatible with
    * languages generated using older CLI versions, but is not forwards-compatible.
    */
-  public static native int getLanguageVersion();
+  public static int getLanguageVersion() {
+    if (sLangVer == -1) {
+      sLangVer = Native.getLanguageVersion();
+    }
+
+    return sLangVer;
+  }
 
   /**
    * The earliest ABI version that is supported by the current version of the library.
    */
-  public static native int getMinimumCompatibleLanguageVersion();
+  public static int getMinimumCompatibleLanguageVersion() {
+    if (sMinCompatLangVer == -1) {
+      sMinCompatLangVer = Native.getMinimumCompatibleLanguageVersion();
+    }
+
+    return sMinCompatLangVer;
+  }
+
+  public static void registerNatives() {
+    Native.registerNatives();
+  }
+
+  @GenerateNativeHeaders(fileName = "meta")
+  private static final class Native {
+
+    static native int getLanguageVersion();
+
+    /**
+     * The earliest ABI version that is supported by the current version of the library.
+     */
+    static native int getMinimumCompatibleLanguageVersion();
+
+    private static native void registerNatives();
+  }
 }

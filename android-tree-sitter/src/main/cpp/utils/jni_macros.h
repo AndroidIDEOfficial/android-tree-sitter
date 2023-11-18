@@ -15,28 +15,15 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter
+#ifndef ATS_JNI_MACROS_H
+#define ATS_JNI_MACROS_H
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.logging.LogLevel.LIFECYCLE
-import org.gradle.api.tasks.TaskAction
+#include <jni.h>
 
-/**
- * @author Akash Yadav
- */
-abstract class GenerateTreeSitterGrammarTask : DefaultTask() {
+#define MAKE_JNI_METHOD(_name, _sig, _func) (JNINativeMethod) { \
+                                                .name = _name,  \
+                                                .signature = _sig, \
+                                                .fnPtr = reinterpret_cast<void *>(&_func) \
+                                            }
 
-  @TaskAction
-  fun generateGrammar() {
-    val langName = project.name.substringAfterLast('-')
-
-    val grammarDir = project.rootProject.file("grammars/$langName").absolutePath
-    var tsCmd = project.rootProject.file("tree-sitter-lib/cli/build/release/tree-sitter").absolutePath
-    if (!BUILD_TS_CLI_FROM_SOURCE) {
-      tsCmd = "tree-sitter"
-    }
-
-    project.logger.log(LIFECYCLE, "Using '$tsCmd' to generate '${project.name}' grammar")
-    project.executeCommand(grammarDir, tsCmd, "generate")
-  }
-}
+#endif //ATS_JNI_MACROS_H

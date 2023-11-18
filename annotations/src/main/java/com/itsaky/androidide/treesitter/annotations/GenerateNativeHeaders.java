@@ -15,28 +15,26 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter
+package com.itsaky.androidide.treesitter.annotations;
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.logging.LogLevel.LIFECYCLE
-import org.gradle.api.tasks.TaskAction
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Generates header files for native methods in a Java class.
+ *
  * @author Akash Yadav
  */
-abstract class GenerateTreeSitterGrammarTask : DefaultTask() {
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+public @interface GenerateNativeHeaders {
 
-  @TaskAction
-  fun generateGrammar() {
-    val langName = project.name.substringAfterLast('-')
-
-    val grammarDir = project.rootProject.file("grammars/$langName").absolutePath
-    var tsCmd = project.rootProject.file("tree-sitter-lib/cli/build/release/tree-sitter").absolutePath
-    if (!BUILD_TS_CLI_FROM_SOURCE) {
-      tsCmd = "tree-sitter"
-    }
-
-    project.logger.log(LIFECYCLE, "Using '$tsCmd' to generate '${project.name}' grammar")
-    project.executeCommand(grammarDir, tsCmd, "generate")
-  }
+  /**
+   * The base file name for the header files
+   *
+   * @return The base file name.
+   */
+  String fileName();
 }

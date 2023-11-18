@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import android.content.Context;
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicLong;
@@ -249,6 +250,7 @@ public class TSLanguage extends TSNativeObject {
     }
   }
 
+  @GenerateNativeHeaders(fileName = "language")
   private static class Native {
 
     private static native int symCount(long ptr);

@@ -15,7 +15,13 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <array>
+
+#include "utils/jni_macros.h"
 #include "utils/ts_obj_utils.h"
+#include "utils/ts_log.h"
+#include "ts_meta.h"
+#include "ts_meta_sigs.h"
 
 #if defined(__ANDROID__)
 static jint JNI_VERSION = JNI_VERSION_1_6;
@@ -41,14 +47,30 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
 }
 
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TreeSitter_getLanguageVersion
-    (JNIEnv *env, jclass self) {
+JNIEXPORT jint JNICALL ats_language_version(JNIEnv *env, jclass self) {
   return (jint) TREE_SITTER_LANGUAGE_VERSION;
 }
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TreeSitter_getMinimumCompatibleLanguageVersion
-    (JNIEnv *env, jclass self) {
+JNIEXPORT jint JNICALL
+ats_min_compatible_language_version(JNIEnv *env, jclass self) {
   return (jint) TREE_SITTER_MIN_COMPATIBLE_LANGUAGE_VERSION;
+}
+
+static JNINativeMethod gMethods[] = {
+    MAKE_JNI_METHOD(TS_TREESITTER_GETLANGUAGEVERSION_NAME,
+                    TS_TREESITTER_GETLANGUAGEVERSION_SIG,
+                    ats_language_version),
+    MAKE_JNI_METHOD(TS_TREESITTER_GETMINIMUMCOMPATIBLELANGUAGEVERSION_NAME,
+                    TS_TREESITTER_GETMINIMUMCOMPATIBLELANGUAGEVERSION_SIG,
+                    ats_min_compatible_language_version)
+};
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TreeSitter_00024Native_registerNatives(
+    JNIEnv *env,
+    jclass clazz) {
+
+  auto result = env->RegisterNatives(clazz, gMethods, 2);
+  LOGD("TreeSitter", "RegisterNatives: %d", result);
 }

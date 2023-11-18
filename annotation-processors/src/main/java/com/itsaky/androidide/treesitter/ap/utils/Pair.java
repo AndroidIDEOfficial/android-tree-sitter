@@ -15,28 +15,18 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter
-
-import org.gradle.api.DefaultTask
-import org.gradle.api.logging.LogLevel.LIFECYCLE
-import org.gradle.api.tasks.TaskAction
+package com.itsaky.androidide.treesitter.ap.utils;
 
 /**
  * @author Akash Yadav
  */
-abstract class GenerateTreeSitterGrammarTask : DefaultTask() {
+public class Pair<F, S> {
 
-  @TaskAction
-  fun generateGrammar() {
-    val langName = project.name.substringAfterLast('-')
+  public final F first;
+  public final S second;
 
-    val grammarDir = project.rootProject.file("grammars/$langName").absolutePath
-    var tsCmd = project.rootProject.file("tree-sitter-lib/cli/build/release/tree-sitter").absolutePath
-    if (!BUILD_TS_CLI_FROM_SOURCE) {
-      tsCmd = "tree-sitter"
-    }
-
-    project.logger.log(LIFECYCLE, "Using '$tsCmd' to generate '${project.name}' grammar")
-    project.executeCommand(grammarDir, tsCmd, "generate")
+  public Pair(F first, S second) {
+    this.first = first;
+    this.second = second;
   }
 }

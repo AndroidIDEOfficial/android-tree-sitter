@@ -17,6 +17,7 @@
 package com.itsaky.androidide.androidtreesitter
 
 import android.R.layout
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,6 +31,7 @@ import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.treesitter.TSLanguageCache
 import com.itsaky.androidide.treesitter.TSParser
 import com.itsaky.androidide.treesitter.TSTreeCursor
+import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.treesitter.java.TSLanguageJava
 import com.itsaky.androidide.treesitter.json.TSLanguageJson
 import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin
@@ -74,6 +76,9 @@ class MainActivity : AppCompatActivity() {
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
 
+    // noinspection SetTextI18n
+    content.tsMeta.text = "Tree Sitter Language Version: " + TreeSitter.getLanguageVersion()
+
     languageMap["C"] = TSLanguage.loadLanguage(this, "c")
     content.languageChooser.adapter =
       ArrayAdapter(this, layout.simple_list_item_1,
@@ -103,8 +108,6 @@ class MainActivity : AppCompatActivity() {
 
   private fun afterInputChanged(editable: Editable) {
     val language = languageMap[content.languageChooser.selectedItem as String]
-//    content.progress.visibility = View.VISIBLE
-//    content.code.isEnabled = false
 
     val currentJob = this.parseJob
 
@@ -147,11 +150,9 @@ class MainActivity : AppCompatActivity() {
   private suspend fun handleParseResult(result: CharSequence) {
     withContext(Dispatchers.Main.immediate) {
       val text = content.ast
-      val progress = content.progress
       val codeView = content.code
 
       text.text = result
-      progress.visibility = View.GONE
       codeView.isEnabled = true
       codeView.requestFocus()
     }
@@ -201,7 +202,8 @@ class MainActivity : AppCompatActivity() {
     private val languageMap = hashMapOf<String, TSLanguage>()
 
     init {
-      System.loadLibrary("android-tree-sitter")
+      TreeSitter.loadLibrary()
+
       System.loadLibrary("tree-sitter-java")
       System.loadLibrary("tree-sitter-json")
       System.loadLibrary("tree-sitter-kotlin")

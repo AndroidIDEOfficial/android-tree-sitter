@@ -59,7 +59,7 @@ import net.ltgt.gradle.incap.IncrementalAnnotationProcessor;
 @SupportedAnnotationTypes(value = {"com.itsaky.androidide.treesitter.annotations.Synchronized",
   "com.itsaky.androidide.treesitter.annotations.NotSynchronized"})
 @SupportedOptions(value = {})
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 @IncrementalAnnotationProcessor(AGGREGATING)
 @AutoService(Processor.class)
 @SuppressWarnings("unused")

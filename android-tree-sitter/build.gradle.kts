@@ -23,8 +23,23 @@ plugins {
 
 description = "Android Java bindings for Tree Sitter."
 
+val nativeHeadersDir =
+  project.layout.buildDirectory.dir("generated/native_headers")
+
 android {
   namespace = "com.itsaky.androidide.treesitter"
+
+  defaultConfig {
+    externalNativeBuild {
+      cmake {
+        arguments += "-DAUTOGEN_HEADERS=${nativeHeadersDir.get().asFile.absolutePath}"
+      }
+    }
+  }
+}
+
+tasks.withType(JavaCompile::class.java).configureEach {
+  options.compilerArgs.add("-AnativeHeaders.outDir=${nativeHeadersDir.get().asFile.absolutePath}")
 }
 
 dependencies {

@@ -30,10 +30,25 @@ class TsGrammarPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
+      val grammars = target.readGrammars()
+      val (grammarName, srcExtra) = grammars.find {
+        it.name == project.name.substringAfterLast('-')
+      }!!
+
+      val grammarDir = objects.directoryProperty()
+      grammarDir.set(rootProject.rootDir.resolve("grammars/$grammarName"))
 
       val generateTask = tasks.register("generateTreeSitterGrammar",
         GenerateTreeSitterGrammarTask::class.java) {
+
         dependsOn(rootProject.tasks.getByName("buildTreeSitter"))
+
+        inputs.file(grammarDir.file("grammar.js"))
+        for (extra in srcExtra) {
+          inputs.file(grammarDir.file(extra))
+        }
+
+        outputs.file(grammarDir.file("src/parser.c"))
       }
       tasks.withType(JavaCompile::class.java) { dependsOn(generateTask) }
     }
