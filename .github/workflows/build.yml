@@ -28,6 +28,8 @@ env:
   BUILD_IS_RELEASE: ${{ github.ref == 'refs/heads/main'  }}
   PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
 
+  DEBUG_INFO_PATH: '**/build/generated/**/*.debug_info'
+
 jobs:
   build_release_apk:
     name: Build Release APK
@@ -78,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: debug-symbols
-          path: '**/build/generated/**/*.debug_info'
+          path: ${{ env.DEBUG_INFO_PATH }}
 
   unit_test_debug:
     name: Run local tests
@@ -167,9 +169,7 @@ jobs:
           name: debug-symbols
       - name: Archive debug symbols
         run: |
-          cd build/debug_info
-          zip -r ../../debug-symbols.zip *
-          cd -
+          zip -r debug-symbols.zip $DEBUG_INFO_PATH
       - name: Publish release
         id: publish_release
         run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace
