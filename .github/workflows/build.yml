@@ -168,7 +168,7 @@ jobs:
         working-directory: artifacts/
       - name: Archive debug symbols
         run: |
-          zip -r debug-symbols.zip $DEBUG_INFO_PATH
+          zip -r debug-symbols.zip . -i $DEBUG_INFO_PATH
         working-directory: artifacts/
       - name: Publish release
         id: publish_release
