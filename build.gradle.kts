@@ -93,7 +93,7 @@ subprojects {
     configure<MavenPublishBaseExtension> {
       group = "com.itsaky.androidide.treesitter"
       var versionName = rootProject.version.toString()
-      if (System.getenv("PublishToMaven").isNullOrBlank()) {
+      if (!System.getenv("PublishToMaven").toBoolean()) {
         versionName = "$versionName-SNAPSHOT"
       }
       versionName = versionName.substring(1) // remove 'v' prefix
