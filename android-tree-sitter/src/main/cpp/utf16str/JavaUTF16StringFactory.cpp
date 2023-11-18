@@ -26,7 +26,7 @@ JNIEXPORT jlong JNICALL
 Java_com_itsaky_androidide_treesitter_string_UTF16StringFactory_00024Native_newString(JNIEnv *env,
                                                                                       jclass clazz,
                                                                                       jstring source) {
-    return (jlong) cache.create(env, source);
+    return (jlong) StrCache::getInstance().create(env, source);
 }
 
 extern "C"
@@ -38,7 +38,7 @@ Java_com_itsaky_androidide_treesitter_string_UTF16StringFactory_00024Native_newS
     for (int i = off; i < off + len; ++i) {
         vec.emplace_back(*(ba + off));
     }
-    jlong result = (jlong) cache.create(vec);
+    jlong result = (jlong) StrCache::getInstance().create(vec);
     env->ReleaseByteArrayElements(bytes, ba,JNI_ABORT);
     return result;
 }

@@ -220,7 +220,7 @@ public:
     bool operator!=(const UTF16String &rhs) const;
 };
 
-UTF16String *as_str(jlong pointer);
+UTF16String *as_str(JNIEnv *env, jlong pointer);
 
 int vsize(const vector<jbyte> &vc);
 

@@ -222,7 +222,7 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
   auto *ts_parser_internal = (TSParserInternal *) parser;
   TSParser *ts_parser = ts_parser_internal->getParser(env);
   TSTree *old_tree = tree_pointer == 0 ? nullptr : (TSTree *) tree_pointer;
-  auto *source = as_str(str_pointer);
+  auto *source = as_str(env, str_pointer);
 
   if (!ts_parser_internal->begin_round(env)) {
     return 0;

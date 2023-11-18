@@ -25,182 +25,201 @@
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_append(JNIEnv *env,
-                                                                            jclass clazz,
-                                                                            jlong pointer,
-                                                                            jstring str) {
-    as_str(pointer)->append(env, str);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_append(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jstring str) {
+  as_str(env, pointer)->append(env, str);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_appendPart(JNIEnv *env,
-                                                                                jclass clazz,
-                                                                                jlong pointer,
-                                                                                jstring str,
-                                                                                jint from_index,
-                                                                                jint length) {
-    as_str(pointer)->append(env, str, from_index, length);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_appendPart(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jstring str,
+    jint from_index,
+    jint length) {
+  as_str(env, pointer)->append(env, str, from_index, length);
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_length(JNIEnv *env,
-                                                                            jclass clazz,
-                                                                            jlong pointer) {
-    return as_str(pointer)->length();
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_length(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer) {
+  return as_str(env, pointer)->length();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_erase(JNIEnv *env,
-                                                                           jclass clazz,
-                                                                           jlong pointer) {
-    cache.erase(as_str(pointer));
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_erase(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer) {
+  StrCache::getInstance().erase(as_str(env, pointer));
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteLength(JNIEnv *env,
-                                                                                jclass clazz,
-                                                                                jlong pointer) {
-    return as_str(pointer)->byte_length();
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteLength(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer) {
+  return as_str(env, pointer)->byte_length();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_insert(JNIEnv *env,
-                                                                            jclass clazz,
-                                                                            jlong pointer,
-                                                                            jstring str,
-                                                                            jint index) {
-    as_str(pointer)->insert(env, str, index);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_insert(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jstring str,
+    jint index) {
+  as_str(env, pointer)->insert(env, str, index);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteChars(JNIEnv *env,
-                                                                                 jclass clazz,
-                                                                                 jlong pointer,
-                                                                                 jint start,
-                                                                                 jint end) {
-    as_str(pointer)->delete_chars(start, end);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteChars(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end) {
+  as_str(env, pointer)->delete_chars(start, end);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteBytes(JNIEnv *env,
-                                                                                 jclass clazz,
-                                                                                 jlong pointer,
-                                                                                 jint start,
-                                                                                 jint end) {
-    as_str(pointer)->delete_bytes(start, end);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteBytes(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end) {
+  as_str(env, pointer)->delete_bytes(start, end);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceChars(JNIEnv *env,
-                                                                                  jclass clazz,
-                                                                                  jlong pointer,
-                                                                                  jint start,
-                                                                                  jint end,
-                                                                                  jstring str) {
-    as_str(pointer)->replace_chars(env, start, end, str);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceChars(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end,
+    jstring str) {
+  as_str(env, pointer)->replace_chars(env, start, end, str);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceBytes(JNIEnv *env,
-                                                                                  jclass clazz,
-                                                                                  jlong pointer,
-                                                                                  jint start,
-                                                                                  jint end,
-                                                                                  jstring str) {
-    as_str(pointer)->replace_bytes(env, start, end, str);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceBytes(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end,
+    jstring str) {
+  as_str(env, pointer)->replace_bytes(env, start, end, str);
 }
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_substring_1chars(JNIEnv *env,
-                                                                                      jclass clazz,
-                                                                                      jlong pointer,
-                                                                                      jint start,
-                                                                                      jint end) {
-    return (jlong) as_str(pointer)->substring_chars(start, end);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_substring_1chars(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end) {
+  return (jlong) as_str(env, pointer)->substring_chars(start, end);
 }
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_substring_1bytes(JNIEnv *env,
-                                                                                      jclass clazz,
-                                                                                      jlong pointer,
-                                                                                      jint start,
-                                                                                      jint end) {
-    return (jlong) as_str(pointer)->substring_bytes(start, end);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_substring_1bytes(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end) {
+  return (jlong) as_str(env, pointer)->substring_bytes(start, end);
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_subjstring_1chars(JNIEnv *env,
-                                                                                       jclass clazz,
-                                                                                       jlong pointer,
-                                                                                       jint start,
-                                                                                       jint end) {
-    return as_str(pointer)->subjstring_chars(env, start, end);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_subjstring_1chars(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end) {
+  return as_str(env, pointer)->subjstring_chars(env, start, end);
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_subjstring_1bytes(JNIEnv *env,
-                                                                                       jclass clazz,
-                                                                                       jlong pointer,
-                                                                                       jint start,
-                                                                                       jint end) {
-    return as_str(pointer)->subjstring_bytes(env, start, end);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_subjstring_1bytes(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint start,
+    jint end) {
+  return as_str(env, pointer)->subjstring_bytes(env, start, end);
 }
 
 extern "C"
 JNIEXPORT jbyte JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteAt(JNIEnv *env,
-                                                                            jclass clazz,
-                                                                            jlong pointer,
-                                                                            jint index) {
-    return as_str(pointer)->byte_at(index);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteAt(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint index) {
+  return as_str(env, pointer)->byte_at(index);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setByteAt(JNIEnv *env,
-                                                                               jclass clazz,
-                                                                               jlong pointer,
-                                                                               jint index,
-                                                                               jbyte b) {
-    as_str(pointer)->set_byte_at(index, b);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setByteAt(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint index,
+    jbyte b) {
+  as_str(env, pointer)->set_byte_at(index, b);
 }
 
 extern "C"
 JNIEXPORT jchar JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_chatAt(JNIEnv *env,
-                                                                            jclass clazz,
-                                                                            jlong pointer,
-                                                                            jint index) {
-    return as_str(pointer)->char_at(index);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_chatAt(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint index) {
+  return as_str(env, pointer)->char_at(index);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setCharAt(JNIEnv *env,
-                                                                               jclass clazz,
-                                                                               jlong pointer,
-                                                                               jint index,
-                                                                               jchar c) {
-    as_str(pointer)->set_char_at(index, c);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setCharAt(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer,
+    jint index,
+    jchar c) {
+  as_str(env, pointer)->set_char_at(index, c);
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_toString(JNIEnv *env,
-                                                                              jclass clazz,
-                                                                              jlong pointer) {
-    return as_str(pointer)->to_jstring(env);
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_toString(
+    JNIEnv *env,
+    jclass clazz,
+    jlong pointer) {
+  return as_str(env, pointer)->to_jstring(env);
 }

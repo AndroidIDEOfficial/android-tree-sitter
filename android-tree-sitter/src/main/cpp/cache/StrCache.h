@@ -26,16 +26,19 @@
 #include "../utf16str/UTF16String.h"
 
 class StrCache {
-private:
-    list<UTF16String> strings;
-    mutex lock;
-public:
-    UTF16String *create(JNIEnv *env, jstring str);
-    UTF16String *create(vector<jbyte> bytes);
-    UTF16String *register_str(const UTF16String& str);
-    void erase(UTF16String *str);
-};
+ private:
+  list<UTF16String> strings;
+  mutex lock;
+ public:
+  UTF16String *create(JNIEnv *env, jstring str);
+  UTF16String *create(vector<jbyte> bytes);
+  UTF16String *register_str(const UTF16String &str);
+  void erase(UTF16String *str);
 
-static StrCache cache;
+  static StrCache &getInstance() {
+    static StrCache instance;
+    return instance;
+  }
+};
 
 #endif //ANDROIDTREESITTER_STRCACHE_H

@@ -25,6 +25,7 @@
 #include "../cache/StrCache.h"
 #include "../utils/jni_string.h"
 #include "../utils/ts_obj_utils.h"
+#include "../utils/ts_preconditions.h"
 
 #define HI_BYTE_SHIFT 0
 #define LO_BYTE_SHIFT 8
@@ -168,20 +169,20 @@ UTF16String *UTF16String::substring_bytes(jint start, jint end) {
     for (int i = start; i < end; ++i) {
         copy.emplace_back(_string[i]);
     }
-    return cache.create(copy);
+    return StrCache::getInstance().create(copy);
 }
 
 jstring UTF16String::subjstring_chars(JNIEnv *env, jint start, jint end) {
     UTF16String *substr = substring_chars(start, end);
     jstring jstr = substr->to_jstring(env);
-    cache.erase(substr);
+    StrCache::getInstance().erase(substr);
     return jstr;
 }
 
 jstring UTF16String::subjstring_bytes(JNIEnv *env, jint start, jint end) {
     UTF16String *substr = substring_bytes(start, end);
     jstring jstr = substr->to_jstring(env);
-    cache.erase(substr);
+    StrCache::getInstance().erase(substr);
     return jstr;
 }
 
@@ -205,7 +206,8 @@ const char *UTF16String::to_cstring() {
     return chars;
 }
 
-UTF16String *as_str(jlong pointer) {
+UTF16String *as_str(JNIEnv *env, jlong pointer) {
+    req_nnp(env, pointer, "UTF16String pointer");
     return (UTF16String *) pointer;
 }
 
