@@ -159,17 +159,17 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Download sample APK
+      - name: Download all artifacts
         uses: actions/download-artifact@v3
         with:
-          name: app-release
-      - name: Download debug symbols
-        uses: actions/download-artifact@v3
-        with:
-          name: debug-symbols
+          path: artifacts/
+      - name: List downloaded artifacts
+        run: ls -laR
+        working-directory: artifacts/
       - name: Archive debug symbols
         run: |
           zip -r debug-symbols.zip $DEBUG_INFO_PATH
+        working-directory: artifacts/
       - name: Publish release
         id: publish_release
         run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace

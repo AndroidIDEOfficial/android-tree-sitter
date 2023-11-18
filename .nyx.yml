@@ -22,7 +22,7 @@ releaseAssets:
   debug_syms:
     fileName: "shared-library-debug-symbols"
     description: "Debug symbols (debug_info) for shared libraries (.so)"
-    path: debug-symbols.zip
+    path: artifacts/debug-symbols.zip
     type: application/zip
 
 releaseTypes:
