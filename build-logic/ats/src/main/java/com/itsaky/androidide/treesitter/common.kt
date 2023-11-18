@@ -33,16 +33,14 @@ val BUILD_TS_CLI_FROM_SOURCE by lazy {
 }
 
 fun Project.executeCommand(workingDir: String, vararg command: String) {
-  val out = ByteArrayOutputStream()
   val result = exec {
     workingDir(workingDir)
     commandLine(*command)
-    standardOutput = out
-    errorOutput = out
-    isIgnoreExitValue = true
+    standardOutput = System.out
+    errorOutput = System.err
   }
 
   if (result.exitValue != 0) {
-    throw GradleException("Failed to execute '${command.joinToString(" ")}': $out")
+    throw GradleException("Failed to execute '${command.joinToString(" ")}'")
   }
 }
