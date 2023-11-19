@@ -18,111 +18,81 @@
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_newCursor(
-    JNIEnv *env, jclass self, jobject node) {
-  auto *cursor =
-      new TSTreeCursor(ts_tree_cursor_new(_unmarshalNode(env, node)));
+#include "ts_tree_cursor_sigs.h"
+
+static jlong TreeCursor_newCursor(JNIEnv *env, jclass self, jobject node) {
+  auto
+      *cursor = new TSTreeCursor(ts_tree_cursor_new(_unmarshalNode(env, node)));
   return (jlong) cursor;
 }
 
-extern "C" JNIEXPORT jobject JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_currentTreeCursorNode(
-    JNIEnv *env, jclass self, jlong cursor) {
+static jobject TreeCursor_currentTreeCursorNode(JNIEnv *env, jclass self, jlong cursor) {
   req_nnp(env, cursor);
   TSNode node = ts_tree_cursor_current_node((TSTreeCursor *) cursor);
-  return _marshalTreeCursorNode(
-      env,
-      (TreeCursorNode) {
-          ts_node_type(node),
-          ts_tree_cursor_current_field_name((TSTreeCursor *) cursor),
-          ts_node_start_byte(node) / 2, ts_node_end_byte(node) / 2
-      });
+  return _marshalTreeCursorNode(env,
+                                (TreeCursorNode) {ts_node_type(node),
+                                                  ts_tree_cursor_current_field_name(
+                                                      (TSTreeCursor *) cursor),
+                                                  ts_node_start_byte(node) / 2,
+                                                  ts_node_end_byte(node) / 2});
 }
 
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_currentFieldName(
-    JNIEnv *env, jclass self, jlong cursor) {
+static jstring TreeCursor_currentFieldName(JNIEnv *env, jclass self, jlong cursor) {
   req_nnp(env, cursor);
   const char *name = ts_tree_cursor_current_field_name((TSTreeCursor *) cursor);
   jstring result = env->NewStringUTF(name);
   return result;
 }
 
-extern "C" JNIEXPORT jobject JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_currentNode(
-    JNIEnv *env,
-    jclass self,
-    jlong cursor) {
+static jobject TreeCursor_currentNode(JNIEnv *env, jclass self, jlong cursor) {
   req_nnp(env, cursor);
   return _marshalNode(env,
                       ts_tree_cursor_current_node((TSTreeCursor *) cursor));
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_delete(
-    JNIEnv *env, jclass self, jlong cursor) {
+static void TreeCursor_delete(JNIEnv *env, jclass self, jlong cursor) {
   req_nnp(env, cursor);
   ts_tree_cursor_delete((TSTreeCursor *) cursor);
   delete (TSTreeCursor *) cursor;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoFirstChild(
-    JNIEnv *env,
-    jclass self,
-    jlong cursor) {
+static jboolean TreeCursor_gotoFirstChild(JNIEnv *env, jclass self, jlong cursor) {
   req_nnp(env, cursor);
   return (jboolean) ts_tree_cursor_goto_first_child((TSTreeCursor *) cursor);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoNextSibling(
-    JNIEnv *env,
-    jclass self,
-    jlong cursor) {
+static jboolean TreeCursor_gotoNextSibling(JNIEnv *env, jclass self, jlong cursor) {
   req_nnp(env, cursor);
   return (jboolean) ts_tree_cursor_goto_next_sibling((TSTreeCursor *) cursor);
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoParent(JNIEnv *env,
-                                                                          jclass self,
-                                                                          jlong cursor) {
+static jboolean TreeCursor_gotoParent(JNIEnv *env, jclass self, jlong cursor) {
   req_nnp(env, cursor);
   return (jboolean) ts_tree_cursor_goto_parent((TSTreeCursor *) cursor);
 }
 
-extern "C"
-JNIEXPORT jshort JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_currentFieldId(
-    JNIEnv *env,
-    jclass clazz,
-    jlong cursor) {
+
+static jshort TreeCursor_currentFieldId(JNIEnv *env, jclass clazz, jlong cursor) {
   req_nnp(env, cursor);
   return (jshort) ts_tree_cursor_current_field_id((TSTreeCursor *) cursor);
 }
 
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoFirstChildForByte(
-    JNIEnv *env,
-    jclass clazz,
-    jlong cursor,
-    jint byte_index) {
+
+static jlong TreeCursor_gotoFirstChildForByte(JNIEnv *env,
+                                   jclass clazz,
+                                   jlong cursor,
+                                   jint byte_index) {
   req_nnp(env, cursor);
   return (jlong) ts_tree_cursor_goto_first_child_for_byte((TSTreeCursor *) cursor,
                                                           byte_index);
 }
 
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoFirstChildForPoint(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jobject point) {
+
+static jboolean TreeCursor_gotoFirstChildForPoint(JNIEnv *env,
+                                       jclass clazz,
+                                       jlong pointer,
+                                       jobject point) {
   req_nnp(env, pointer);
   return (jboolean) ts_tree_cursor_goto_first_child_for_point((TSTreeCursor *) pointer,
                                                               _unmarshalPoint(
@@ -130,83 +100,85 @@ Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoFirstChildFor
                                                                   point));
 }
 
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoLastChild(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer) {
+
+static jboolean TreeCursor_gotoLastChild(JNIEnv *env, jclass clazz, jlong pointer) {
   req_nnp(env, pointer);
   return (jboolean) ts_tree_cursor_goto_last_child((TSTreeCursor *) pointer);
 }
 
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoPreviousSibling(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer) {
+
+static jboolean TreeCursor_gotoPreviousSibling(JNIEnv *env, jclass clazz, jlong pointer) {
   req_nnp(env, pointer);
   return (jboolean) ts_tree_cursor_goto_previous_sibling((TSTreeCursor *) pointer);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_gotoDescendant(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint descendant_index) {
+
+static void TreeCursor_gotoDescendant(JNIEnv *env,
+                           jclass clazz,
+                           jlong pointer,
+                           jint descendant_index) {
   req_nnp(env, pointer);
   ts_tree_cursor_goto_descendant((TSTreeCursor *) pointer, descendant_index);
 }
 
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_currentDescendantIndex(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer) {
+
+static jint TreeCursor_currentDescendantIndex(JNIEnv *env, jclass clazz, jlong pointer) {
   req_nnp(env, pointer);
   return (jint) ts_tree_cursor_current_descendant_index((TSTreeCursor *) pointer);
 }
 
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_depth(JNIEnv *env,
-                                                                     jclass clazz,
-                                                                     jlong pointer) {
+
+static jint TreeCursor_depth(JNIEnv *env, jclass clazz, jlong pointer) {
   req_nnp(env, pointer);
   return (jint) ts_tree_cursor_current_depth((TSTreeCursor *) pointer);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_reset(JNIEnv *env,
-                                                                     jclass clazz,
-                                                                     jlong pointer,
-                                                                     jobject node) {
+
+static void TreeCursor_reset(JNIEnv *env, jclass clazz, jlong pointer, jobject node) {
   req_nnp(env, pointer);
   ts_tree_cursor_reset((TSTreeCursor *) pointer, _unmarshalNode(env, node));
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_resetTo(JNIEnv *env,
-                                                                       jclass clazz,
-                                                                       jlong pointer,
-                                                                       jlong another) {
+
+static void TreeCursor_resetTo(JNIEnv *env, jclass clazz, jlong pointer, jlong another) {
   req_nnp(env, pointer, "src");
   req_nnp(env, another, "another");
   ts_tree_cursor_reset_to((TSTreeCursor *) pointer, (TSTreeCursor *) another);
 }
 
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_copy(JNIEnv *env,
-                                                                    jclass clazz,
-                                                                    jlong pointer) {
+
+static jlong TreeCursor_copy(JNIEnv *env, jclass clazz, jlong pointer) {
   req_nnp(env, pointer);
-  auto *copied = new TSTreeCursor (ts_tree_cursor_copy((TSTreeCursor *) pointer));
+  auto
+      *copied = new TSTreeCursor(ts_tree_cursor_copy((TSTreeCursor *) pointer));
   return (jlong) copied;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_registerNatives(
+    JNIEnv *env,
+    jclass clazz) {
+
+  SET_JNI_METHOD(TSTreeCursor_Native_copy, TreeCursor_copy);
+  SET_JNI_METHOD(TSTreeCursor_Native_currentDescendantIndex, TreeCursor_currentDescendantIndex);
+  SET_JNI_METHOD(TSTreeCursor_Native_currentFieldId, TreeCursor_currentFieldId);
+  SET_JNI_METHOD(TSTreeCursor_Native_currentFieldName, TreeCursor_currentFieldName);
+  SET_JNI_METHOD(TSTreeCursor_Native_currentNode, TreeCursor_currentNode);
+  SET_JNI_METHOD(TSTreeCursor_Native_currentTreeCursorNode, TreeCursor_currentTreeCursorNode);
+  SET_JNI_METHOD(TSTreeCursor_Native_delete, TreeCursor_delete);
+  SET_JNI_METHOD(TSTreeCursor_Native_depth, TreeCursor_depth);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoDescendant, TreeCursor_gotoDescendant);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoFirstChild, TreeCursor_gotoFirstChild);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoFirstChildForByte, TreeCursor_gotoFirstChildForByte);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoFirstChildForPoint, TreeCursor_gotoFirstChildForPoint);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoLastChild, TreeCursor_gotoLastChild);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoNextSibling, TreeCursor_gotoNextSibling);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoParent, TreeCursor_gotoParent);
+  SET_JNI_METHOD(TSTreeCursor_Native_gotoPreviousSibling, TreeCursor_gotoPreviousSibling);
+  SET_JNI_METHOD(TSTreeCursor_Native_newCursor, TreeCursor_newCursor);
+  SET_JNI_METHOD(TSTreeCursor_Native_reset, TreeCursor_reset);
+  SET_JNI_METHOD(TSTreeCursor_Native_resetTo, TreeCursor_resetTo);
+
+  TSTreeCursor_Native__RegisterNatives(env, clazz);
 }

@@ -96,16 +96,22 @@ public class TSTree extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "tree")
   private static class Native {
 
-    public static native void edit(long tree, TSInputEdit inputEdit);
+    static {
+      registerNatives();
+    }
 
-    public static native void delete(long tree);
+    static native void registerNatives();
 
-    public static native long copy(long tree);
+    static native void edit(long tree, TSInputEdit inputEdit);
 
-    public static native TSNode rootNode(long tree);
+    static native void delete(long tree);
 
-    public static native TSRange[] changedRanges(long tree, long oldTree);
+    static native long copy(long tree);
 
-    public static native long getLanguage(long tree);
+    static native TSNode rootNode(long tree);
+
+    static native TSRange[] changedRanges(long tree, long oldTree);
+
+    static native long getLanguage(long tree);
   }
 }

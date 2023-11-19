@@ -22,6 +22,7 @@ import static com.itsaky.androidide.treesitter.string.Assertions.checkStringRang
 
 import com.itsaky.androidide.treesitter.TSNativeObject;
 import com.itsaky.androidide.treesitter.annotations.DontSynchronize;
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.annotations.Synchronized;
 import com.itsaky.androidide.treesitter.util.Consumer;
 import java.util.Objects;
@@ -437,7 +438,14 @@ public class UTF16String extends TSNativeObject implements CharSequence {
     return UTF16StringFactory.createString(getNativeObject(), true);
   }
 
+  @GenerateNativeHeaders(fileName = "utf16string")
   private static class Native {
+
+    static {
+      registerNatives();
+    }
+
+    static native void registerNatives();
 
     static native byte byteAt(long pointer, int index);
 

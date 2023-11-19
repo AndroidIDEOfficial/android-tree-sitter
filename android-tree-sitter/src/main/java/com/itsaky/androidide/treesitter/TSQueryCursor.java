@@ -152,7 +152,7 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
    */
   public int getMatchLimit() {
     checkAccess();
-    return Native.matchLimit(getNativeObject());
+    return Native.getMatchLimit(getNativeObject());
   }
 
   /**
@@ -163,7 +163,7 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
    */
   public void setMatchLimit(int newLimit) {
     checkAccess();
-    Native.matchLimit(getNativeObject(), newLimit);
+    Native.setMatchLimit(getNativeObject(), newLimit);
   }
 
   public void setByteRange(int start, int end) {
@@ -210,24 +210,30 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
   @GenerateNativeHeaders(fileName = "query_cursor")
   private static class Native {
 
-    public static native long newCursor();
+    static {
+      registerNatives();
+    }
 
-    public static native void delete(long cursor);
+    static native void registerNatives();
 
-    public static native void exec(long cursor, long query, TSNode node);
+    static native long newCursor();
 
-    public static native boolean exceededMatchLimit(long cursor);
+    static native void delete(long cursor);
 
-    public static native void matchLimit(long cursor, int newLimit);
+    static native void exec(long cursor, long query, TSNode node);
 
-    public static native int matchLimit(long cursor);
+    static native boolean exceededMatchLimit(long cursor);
 
-    public static native void setByteRange(long cursor, int start, int end);
+    static native void setMatchLimit(long cursor, int newLimit);
 
-    public static native void setPointRange(long cursor, TSPoint start, TSPoint end);
+    static native int getMatchLimit(long cursor);
 
-    public static native TSQueryMatch nextMatch(long cursor);
+    static native void setByteRange(long cursor, int start, int end);
 
-    public static native void removeMatch(long cursor, int id);
+    static native void setPointRange(long cursor, TSPoint start, TSPoint end);
+
+    static native TSQueryMatch nextMatch(long cursor);
+
+    static native void removeMatch(long cursor, int id);
   }
 }

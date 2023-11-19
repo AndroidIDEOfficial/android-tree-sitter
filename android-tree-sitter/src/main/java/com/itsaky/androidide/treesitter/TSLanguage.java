@@ -253,25 +253,31 @@ public class TSLanguage extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "language")
   private static class Native {
 
-    private static native int symCount(long ptr);
+    static {
+      registerNatives();
+    }
 
-    private static native int fldCount(long ptr);
+    static native void registerNatives();
 
-    private static native int symForName(long ptr, byte[] name, int length, boolean named);
+    static native int symCount(long ptr);
 
-    private static native String symName(long lngPtr, int sym);
+    static native int fldCount(long ptr);
 
-    private static native String fldNameForId(long ptr, int id);
+    static native int symForName(long ptr, byte[] name, int length, boolean named);
 
-    private static native int fldIdForName(long ptr, byte[] name, int length);
+    static native String symName(long lngPtr, int sym);
 
-    private static native int symType(long ptr, int sym);
+    static native String fldNameForId(long ptr, int id);
 
-    private static native int langVer(long ptr);
+    static native int fldIdForName(long ptr, byte[] name, int length);
 
-    private static native long[] loadLanguage(String sharedLib, String func);
+    static native int symType(long ptr, int sym);
 
-    private static native void dlclose(long libhandle);
+    static native int langVer(long ptr);
+
+    static native long[] loadLanguage(String sharedLib, String func);
+
+    static native void dlclose(long libhandle);
 
     public static native int stateCount(long pointer);
 

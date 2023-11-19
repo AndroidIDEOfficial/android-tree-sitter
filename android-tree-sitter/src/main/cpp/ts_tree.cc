@@ -18,42 +18,33 @@
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTree_00024Native_edit(
-    JNIEnv *env, jclass self, jlong tree, jobject inputEdit) {
+#include "ts_tree_sigs.h"
+
+static void
+TSTree_edit(JNIEnv *env, jclass self, jlong tree, jobject inputEdit) {
   req_nnp(env, tree);
   req_nnp(env, inputEdit);
   TSInputEdit edit = _unmarshalInputEdit(env, inputEdit);
   ts_tree_edit((TSTree *) tree, &edit);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTree_00024Native_delete(JNIEnv *env,
-                                                                jclass self,
-                                                                jlong tree) {
+static void TSTree_delete(JNIEnv *env, jclass self, jlong tree) {
   req_nnp(env, tree);
   ts_tree_delete((TSTree *) tree);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSTree_00024Native_copy(JNIEnv *env,
-                                                              jclass self,
-                                                              jlong tree) {
+static jlong TSTree_copy(JNIEnv *env, jclass self, jlong tree) {
   req_nnp(env, tree);
   return (jlong) ts_tree_copy((TSTree *) tree);
 }
 
-extern "C" JNIEXPORT jobject JNICALL
-Java_com_itsaky_androidide_treesitter_TSTree_00024Native_rootNode(JNIEnv *env,
-                                                                  jclass self,
-                                                                  jlong tree) {
+static jobject TSTree_rootNode(JNIEnv *env, jclass self, jlong tree) {
   req_nnp(env, tree);
   return _marshalNode(env, ts_tree_root_node((TSTree *) tree));
 }
 
-extern "C" JNIEXPORT jobjectArray JNICALL
-Java_com_itsaky_androidide_treesitter_TSTree_00024Native_changedRanges
-    (JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
+static jobjectArray
+TSTree_changedRanges(JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
   req_nnp(env, tree, "thisTree");
   req_nnp(env, oldTree, "oldTree");
   uint32_t count;
@@ -73,9 +64,20 @@ Java_com_itsaky_androidide_treesitter_TSTree_00024Native_changedRanges
   return arr;
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSTree_00024Native_getLanguage(
-    JNIEnv *env, jclass self, jlong tree) {
+static jlong TSTree_getLanguage(JNIEnv *env, jclass self, jlong tree) {
   req_nnp(env, tree);
   return (jlong) ts_tree_language((TSTree *) tree);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TSTree_00024Native_registerNatives(JNIEnv *env,
+                                                                         jclass clazz) {
+  SET_JNI_METHOD(TSTree_Native_edit, TSTree_edit);
+  SET_JNI_METHOD(TSTree_Native_delete, TSTree_delete);
+  SET_JNI_METHOD(TSTree_Native_copy, TSTree_copy);
+  SET_JNI_METHOD(TSTree_Native_rootNode, TSTree_rootNode);
+  SET_JNI_METHOD(TSTree_Native_changedRanges, TSTree_changedRanges);
+  SET_JNI_METHOD(TSTree_Native_getLanguage, TSTree_getLanguage);
+
+  TSTree_Native__RegisterNatives(env, clazz);
 }

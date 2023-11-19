@@ -230,42 +230,48 @@ public class TSTreeCursor extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "tree_cursor")
   private static class Native {
 
-    public static native long newCursor(TSNode node);
+    static {
+      registerNatives();
+    }
 
-    public static native TSTreeCursorNode currentTreeCursorNode(long cursor);
+    static native long newCursor(TSNode node);
 
-    public static native String currentFieldName(long cursor);
+    static native TSTreeCursorNode currentTreeCursorNode(long cursor);
 
-    public static native TSNode currentNode(long cursor);
+    static native String currentFieldName(long cursor);
 
-    public static native void delete(long cursor);
+    static native TSNode currentNode(long cursor);
 
-    public static native boolean gotoFirstChild(long cursor);
+    static native void delete(long cursor);
 
-    public static native boolean gotoNextSibling(long cursor);
+    static native boolean gotoFirstChild(long cursor);
 
-    public static native boolean gotoParent(long cursor);
+    static native boolean gotoNextSibling(long cursor);
 
-    public static native short currentFieldId(long pointer);
+    static native boolean gotoParent(long cursor);
 
-    public static native long gotoFirstChildForByte(long pointer, int byteIndex);
+    static native short currentFieldId(long pointer);
 
-    public static native boolean gotoFirstChildForPoint(long pointer, TSPoint point);
+    static native long gotoFirstChildForByte(long pointer, int byteIndex);
 
-    public static native boolean gotoLastChild(long pointer);
+    static native boolean gotoFirstChildForPoint(long pointer, TSPoint point);
 
-    public static native boolean gotoPreviousSibling(long pointer);
+    static native boolean gotoLastChild(long pointer);
 
-    public static native void gotoDescendant(long pointer, int descendantIndex);
+    static native boolean gotoPreviousSibling(long pointer);
 
-    public static native int currentDescendantIndex(long pointer);
+    static native void gotoDescendant(long pointer, int descendantIndex);
 
-    public static native int depth(long pointer);
+    static native int currentDescendantIndex(long pointer);
 
-    public static native void reset(long pointer, TSNode node);
+    static native int depth(long pointer);
 
-    public static native void resetTo(long pointer, long another);
+    static native void reset(long pointer, TSNode node);
 
-    public static native long copy(long pointer);
+    static native void resetTo(long pointer, long another);
+
+    static native long copy(long pointer);
+
+    static native void registerNatives();
   }
 }

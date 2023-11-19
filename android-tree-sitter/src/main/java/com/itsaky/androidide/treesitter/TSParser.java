@@ -371,26 +371,32 @@ public class TSParser extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "parser")
   private static class Native {
 
-    public static native long newParser();
+    static {
+      registerNatives();
+    }
 
-    public static native void delete(long parser);
+    static native void registerNatives();
 
-    public static native void setLanguage(long parser, long language);
+    static native long newParser();
 
-    public static native long getLanguage(long parser);
+    static native void delete(long parser);
 
-    public static native void reset(long parser);
+    static native void setLanguage(long parser, long language);
 
-    public static native void setTimeout(long parser, long timeout);
+    static native long getLanguage(long parser);
 
-    public static native long getTimeout(long parser);
+    static native void reset(long parser);
 
-    public static native boolean setIncludedRanges(long parser, TSRange[] ranges);
+    static native void setTimeout(long parser, long timeout);
 
-    public static native TSRange[] getIncludedRanges(long parser);
+    static native long getTimeout(long parser);
 
-    public static native long parse(long parser, long treePointer, long strPointer);
+    static native boolean setIncludedRanges(long parser, TSRange[] ranges);
 
-    public static native boolean requestCancellation(long parser);
+    static native TSRange[] getIncludedRanges(long parser);
+
+    static native long parse(long parser, long treePointer, long strPointer);
+
+    static native boolean requestCancellation(long parser);
   }
 }

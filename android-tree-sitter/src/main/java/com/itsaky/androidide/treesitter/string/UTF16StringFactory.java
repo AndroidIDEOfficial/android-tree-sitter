@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter.string;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 
 /**
@@ -72,7 +73,14 @@ public class UTF16StringFactory {
     return TSObjectFactoryProvider.getFactory().createString(pointer, isSynchronized);
   }
 
+  @GenerateNativeHeaders(fileName = "utf16string_factory")
   private static class Native {
+
+    static {
+      registerNatives();
+    }
+
+    static native void registerNatives();
 
     static native long newString(String source);
 

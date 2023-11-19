@@ -135,6 +135,12 @@ public class TSLookaheadIterator extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "lookahead_iterator")
   private static final class Native {
 
+    static {
+      registerNatives();
+    }
+
+    static native void registerNatives();
+
     static native long newIterator(long language, short stateId);
 
     static native void delete(long pointer);

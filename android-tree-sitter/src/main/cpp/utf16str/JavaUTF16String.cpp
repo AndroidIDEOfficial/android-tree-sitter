@@ -23,203 +23,166 @@
 #include "UTF16String.h"
 #include "../cache/StrCache.h"
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_append(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jstring str) {
+#include "ts_utf16string_sigs.h"
+
+static void
+UTF16String_append(JNIEnv *env, jclass clazz, jlong pointer, jstring str) {
   as_str(env, pointer)->append(env, str);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_appendPart(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jstring str,
-    jint from_index,
-    jint length) {
+static void UTF16String_appendPart(JNIEnv *env,
+                                   jclass clazz,
+                                   jlong pointer,
+                                   jstring str,
+                                   jint from_index,
+                                   jint length) {
   as_str(env, pointer)->append(env, str, from_index, length);
 }
 
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_length(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer) {
+static jint UTF16String_length(JNIEnv *env, jclass clazz, jlong pointer) {
   return as_str(env, pointer)->length();
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_erase(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer) {
+static void UTF16String_erase(JNIEnv *env, jclass clazz, jlong pointer) {
   StrCache::getInstance().erase(as_str(env, pointer));
 }
 
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteLength(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer) {
+static jint UTF16String_byteLength(JNIEnv *env, jclass clazz, jlong pointer) {
   return as_str(env, pointer)->byte_length();
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_insert(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jstring str,
-    jint index) {
+static void UTF16String_insert(JNIEnv *env,
+                               jclass clazz,
+                               jlong pointer,
+                               jstring str,
+                               jint index) {
   as_str(env, pointer)->insert(env, str, index);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteChars(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end) {
+static void UTF16String_deleteChars(JNIEnv *env,
+                                    jclass clazz,
+                                    jlong pointer,
+                                    jint start,
+                                    jint end) {
   as_str(env, pointer)->delete_chars(start, end);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_deleteBytes(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end) {
+static void UTF16String_deleteBytes(JNIEnv *env,
+                                    jclass clazz,
+                                    jlong pointer,
+                                    jint start,
+                                    jint end) {
   as_str(env, pointer)->delete_bytes(start, end);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceChars(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end,
-    jstring str) {
+static void UTF16String_replaceChars(JNIEnv *env,
+                                     jclass clazz,
+                                     jlong pointer,
+                                     jint start,
+                                     jint end,
+                                     jstring str) {
   as_str(env, pointer)->replace_chars(env, start, end, str);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_replaceBytes(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end,
-    jstring str) {
+static void UTF16String_replaceBytes(JNIEnv *env,
+                                     jclass clazz,
+                                     jlong pointer,
+                                     jint start,
+                                     jint end,
+                                     jstring str) {
   as_str(env, pointer)->replace_bytes(env, start, end, str);
 }
 
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_substring_1chars(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end) {
+static jlong UTF16String_substring_chars(JNIEnv *env,
+                                         jclass clazz,
+                                         jlong pointer,
+                                         jint start,
+                                         jint end) {
   return (jlong) as_str(env, pointer)->substring_chars(start, end);
 }
 
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_substring_1bytes(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end) {
+static jlong UTF16String_substring_bytes(JNIEnv *env,
+                                         jclass clazz,
+                                         jlong pointer,
+                                         jint start,
+                                         jint end) {
   return (jlong) as_str(env, pointer)->substring_bytes(start, end);
 }
 
-extern "C"
-JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_subjstring_1chars(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end) {
+static jstring UTF16String_subjstring_chars(JNIEnv *env,
+                                            jclass clazz,
+                                            jlong pointer,
+                                            jint start,
+                                            jint end) {
   return as_str(env, pointer)->subjstring_chars(env, start, end);
 }
 
-extern "C"
-JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_subjstring_1bytes(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint start,
-    jint end) {
+static jstring UTF16String_subjstring_bytes(JNIEnv *env,
+                                            jclass clazz,
+                                            jlong pointer,
+                                            jint start,
+                                            jint end) {
   return as_str(env, pointer)->subjstring_bytes(env, start, end);
 }
 
-extern "C"
-JNIEXPORT jbyte JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_byteAt(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint index) {
+static jbyte
+UTF16String_byteAt(JNIEnv *env, jclass clazz, jlong pointer, jint index) {
   return as_str(env, pointer)->byte_at(index);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setByteAt(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint index,
-    jbyte b) {
+static void UTF16String_setByteAt(JNIEnv *env,
+                                  jclass clazz,
+                                  jlong pointer,
+                                  jint index,
+                                  jbyte b) {
   as_str(env, pointer)->set_byte_at(index, b);
 }
 
-extern "C"
-JNIEXPORT jchar JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_chatAt(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint index) {
+static jchar
+UTF16String_chatAt(JNIEnv *env, jclass clazz, jlong pointer, jint index) {
   return as_str(env, pointer)->char_at(index);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_setCharAt(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer,
-    jint index,
-    jchar c) {
+static void UTF16String_setCharAt(JNIEnv *env,
+                                  jclass clazz,
+                                  jlong pointer,
+                                  jint index,
+                                  jchar c) {
   as_str(env, pointer)->set_char_at(index, c);
 }
 
-extern "C"
-JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_toString(
-    JNIEnv *env,
-    jclass clazz,
-    jlong pointer) {
+static jstring UTF16String_toString(JNIEnv *env, jclass clazz, jlong pointer) {
   return as_str(env, pointer)->to_jstring(env);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_registerNatives(
+    JNIEnv *env,
+    jclass clazz) {
+
+  SET_JNI_METHOD(UTF16String_Native_byteAt, UTF16String_byteAt);
+  SET_JNI_METHOD(UTF16String_Native_setByteAt, UTF16String_setByteAt);
+  SET_JNI_METHOD(UTF16String_Native_chatAt, UTF16String_chatAt);
+  SET_JNI_METHOD(UTF16String_Native_setCharAt, UTF16String_setCharAt);
+  SET_JNI_METHOD(UTF16String_Native_append, UTF16String_append);
+  SET_JNI_METHOD(UTF16String_Native_appendPart, UTF16String_appendPart);
+  SET_JNI_METHOD(UTF16String_Native_insert, UTF16String_insert);
+  SET_JNI_METHOD(UTF16String_Native_deleteChars, UTF16String_deleteChars);
+  SET_JNI_METHOD(UTF16String_Native_deleteBytes, UTF16String_deleteBytes);
+  SET_JNI_METHOD(UTF16String_Native_replaceChars, UTF16String_replaceChars);
+  SET_JNI_METHOD(UTF16String_Native_replaceBytes, UTF16String_replaceBytes);
+  SET_JNI_METHOD(UTF16String_Native_substring_chars,
+                 UTF16String_substring_chars);
+  SET_JNI_METHOD(UTF16String_Native_substring_bytes,
+                 UTF16String_substring_bytes);
+  SET_JNI_METHOD(UTF16String_Native_subjstring_chars,
+                 UTF16String_subjstring_chars);
+  SET_JNI_METHOD(UTF16String_Native_subjstring_bytes,
+                 UTF16String_subjstring_bytes);
+  SET_JNI_METHOD(UTF16String_Native_toString, UTF16String_toString);
+  SET_JNI_METHOD(UTF16String_Native_length, UTF16String_length);
+  SET_JNI_METHOD(UTF16String_Native_byteLength, UTF16String_byteLength);
+  SET_JNI_METHOD(UTF16String_Native_erase, UTF16String_erase);
+
+  UTF16String_Native__RegisterNatives(env, clazz);
 }

@@ -253,30 +253,36 @@ public class TSQuery extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "query")
   private static class Native {
 
-    public static native long newQuery(TSQuery query, long pointer, String source);
+    static {
+      registerNatives();
+    }
 
-    public static native void delete(long query);
+    static native void registerNatives();
 
-    public static native int captureCount(long query);
+    static native long newQuery(TSQuery query, long pointer, String source);
 
-    public static native int patternCount(long query);
+    static native void delete(long query);
 
-    public static native int stringCount(long query);
+    static native int captureCount(long query);
 
-    public static native int startByteForPattern(long query, int pattern);
+    static native int patternCount(long query);
 
-    public static native TSQueryPredicateStep[] predicatesForPattern(long query, int pattern);
+    static native int stringCount(long query);
 
-    public static native boolean patternRooted(long query, int pattern);
+    static native int startByteForPattern(long query, int pattern);
 
-    public static native boolean patternNonLocal(long query, int pattern);
+    static native TSQueryPredicateStep[] predicatesForPattern(long query, int pattern);
 
-    public static native boolean patternGuaranteedAtStep(long query, int byteOffset);
+    static native boolean patternRooted(long query, int pattern);
 
-    public static native String captureNameForId(long query, int id);
+    static native boolean patternNonLocal(long query, int pattern);
 
-    public static native String stringValueForId(long query, int id);
+    static native boolean patternGuaranteedAtStep(long query, int byteOffset);
 
-    public static native int captureQuantifierForId(long query, int pattern, int capture);
+    static native String captureNameForId(long query, int id);
+
+    static native String stringValueForId(long query, int id);
+
+    static native int captureQuantifierForId(long query, int pattern, int capture);
   }
 }

@@ -22,31 +22,27 @@
 #include "utils/ts_log.h"
 #include "utils/ts_preconditions.h"
 
+#include "ts_language_sigs.h"
+
 typedef const TSLanguage *(*TsLangFunc)();
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symCount
-    (JNIEnv *env, jclass self, jlong ptr) {
+static jint TSLanguage_symCount(JNIEnv *env, jclass self, jlong ptr) {
   req_nnp(env, ptr);
   return (jint) ts_language_symbol_count((TSLanguage *) ptr);
 }
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldCount
-    (JNIEnv *env, jclass self, jlong ptr) {
+static jint TSLanguage_fldCount(JNIEnv *env, jclass self, jlong ptr) {
   req_nnp(env, ptr);
   return (jint) ts_language_field_count((TSLanguage *) ptr);
 }
 
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symForName
-    (JNIEnv *env,
-     jclass self,
-     jlong ptr,
-     jbyteArray name,
-     jint length,
-     jboolean isNamed) {
+static jint TSLanguage_symForName(JNIEnv *env,
+                                  jclass self,
+                                  jlong ptr,
+                                  jbyteArray name,
+                                  jint length,
+                                  jboolean isNamed) {
   req_nnp(env, ptr);
   jbyte *nm = env->GetByteArrayElements(name, NULL);
   uint32_t count = ts_language_symbol_for_name((TSLanguage *) ptr,
@@ -58,26 +54,26 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symForName
 }
 
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symName
-    (JNIEnv *env, jclass self, jlong lngPtr, jint sym) {
+static jstring
+TSLanguage_symName(JNIEnv *env, jclass self, jlong lngPtr, jint sym) {
   req_nnp(env, lngPtr);
   return env->NewStringUTF(ts_language_symbol_name((TSLanguage *) lngPtr, sym));
 }
 
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldNameForId
-    (JNIEnv *env, jclass self, jlong ptr, jint id) {
+static jstring
+TSLanguage_fldNameForId(JNIEnv *env, jclass self, jlong ptr, jint id) {
   req_nnp(env, ptr);
   return env->NewStringUTF(ts_language_field_name_for_id((TSLanguage *) ptr,
                                                          id));
 }
 
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldIdForName
-    (JNIEnv *env, jclass self, jlong ptr, jbyteArray name, jint length) {
+static jint TSLanguage_fldIdForName(JNIEnv *env,
+                                    jclass self,
+                                    jlong ptr,
+                                    jbyteArray name,
+                                    jint length) {
   jbyte *nm = env->GetByteArrayElements(name, nullptr);
   req_nnp(env, ptr);
   uint32_t id = ts_language_field_id_for_name((TSLanguage *) ptr,
@@ -88,27 +84,21 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_fldIdForName
 }
 
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_symType
-    (JNIEnv *env, jclass self, jlong ptr, jint sym) {
+static jint TSLanguage_symType(JNIEnv *env, jclass self, jlong ptr, jint sym) {
   req_nnp(env, ptr);
   return (jint) ts_language_symbol_type((TSLanguage *) ptr, sym);
 }
 
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_langVer
-    (JNIEnv *env, jclass self, jlong ptr) {
+static jint TSLanguage_langVer(JNIEnv *env, jclass self, jlong ptr) {
   req_nnp(env, ptr);
   return (jint) ts_language_version((TSLanguage *) ptr);
 }
 
-extern "C"
-JNIEXPORT jlongArray JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_loadLanguage(JNIEnv *env,
-                                                                          jclass clazz,
-                                                                          jstring libpath,
-                                                                          jstring func) {
+static jlongArray TSLanguage_loadLanguage(JNIEnv *env,
+                                          jclass clazz,
+                                          jstring libpath,
+                                          jstring func) {
   auto lib_path = env->GetStringUTFChars(libpath, nullptr);
   auto func_name = env->GetStringUTFChars(func, nullptr);
 
@@ -157,31 +147,45 @@ Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_loadLanguage(JNIEnv
   return result;
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_dlclose(JNIEnv *env,
-                                                                     jclass clazz,
-                                                                     jlong libhandle) {
+static void TSLanguage_dlclose(JNIEnv *env, jclass clazz, jlong libhandle) {
   if (libhandle == 0) return;
   dlclose((void *) libhandle);
 }
 
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_stateCount(JNIEnv *env,
-                                                                        jclass clazz,
-                                                                        jlong pointer) {
+static jint TSLanguage_stateCount(JNIEnv *env, jclass clazz, jlong pointer) {
   req_nnp(env, pointer);
-  return (jint) ts_language_state_count((TSLanguage*) pointer);
+  return (jint) ts_language_state_count((TSLanguage *) pointer);
+}
+
+static jshort TSLanguage_nextState(JNIEnv *env,
+                                   jclass clazz,
+                                   jlong pointer,
+                                   jshort state_id,
+                                   jshort symbol) {
+  req_nnp(env, pointer);
+  return (jshort) ts_language_next_state((TSLanguage *) pointer,
+                                         state_id,
+                                         symbol);
 }
 
 extern "C"
-JNIEXPORT jshort JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_nextState(JNIEnv *env,
-                                                                       jclass clazz,
-                                                                       jlong pointer,
-                                                                       jshort state_id,
-                                                                       jshort symbol) {
-  req_nnp(env, pointer);
-  return (jshort) ts_language_next_state((TSLanguage*) pointer, state_id, symbol);
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_registerNatives(
+    JNIEnv *env,
+    jclass clazz) {
+
+  SET_JNI_METHOD(TSLanguage_Native_symCount, TSLanguage_symCount);
+  SET_JNI_METHOD(TSLanguage_Native_fldCount, TSLanguage_fldCount);
+  SET_JNI_METHOD(TSLanguage_Native_symForName, TSLanguage_symForName);
+  SET_JNI_METHOD(TSLanguage_Native_symName, TSLanguage_symName);
+  SET_JNI_METHOD(TSLanguage_Native_fldNameForId, TSLanguage_fldNameForId);
+  SET_JNI_METHOD(TSLanguage_Native_fldIdForName, TSLanguage_fldIdForName);
+  SET_JNI_METHOD(TSLanguage_Native_symType, TSLanguage_symType);
+  SET_JNI_METHOD(TSLanguage_Native_langVer, TSLanguage_langVer);
+  SET_JNI_METHOD(TSLanguage_Native_loadLanguage, TSLanguage_loadLanguage);
+  SET_JNI_METHOD(TSLanguage_Native_dlclose, TSLanguage_dlclose);
+  SET_JNI_METHOD(TSLanguage_Native_stateCount, TSLanguage_stateCount);
+  SET_JNI_METHOD(TSLanguage_Native_nextState, TSLanguage_nextState);
+
+  TSLanguage_Native__RegisterNatives(env, clazz);
 }

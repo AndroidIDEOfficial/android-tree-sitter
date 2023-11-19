@@ -25,6 +25,8 @@
 #include "utils/ts_preconditions.h"
 #include "utils/ts_log.h"
 
+#include "ts_parser_sigs.h"
+
 /**
  * `TSParserInternal` stores the actual tree sitter parser instance along
  * with the cancellation flag and the cancellation flag mutex.
@@ -112,7 +114,8 @@ class TSParserInternal {
   TSParser *parser;
 
   bool check_destroyed(JNIEnv *env) {
-    if (cancellation_flag_mutex == nullptr || cancellation_flag == nullptr || parser == nullptr) {
+    if (cancellation_flag_mutex == nullptr || cancellation_flag == nullptr
+        || parser == nullptr) {
       throw_illegal_state(env, "TSParserInternal has already been destroyed");
       return true;
     }
@@ -121,62 +124,75 @@ class TSParserInternal {
   }
 };
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_newParser(
-    JNIEnv *env, jclass self) {
+static jlong
+TSParser_newParser(JNIEnv *env,
+                   jclass self) {
   auto parser = new TSParserInternal;
   return (jlong) parser;
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_delete(
-    JNIEnv *env, jclass self, jlong parser_ptr) {
+static void
+TSParser_delete(JNIEnv *env,
+                jclass self,
+                jlong parser_ptr) {
   req_nnp(env, parser_ptr);
 
   auto parser = (TSParserInternal *) parser_ptr;
   delete parser;
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setLanguage(
-    JNIEnv *env, jclass self, jlong parser, jlong language) {
+static void
+TSParser_setLanguage(JNIEnv *env,
+                     jclass self,
+                     jlong parser,
+                     jlong language) {
   req_nnp(env, parser, "parser");
   req_nnp(env, language, "language");
-  ts_parser_set_language(((TSParserInternal *) parser)->getParser(env), (TSLanguage *) language);
+  ts_parser_set_language(((TSParserInternal *) parser)->getParser(env),
+                         (TSLanguage *) language);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getLanguage(
-    JNIEnv *env, jclass self, jlong parser) {
+static jlong
+TSParser_getLanguage(JNIEnv *env,
+                     jclass self,
+                     jlong parser) {
   req_nnp(env, parser);
   return (jlong) ts_parser_language(((TSParserInternal *) parser)->getParser(env));
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_reset(JNIEnv *env,
-                                                                 jclass self,
-                                                                 jlong parser) {
+static void
+TSParser_reset(JNIEnv *env,
+               jclass self,
+               jlong parser) {
   req_nnp(env, parser);
   ts_parser_reset(((TSParserInternal *) parser)->getParser(env));
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setTimeout(
-    JNIEnv *env, jclass self, jlong parser, jlong macros) {
+static void
+TSParser_setTimeout(JNIEnv *env,
+                    jclass self,
+                    jlong parser,
+                    jlong macros) {
   req_nnp(env, parser);
-  ts_parser_set_timeout_micros(((TSParserInternal *) parser)->getParser(env), macros);
+  ts_parser_set_timeout_micros(((TSParserInternal *) parser)->getParser(env),
+                               macros);
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getTimeout(
-    JNIEnv *env, jclass self, jlong parser) {
+static jlong
+TSParser_getTimeout(JNIEnv *env,
+                    jclass self,
+                    jlong parser) {
   req_nnp(env, parser);
-  return (jlong) ts_parser_timeout_micros(((TSParserInternal *) parser)->getParser(env));
+  return (jlong) ts_parser_timeout_micros(((TSParserInternal *) parser)->getParser(
+      env));
 }
 
-extern "C" JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges(
-    JNIEnv *env, jclass self, jlong parser, jobjectArray ranges) {
+static jboolean
+TSParser_setIncludedRanges(
+    JNIEnv *env,
+    jclass self,
+    jlong parser,
+    jobjectArray ranges) {
   req_nnp(env, parser);
   int count = env->GetArrayLength(ranges);
   TSRange tsRanges[count];
@@ -188,18 +204,20 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_setIncludedRanges(
   }
 
   const TSRange *r = tsRanges;
-  return (jboolean) ts_parser_set_included_ranges(((TSParserInternal *) parser)->getParser(env),
-                                                  r,
-                                                  count);
+  return (jboolean) ts_parser_set_included_ranges(((TSParserInternal *) parser)->getParser(
+      env), r, count);
 }
 
-extern "C" JNIEXPORT jobjectArray JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges(
-    JNIEnv *env, jclass self, jlong parser) {
+static jobjectArray
+TSParser_getIncludedRanges(
+    JNIEnv *env,
+    jclass self,
+    jlong parser) {
   req_nnp(env, parser);
   jint count;
-  const TSRange *ranges = ts_parser_included_ranges(((TSParserInternal *) parser)->getParser(env),
-                                                    reinterpret_cast<uint32_t *>(&count));
+  const TSRange *ranges =
+      ts_parser_included_ranges(((TSParserInternal *) parser)->getParser(env),
+                                reinterpret_cast<uint32_t *>(&count));
   jobjectArray result = createRangeArr(env, count);
   req_nnp(env, result, "TSRange[] from factory");
 
@@ -210,13 +228,11 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_getIncludedRanges(
   return result;
 }
 
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
-                                                                 jclass clazz,
-                                                                 jlong parser,
-                                                                 jlong tree_pointer,
-                                                                 jlong str_pointer) {
+static jlong TSParser_parse(JNIEnv *env,
+                            jclass clazz,
+                            jlong parser,
+                            jlong tree_pointer,
+                            jlong str_pointer) {
   req_nnp(env, parser);
   req_nnp(env, str_pointer, "string");
   auto *ts_parser_internal = (TSParserInternal *) parser;
@@ -231,21 +247,19 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_parse(JNIEnv *env,
   // start parsing
   // if the user cancels the parse while this method is being executed
   // then this will return nullptr
-  auto tree =
-      ts_parser_parse_string_encoding(ts_parser,
-                                      old_tree,
-                                      source->to_cstring(),
-                                      source->byte_length(),
-                                      TSInputEncodingUTF16);
+  auto tree = ts_parser_parse_string_encoding(ts_parser,
+                                              old_tree,
+                                              source->to_cstring(),
+                                              source->byte_length(),
+                                              TSInputEncodingUTF16);
 
   ts_parser_internal->end_round(env);
 
   return (jlong) tree;
 }
 
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_requestCancellation(
+static jboolean
+TSParser_requestCancellation(
     JNIEnv *env,
     jclass clazz,
     jlong parser) {
@@ -265,4 +279,26 @@ Java_com_itsaky_androidide_treesitter_TSParser_00024Native_requestCancellation(
   *flag = 1;
   LOGD("TSParser", "Cancellation flag has been set");
   return true;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_itsaky_androidide_treesitter_TSParser_00024Native_registerNatives(
+    JNIEnv *env,
+    jclass clazz) {
+
+  SET_JNI_METHOD(TSParser_Native_newParser, TSParser_newParser);
+  SET_JNI_METHOD(TSParser_Native_delete, TSParser_delete);
+  SET_JNI_METHOD(TSParser_Native_setLanguage, TSParser_setLanguage);
+  SET_JNI_METHOD(TSParser_Native_getLanguage, TSParser_getLanguage);
+  SET_JNI_METHOD(TSParser_Native_reset, TSParser_reset);
+  SET_JNI_METHOD(TSParser_Native_setTimeout, TSParser_setTimeout);
+  SET_JNI_METHOD(TSParser_Native_getTimeout, TSParser_getTimeout);
+  SET_JNI_METHOD(TSParser_Native_setIncludedRanges, TSParser_setIncludedRanges);
+  SET_JNI_METHOD(TSParser_Native_getIncludedRanges, TSParser_getIncludedRanges);
+  SET_JNI_METHOD(TSParser_Native_parse, TSParser_parse);
+  SET_JNI_METHOD(TSParser_Native_requestCancellation,
+                 TSParser_requestCancellation);
+
+  TSParser_Native__RegisterNatives(env, clazz);
 }
