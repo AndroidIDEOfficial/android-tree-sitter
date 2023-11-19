@@ -26,6 +26,7 @@ import java.io.InputStream
 import java.io.PrintWriter
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import javax.annotation.processing.Messager
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.tools.JavaFileObject.Kind.SOURCE

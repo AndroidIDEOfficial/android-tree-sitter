@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -42,6 +43,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic.Kind;
+import kotlin.Triple;
 
 /**
  * @author Akash Yadav
@@ -60,6 +63,7 @@ public class JNIWriter {
   private final TypeMirror stringType;
   private final TypeMirror throwableType;
   private final TypeMirror classType;
+  private final String REGISTER_NATIVES = "registerNatives";
 
   public JNIWriter(Types types, Elements elements) {
     this.types = types;
@@ -184,12 +188,17 @@ public class JNIWriter {
 
     final var defTypMth = typeName + "_METHODS";
     final var defTypMthCount = typeName + "_METHOD_COUNT";
-    final var nameAndSigList = new ArrayList<Pair<String, String>>();
+    final var nameAndSigList = new ArrayList<Triple<String, String, String>>();
 
     var idx = 0;
     for (final var entry : sigs.entrySet()) {
       final var methodName = entry.getKey();
       final var methodSig = entry.getValue();
+
+      if (REGISTER_NATIVES.equals(methodName)) {
+        continue;
+      }
+
       final var qualifiedMethodName = typeName + methodName;
 
       out.println();
@@ -219,9 +228,7 @@ public class JNIWriter {
         o.println("};");
       });
 
-      if (!"registerNatives".equals(methodName)) {
-        nameAndSigList.add(Pair.of(qualifiedMethodName, methodSig));
-      }
+      nameAndSigList.add(new Triple<>(qualifiedMethodName, methodName, methodSig));
     }
     out.println();
 
@@ -229,8 +236,8 @@ public class JNIWriter {
     out.print(defTypMth);
     out.print("[] = {");
 
-    for (Pair<String, String> pair : nameAndSigList) {
-      out.print(pair.first);
+    for (Triple<String, String, String> pair : nameAndSigList) {
+      out.print(pair.getFirst());
       out.println(",");
     }
 
@@ -373,6 +380,7 @@ public class JNIWriter {
   ) {
     List<? extends Element> classmethods = sym.getEnclosedElements();
 
+    ExecutableElement regNtv = null;
     for (Element e : classmethods) {
       if (e.getKind() != ElementKind.METHOD) {
         continue;
@@ -388,6 +396,23 @@ public class JNIWriter {
 
       TypeSignature newtypesig = new TypeSignature(types);
       CharSequence methodName = md.getSimpleName();
+
+      if (regNtv == null && REGISTER_NATIVES.contentEquals(methodName)) {
+        regNtv = md;
+        // validate registerNatives method
+        if (!md.getModifiers().contains(Modifier.STATIC)) {
+          err(REGISTER_NATIVES + " must be static, class=" + sym);
+        }
+
+        if (!md.getParameters().isEmpty()) {
+          err(REGISTER_NATIVES + " must not have any parameters, class=" + sym);
+        }
+
+        if (md.getReturnType().getKind() != TypeKind.VOID) {
+          err(REGISTER_NATIVES + " must return 'void', class=" + sym + ", typ=" + md.getReturnType() + ", typ.knd=" + md.getReturnType().getKind());
+        }
+      }
+
       boolean isOverloaded = false;
       for (Element md2 : classmethods) {
         if ((md2 != md) && (methodName.equals(md2.getSimpleName())) && isNative(md2)) {
@@ -425,6 +450,11 @@ public class JNIWriter {
       }
       out.println(");");
       out.println();
+    }
+
+    if (regNtv == null) {
+      err("Class " + sym + " does not define '" + REGISTER_NATIVES +
+        "' method. Please define method 'static native void " + REGISTER_NATIVES + "();'");
     }
   }
 
@@ -754,5 +784,10 @@ public class JNIWriter {
       jv.visit(t, sig);
       return sig;
     }
+  }
+
+
+  static void err(String msg) {
+    throw new RuntimeException(msg);
   }
 }
