@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
+import dalvik.annotation.optimization.CriticalNative;
 
 /**
  * @author Akash Yadav
@@ -68,6 +69,7 @@ public class TreeSitter {
   @GenerateNativeHeaders(fileName = "meta")
   private static final class Native {
 
+    @CriticalNative
     static native int getLanguageVersion();
 
     /**

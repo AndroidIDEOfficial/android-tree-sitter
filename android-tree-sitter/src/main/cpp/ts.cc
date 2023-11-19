@@ -57,11 +57,11 @@ ats_min_compatible_language_version(JNIEnv *env, jclass self) {
 }
 
 static JNINativeMethod gMethods[] = {
-    MAKE_JNI_METHOD(TS_TREESITTER_GETLANGUAGEVERSION_NAME,
-                    TS_TREESITTER_GETLANGUAGEVERSION_SIG,
+    MAKE_JNI_METHOD(TS_TREESITTER_NATIVE_GETLANGUAGEVERSION_NAME,
+                    TS_TREESITTER_NATIVE_GETLANGUAGEVERSION_SIG,
                     ats_language_version),
-    MAKE_JNI_METHOD(TS_TREESITTER_GETMINIMUMCOMPATIBLELANGUAGEVERSION_NAME,
-                    TS_TREESITTER_GETMINIMUMCOMPATIBLELANGUAGEVERSION_SIG,
+    MAKE_JNI_METHOD(TS_TREESITTER_NATIVE_GETMINIMUMCOMPATIBLELANGUAGEVERSION_NAME,
+                    TS_TREESITTER_NATIVE_GETMINIMUMCOMPATIBLELANGUAGEVERSION_SIG,
                     ats_min_compatible_language_version)
 };
 
@@ -71,6 +71,6 @@ Java_com_itsaky_androidide_treesitter_TreeSitter_00024Native_registerNatives(
     JNIEnv *env,
     jclass clazz) {
 
-  auto result = env->RegisterNatives(clazz, gMethods, 2);
+  auto result = env->RegisterNatives(clazz, gMethods, TS_TREESITTER_NATIVE__METHOD_COUNT);
   LOGD("TreeSitter", "RegisterNatives: %d", result);
 }

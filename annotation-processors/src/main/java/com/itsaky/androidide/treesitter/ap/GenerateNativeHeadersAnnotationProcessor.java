@@ -39,6 +39,8 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -86,7 +88,7 @@ public class GenerateNativeHeadersAnnotationProcessor extends AbstractProcessor 
     for (Element element : elements) {
       if (element.getKind() != ElementKind.CLASS) {
         messager.printMessage(Kind.ERROR,
-          Synchronized.class.getSimpleName() + " can only be applied to classes");
+          GenerateNativeHeaders.class.getSimpleName() + " can only be applied to classes");
         continue;
       }
 
@@ -95,7 +97,7 @@ public class GenerateNativeHeadersAnnotationProcessor extends AbstractProcessor 
         element.getAnnotation(GenerateNativeHeaders.class));
       final var fileName = annotation.fileName();
 
-      final var writer = new JNIWriter(this.types, this.elements);
+      final var writer = new JNIWriter(this.types, this.elements, messager);
       final var result = writer.generate(type);
 
       if (outputDirectory.exists()) {

@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter.ap;
 
+import com.itsaky.androidide.treesitter.ap.utils.NativeMethodValidator;
 import com.itsaky.androidide.treesitter.ap.utils.Pair;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -55,12 +57,14 @@ public class JNIWriter {
   private static final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 
   private final Types types;
+  private final Messager messager;
   private final TypeMirror stringType;
   private final TypeMirror throwableType;
   private final TypeMirror classType;
 
-  public JNIWriter(Types types, Elements elements) {
+  public JNIWriter(Types types, Elements elements, Messager messager) {
     this.types = types;
+    this.messager = messager;
 
     this.stringType = elements.getTypeElement("java.lang.String").asType();
     this.throwableType = elements.getTypeElement("java.lang.Throwable").asType();
@@ -163,23 +167,55 @@ public class JNIWriter {
     // Write method signatures header
     fileTop(sigWriter);
     guardBegin(sigWriter, cname, "METHOD_SIGNATURES");
-    writeMethodSigs(sigWriter, cname, type.getSimpleName().toString(), sigs);
+    writeMethodDefs(sigWriter, cname, type, sigs);
     guardEnd(sigWriter);
 
     return new Pair<>(_headerWriter.toString(), _sigWriter.toString());
   }
 
-  private void writeMethodSigs(PrintWriter out, String cname, String simpleName, HashMap<String, String> sigs) {
+  private void writeMethodDefs(PrintWriter out, String cname, TypeElement type, HashMap<String, String> sigs) {
+    final var typeName = new StringBuilder();
+    Element curr = type;
+    while (curr != null && curr.getKind().isClass()) {
+      typeName.insert(0, "_").insert(0, curr.getSimpleName());
+      curr = curr.getEnclosingElement();
+    }
+
+    final var nameAndSigList = new ArrayList<Pair<String, String>>();
+
     for (final var entry : sigs.entrySet()) {
       final var methodName = entry.getKey();
       final var methodSig = entry.getValue();
-      final var namePrefix = "#define TS_" + simpleName.toUpperCase(Locale.ROOT) + "_" + methodName.toUpperCase(Locale.ROOT);
+      final var namePrefix = "TS_" + typeName.toString().toUpperCase(Locale.ROOT) + methodName.toUpperCase(Locale.ROOT);
+      final var defName = namePrefix + "_NAME";
+      final var defSig = namePrefix + "_SIG";
 
       out.println();
       methodDoc(out, cname, methodName, methodSig);
-      out.println(namePrefix + "_NAME" + " \"" + methodName + "\"");
-      out.println(namePrefix + "_SIG" + " \"" + methodSig + "\"");
+
+      out.print("#define ");
+      out.print(defName);
+      out.print(" \"");
+      out.print(methodName);
+      out.println("\"");
+
+      out.print("#define ");
+      out.print(defSig);
+      out.print(" \"");
+      out.print(methodSig);
+      out.println("\"");
+
+      if (!"registerNatives".equals(methodName)) {
+        nameAndSigList.add(Pair.of(defName, defSig));
+      }
     }
+    out.println();
+
+    out.print("#define TS_");
+    out.print(typeName.toString().toUpperCase(Locale.ROOT));
+    out.print("_METHOD_COUNT ");
+    out.println(nameAndSigList.size());
+
     out.println();
   }
 
@@ -254,6 +290,7 @@ public class JNIWriter {
 
   void writeMethods(PrintWriter out, TypeElement sym, String cname, Map<String, String> methodSigs) {
     List<? extends Element> classmethods = sym.getEnclosedElements();
+
     for (Element e : classmethods) {
       if (e.getKind() != ElementKind.METHOD) {
         continue;
@@ -262,6 +299,12 @@ public class JNIWriter {
       ExecutableElement md = ((ExecutableElement) e);
 
       if (!isNative(md)) {
+        continue;
+      }
+
+      // validate the method
+      final var verRes = NativeMethodValidator.validateNativeMethod(md, messager);
+      if (!verRes.first) {
         continue;
       }
 
@@ -280,12 +323,21 @@ public class JNIWriter {
       methodDoc(out, cname, methodName, methodSig);
       out.println("JNIEXPORT " + jniType(types.erasure(md.getReturnType())) + " JNICALL " +
         encodeMethod(md, sym, isOverloaded));
-      out.print("  (JNIEnv *, ");
-      out.print((isStatic(md)) ? "jclass" : "jobject");
+
+      if (verRes.third) {
+        // omit JNIEnv and jclass from @CriticalNative methods
+        out.print("  (");
+      } else {
+        out.print("  (JNIEnv *env, ");
+        out.print((isStatic(md)) ? "jclass clazz" : "jobject self");
+      }
+
       for (VariableElement v : md.getParameters()) {
         var arg = types.erasure(v.asType());
         out.print(", ");
         out.print(jniType(arg));
+        out.print(" ");
+        out.print(v.getSimpleName());
       }
       out.println(");");
       out.println();

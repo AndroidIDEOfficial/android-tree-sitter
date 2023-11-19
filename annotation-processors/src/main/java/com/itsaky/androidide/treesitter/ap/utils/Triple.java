@@ -20,17 +20,23 @@ package com.itsaky.androidide.treesitter.ap.utils;
 /**
  * @author Akash Yadav
  */
-public class Pair<F, S> {
+public class Triple<F, S, T> {
 
   public final F first;
   public final S second;
+  public final T third;
 
-  public Pair(F first, S second) {
+  public Triple(F first, S second, T third) {
     this.first = first;
     this.second = second;
+    this.third = third;
   }
 
-  public static <F, S> Pair<F, S> of (F f, S s) {
-    return new Pair<>(f, s);
+  public static <F, S, T> Triple<F, S, T> of (F first, S second, T third) {
+    return new Triple<>(first, second, third);
+  }
+
+  public static <T> Triple<T, T, T> of (T t) {
+    return new Triple<>(t, t, t);
   }
 }
