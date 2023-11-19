@@ -26,10 +26,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -40,8 +38,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
 import net.ltgt.gradle.incap.IncrementalAnnotationProcessor;
 
@@ -57,26 +53,11 @@ import net.ltgt.gradle.incap.IncrementalAnnotationProcessor;
 @IncrementalAnnotationProcessor(AGGREGATING)
 @AutoService(Processor.class)
 @SuppressWarnings("unused")
-public class GenerateNativeHeadersAnnotationProcessor extends AbstractProcessor {
-
-  private Types types;
-  private Elements elements;
-
-  private File outputDirectory;
+public class NativeMethodValidatorAnnotationProcessor extends AbstractProcessor {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     return Set.of(GenerateNativeHeaders.class.getName());
-  }
-
-  @Override
-  public synchronized void init(ProcessingEnvironment processingEnv) {
-    this.types = processingEnv.getTypeUtils();
-    this.elements = processingEnv.getElementUtils();
-    this.outputDirectory = new File(
-      Objects.requireNonNull(processingEnv.getOptions().get("nativeHeaders.outDir")));
-
-    super.init(processingEnv);
   }
 
   @Override
