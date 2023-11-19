@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.treesitter
 
-import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 
 /**
  * Gradle task to build shared library for host OS.
@@ -30,26 +30,28 @@ import org.gradle.api.tasks.TaskAction
  */
 abstract class BuildForHostTask : DefaultTask() {
 
-  @Input var libName: String = ""
+  @Input
+  var libName: String = ""
 
   @TaskAction
   fun buildForHost() {
     val cppDir = project.file("src/main/cpp").absolutePath
-    val workingDir =
-        project
-            .file("${cppDir}/host-build")
-            .apply {
-              if (!exists()) {
-                mkdirs()
-              }
-            }
-            .absolutePath
+    val workingDir = project.file("${cppDir}/host-build").apply {
+      if (!exists()) {
+        mkdirs()
+      }
+    }.absolutePath
 
-    project.executeCommand(workingDir, "cmake", cppDir, "-DAUTOGEN_HEADERS=${project.layout.buildDirectory.dir("generated/native_headers").get().asFile.absolutePath}")
+    val outDirPath =
+      project.layout.buildDirectory.dir("generated/native_headers")
+        .get().asFile.absolutePath
+
+    project.executeCommand(workingDir, "cmake", cppDir, "-DAUTOGEN_HEADERS=$outDirPath")
     project.executeCommand(workingDir, "make")
 
     if (libName.isEmpty()) {
-      throw GradleException("'libName' must be specified for '${javaClass.simpleName}'")
+      throw GradleException(
+        "'libName' must be specified for '${javaClass.simpleName}'")
     }
 
     val soName = "lib${libName}.so"
