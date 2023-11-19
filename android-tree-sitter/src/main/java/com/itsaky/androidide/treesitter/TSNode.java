@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -623,6 +624,7 @@ public class TSNode extends TSNativeObject {
     // no need to do anything
   }
 
+  @GenerateNativeHeaders(fileName = "node")
   private static final class Native {
 
     static native boolean canAccess(long id);

@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
@@ -367,6 +368,7 @@ public class TSParser extends TSNativeObject {
     }
   }
 
+  @GenerateNativeHeaders(fileName = "parser")
   private static class Native {
 
     public static native long newParser();

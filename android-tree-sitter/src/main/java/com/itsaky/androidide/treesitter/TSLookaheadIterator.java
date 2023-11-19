@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 
 /**
@@ -131,6 +132,7 @@ public class TSLookaheadIterator extends TSNativeObject {
     Native.delete(getNativeObject());
   }
 
+  @GenerateNativeHeaders(fileName = "lookahead_iterator")
   private static final class Native {
 
     static native long newIterator(long language, short stateId);

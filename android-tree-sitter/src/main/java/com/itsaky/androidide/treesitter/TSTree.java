@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.util.Objects;
 
@@ -92,6 +93,7 @@ public class TSTree extends TSNativeObject {
     return TSLanguageCache.get(langPtr);
   }
 
+  @GenerateNativeHeaders(fileName = "tree")
   private static class Native {
 
     public static native void edit(long tree, TSInputEdit inputEdit);

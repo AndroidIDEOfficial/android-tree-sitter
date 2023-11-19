@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.util.Objects;
 
@@ -226,6 +227,7 @@ public class TSTreeCursor extends TSNativeObject {
     return TSObjectFactoryProvider.getFactory().createTreeCursor(pointer);
   }
 
+  @GenerateNativeHeaders(fileName = "tree_cursor")
   private static class Native {
 
     public static native long newCursor(TSNode node);

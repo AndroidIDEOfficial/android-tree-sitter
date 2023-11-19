@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.treesitter;
 
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -206,6 +207,7 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
     }
   }
 
+  @GenerateNativeHeaders(fileName = "query_cursor")
   private static class Native {
 
     public static native long newCursor();

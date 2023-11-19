@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import android.text.TextUtils;
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 
 public class TSQuery extends TSNativeObject {
@@ -249,6 +250,7 @@ public class TSQuery extends TSNativeObject {
     }
   }
 
+  @GenerateNativeHeaders(fileName = "query")
   private static class Native {
 
     public static native long newQuery(TSQuery query, long pointer, String source);

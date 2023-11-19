@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -35,6 +36,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
@@ -370,66 +372,58 @@ public class JNIWriter {
 
   @SuppressWarnings("fallthrough")
   protected final String jniType(TypeMirror t) {
-    switch (t.getKind()) {
-      case ARRAY: {
-        TypeMirror ct = ((ArrayType) t).getComponentType();
-        switch (ct.getKind()) {
-          case BOOLEAN:
-            return "jbooleanArray";
-          case BYTE:
-            return "jbyteArray";
-          case CHAR:
-            return "jcharArray";
-          case SHORT:
-            return "jshortArray";
-          case INT:
-            return "jintArray";
-          case LONG:
-            return "jlongArray";
-          case FLOAT:
-            return "jfloatArray";
-          case DOUBLE:
-            return "jdoubleArray";
-          case ARRAY:
-          case DECLARED:
-            return "jobjectArray";
-          default:
-            throw new Error(ct.toString());
-        }
+    TypeKind tKind = t.getKind();
+    if (Objects.requireNonNull(tKind) == TypeKind.ARRAY) {
+      TypeMirror ct = ((ArrayType) t).getComponentType();
+      TypeKind kind = ct.getKind();
+      if (Objects.requireNonNull(kind) == TypeKind.BOOLEAN) {
+        return "jbooleanArray";
+      } else if (kind == TypeKind.BYTE) {
+        return "jbyteArray";
+      } else if (kind == TypeKind.CHAR) {
+        return "jcharArray";
+      } else if (kind == TypeKind.SHORT) {
+        return "jshortArray";
+      } else if (kind == TypeKind.INT) {
+        return "jintArray";
+      } else if (kind == TypeKind.LONG) {
+        return "jlongArray";
+      } else if (kind == TypeKind.FLOAT) {
+        return "jfloatArray";
+      } else if (kind == TypeKind.DOUBLE) {
+        return "jdoubleArray";
+      } else {
+        return "jobjectArray";
       }
-
-      case VOID:
-        return "void";
-      case BOOLEAN:
-        return "jboolean";
-      case BYTE:
-        return "jbyte";
-      case CHAR:
-        return "jchar";
-      case SHORT:
-        return "jshort";
-      case INT:
-        return "jint";
-      case LONG:
-        return "jlong";
-      case FLOAT:
-        return "jfloat";
-      case DOUBLE:
-        return "jdouble";
-      case DECLARED: {
-        if (types.isAssignable(t, stringType)) {
-          return "jstring";
-        } else if (types.isAssignable(t, throwableType)) {
-          return "jthrowable";
-        } else if (types.isAssignable(t, classType)) {
-          return "jclass";
-        } else {
-          return "jobject";
-        }
+    } else if (tKind == TypeKind.VOID) {
+      return "void";
+    } else if (tKind == TypeKind.BOOLEAN) {
+      return "jboolean";
+    } else if (tKind == TypeKind.BYTE) {
+      return "jbyte";
+    } else if (tKind == TypeKind.CHAR) {
+      return "jchar";
+    } else if (tKind == TypeKind.SHORT) {
+      return "jshort";
+    } else if (tKind == TypeKind.INT) {
+      return "jint";
+    } else if (tKind == TypeKind.LONG) {
+      return "jlong";
+    } else if (tKind == TypeKind.FLOAT) {
+      return "jfloat";
+    } else if (tKind == TypeKind.DOUBLE) {
+      return "jdouble";
+    } else if (tKind == TypeKind.DECLARED) {
+      if (types.isAssignable(t, stringType)) {
+        return "jstring";
+      } else if (types.isAssignable(t, throwableType)) {
+        return "jthrowable";
+      } else if (types.isAssignable(t, classType)) {
+        return "jclass";
       }
     }
 
-    throw new IllegalArgumentException("jni unknown type");
+    return "jobject";
   }
 
   protected void fileTop(PrintWriter out) {
