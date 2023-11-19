@@ -182,6 +182,8 @@ public class JNIWriter {
       curr = curr.getEnclosingElement();
     }
 
+    final var defTypMth = typeName + "_METHODS";
+    final var defTypMthCount = typeName + "_METHOD_COUNT";
     final var nameAndSigList = new ArrayList<Pair<String, String>>();
 
     var idx = 0;
@@ -193,10 +195,11 @@ public class JNIWriter {
       out.println();
       methodDoc(out, cname, methodName, methodSig);
 
+      final var defArrIdx = qualifiedMethodName + "__ARR_IDX";
+
       out.print("#define ");
-      out.print(typeName);
-      out.print(methodName);
-      out.print("__ARR_IDX ");
+      out.print(defArrIdx);
+      out.print(" ");
       out.println(idx++);
 
       // In Android, the JNINativeMethod structure has 'const' properties
@@ -204,8 +207,7 @@ public class JNIWriter {
       // So we disable the warning when compiling for non-Android machines
       jvmDisableWarning(out, "write-strings", o -> {
         o.print("static JNINativeMethod ");
-        o.print(typeName);
-        o.print(methodName);
+        o.print(qualifiedMethodName);
         o.println("= {");
         o.print("    .name = \"");
         o.print(methodName);
@@ -224,8 +226,8 @@ public class JNIWriter {
     out.println();
 
     out.print("static JNINativeMethod ");
-    out.print(typeName);
-    out.print("_METHODS[] = {");
+    out.print(defTypMth);
+    out.print("[] = {");
 
     for (Pair<String, String> pair : nameAndSigList) {
       out.print(pair.first);
@@ -234,18 +236,28 @@ public class JNIWriter {
 
     out.println("};");
 
-    out.print("#define TS_");
-    out.print(typeName.toString().toUpperCase(Locale.ROOT));
-    out.print("_METHOD_COUNT ");
+    out.print("#define ");
+    out.print(defTypMthCount);
+    out.print(" ");
     out.println(nameAndSigList.size());
 
     out.println();
     out.println("#ifndef SET_JNI_METHOD");
     out.print("#define SET_JNI_METHOD(_mth, _func) ");
-    out.print(typeName);
-    out.print("_METHODS");
+    out.print(defTypMth);
     out.println("[_mth##__ARR_IDX].fnPtr = reinterpret_cast<void *>(&_func)");
     out.print("#endif");
+    out.println();
+
+    out.println();
+    out.print("#define ");
+    out.print(typeName);
+    out.print("_RegisterNatives(_env, _class) (*_env).RegisterNatives(_class, ");
+    out.print(defTypMth);
+    out.print(", ");
+    out.print(defTypMthCount);
+    out.println(")");
+    out.println();
 
     out.println();
   }

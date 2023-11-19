@@ -64,8 +64,5 @@ Java_com_itsaky_androidide_treesitter_TreeSitter_00024Native_registerNatives(
   SET_JNI_METHOD(TreeSitter_Native_getMinimumCompatibleLanguageVersion,
                  ats_min_compatible_language_version);
 
-  auto result = env->RegisterNatives(clazz,
-                                     TreeSitter_Native__METHODS,
-                                     TS_TREESITTER_NATIVE__METHOD_COUNT);
-  LOGD("TreeSitter", "RegisterNatives: %d", result);
+  TreeSitter_Native__RegisterNatives(env, clazz);
 }
