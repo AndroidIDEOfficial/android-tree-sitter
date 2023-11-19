@@ -21,12 +21,11 @@ import static net.ltgt.gradle.incap.IncrementalAnnotationProcessorType.AGGREGATI
 
 import com.google.auto.service.AutoService;
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
-import com.itsaky.androidide.treesitter.annotations.Synchronized;
+import com.itsaky.androidide.treesitter.ap.utils.NativeMethodValidator;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
@@ -40,7 +39,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -93,31 +91,15 @@ public class GenerateNativeHeadersAnnotationProcessor extends AbstractProcessor 
       }
 
       final var type = ((TypeElement) element);
-      final var annotation = Objects.requireNonNull(
-        element.getAnnotation(GenerateNativeHeaders.class));
-      final var fileName = annotation.fileName();
 
-      final var writer = new JNIWriter(this.types, this.elements, messager);
-      final var result = writer.generate(type);
+      for (Element e : type.getEnclosedElements()) {
+        if (e.getKind() != ElementKind.METHOD) {
+          continue;
+        }
 
-      if (outputDirectory.exists()) {
-        outputDirectory.delete();
+        final var md = ((ExecutableElement) e);
+        NativeMethodValidator.validateNativeMethod(md, messager);
       }
-
-      outputDirectory.mkdirs();
-
-      final var methodHeaders = new File(outputDirectory, "ts_" + fileName + ".h");
-      if (methodHeaders.exists()) {
-        methodHeaders.delete();
-      }
-
-      final var methodSignatures = new File(outputDirectory, "ts_" + fileName + "_sigs.h");
-      if (methodSignatures.exists()) {
-        methodSignatures.delete();
-      }
-
-      writeFileContents(result.first, methodHeaders);
-      writeFileContents(result.second, methodSignatures);
     }
     return false;
   }

@@ -15,22 +15,37 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter.ap.utils;
+package com.itsaky.androidide.treesitter.jni
+
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 
 /**
  * @author Akash Yadav
  */
-public class Pair<F, S> {
+abstract class GenerateNativeHeadersTask : DefaultTask() {
 
-  public final F first;
-  public final S second;
+  @get:InputFiles
+  abstract var srcFiles: FileTree
 
-  public Pair(F first, S second) {
-    this.first = first;
-    this.second = second;
-  }
+  @get:InputFiles
+  abstract var classPath: FileCollection
 
-  public static <F, S> Pair<F, S> of (F f, S s) {
-    return new Pair<>(f, s);
+  @get:OutputDirectory
+  abstract val outputDirectory: DirectoryProperty
+
+  @TaskAction
+  fun generateHeaders() {
+    val files = srcFiles.files
+    val classPaths = classPath.files
+    files.forEach {
+      NativeHeaderGenerator.generate(files, classPaths, it,
+        outputDirectory.asFile.get())
+    }
   }
 }

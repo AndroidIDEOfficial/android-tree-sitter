@@ -153,7 +153,7 @@ tasks.register<CleanTreeSitterBuildTask>("cleanTreeSitterBuild")
 
 tasks.register<Delete>("clean").configure {
   dependsOn("cleanTreeSitterBuild")
-  delete(rootProject.buildDir)
+  delete(rootProject.layout.buildDirectory)
   delete(rootProject.file("tree-sitter-lib/cli/build"))
 }
 

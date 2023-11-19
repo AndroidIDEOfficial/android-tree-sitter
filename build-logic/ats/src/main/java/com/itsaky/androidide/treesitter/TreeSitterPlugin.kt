@@ -23,11 +23,11 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
 import com.android.build.gradle.internal.plugins.BasePluginAccessor
 import com.android.build.gradle.internal.plugins.LibraryPlugin
+import com.android.build.gradle.tasks.ExternalNativeBuildTask
+import com.itsaky.androidide.treesitter.jni.GenerateNativeHeadersTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.bundling.Zip
-import org.gradle.kotlin.dsl.create
 import java.util.Locale
 
 /**
@@ -39,18 +39,6 @@ class TreeSitterPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
-      tasks.register("buildForHost", BuildForHostTask::class.java) {
-        dependsOn(rootProject.tasks.getByName("buildTreeSitter"))
-        libName = project.name
-      }
-
-      tasks.create("cleanHostBuild", type = Delete::class) {
-        delete("src/main/cpp/host-build")
-      }
-
-      tasks.named("clean").configure { dependsOn("cleanHostBuild") }
-      tasks.named("preBuild") { dependsOn("buildForHost") }
-
       val baseExtention = extensions.getByType(BaseExtension::class.java)
       val pluginType = if (plugins.hasPlugin(
           "com.android.application")
@@ -87,9 +75,39 @@ class TreeSitterPlugin : Plugin<Project> {
             }
 
           variant.sources.assets?.addGeneratedSourceDirectory(
-            generateDebugSymbolsTask,
-            GenerateDebugSymbolsTask::outputDirectory
-          )
+            generateDebugSymbolsTask, GenerateDebugSymbolsTask::outputDirectory)
+
+          val cleanHostBuild =
+            tasks.register("cleanHostBuild$variantName", Delete::class.java) {
+              delete("src/main/cpp/host-build")
+            }
+
+          val generateNativeHeadersTask =
+            tasks.register("generateNativeHeaders$variantName",
+              GenerateNativeHeadersTask::class.java) {
+
+              srcFiles = baseExtention.sourceSets.getByName("main").java.getSourceFiles()
+              classPath = variant.compileClasspath
+              outputDirectory.set(
+                project.layout.buildDirectory.dir("generated/native_headers"))
+            }
+
+          val buildForHost = tasks.register("buildForHost$variantName",
+            BuildForHostTask::class.java) {
+
+            dependsOn(rootProject.tasks.getByName("buildTreeSitter"))
+            dependsOn(generateNativeHeadersTask)
+
+            libName = project.name
+          }
+
+          tasks.withType(ExternalNativeBuildTask::class.java) {
+            dependsOn(buildForHost)
+          }
+
+          tasks.named("clean") {
+            dependsOn(cleanHostBuild)
+          }
         }
       }
     }

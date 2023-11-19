@@ -15,10 +15,8 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter.ap;
+package com.itsaky.androidide.treesitter.jni;
 
-import com.itsaky.androidide.treesitter.ap.utils.NativeMethodValidator;
-import com.itsaky.androidide.treesitter.ap.utils.Pair;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
@@ -28,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -57,14 +54,12 @@ public class JNIWriter {
   private static final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 
   private final Types types;
-  private final Messager messager;
   private final TypeMirror stringType;
   private final TypeMirror throwableType;
   private final TypeMirror classType;
 
-  public JNIWriter(Types types, Elements elements, Messager messager) {
+  public JNIWriter(Types types, Elements elements) {
     this.types = types;
-    this.messager = messager;
 
     this.stringType = elements.getTypeElement("java.lang.String").asType();
     this.throwableType = elements.getTypeElement("java.lang.Throwable").asType();
@@ -303,10 +298,6 @@ public class JNIWriter {
       }
 
       // validate the method
-      final var verRes = NativeMethodValidator.validateNativeMethod(md, messager);
-      if (!verRes.first) {
-        continue;
-      }
 
       TypeSignature newtypesig = new TypeSignature(types);
       CharSequence methodName = md.getSimpleName();
@@ -324,7 +315,10 @@ public class JNIWriter {
       out.println("JNIEXPORT " + jniType(types.erasure(md.getReturnType())) + " JNICALL " +
         encodeMethod(md, sym, isOverloaded));
 
-      if (verRes.third) {
+      final var criticalNative = md.getAnnotationMirrors().stream().filter(am -> ((TypeElement) am.getAnnotationType()
+        .asElement()).getQualifiedName().contentEquals("dalvik.annotation.optimization.CriticalNative")).findFirst();
+
+      if (criticalNative.isPresent()) {
         // omit JNIEnv and jclass from @CriticalNative methods
         out.print("  (");
       } else {

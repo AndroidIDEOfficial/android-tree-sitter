@@ -62,4 +62,6 @@ dependencies {
     implementation(gradleApi())
     implementation(libs.gradle.android)
     implementation(libs.google.gson)
+    implementation(libs.google.guava)
+    implementation(libs.javaparser.core)
 }
