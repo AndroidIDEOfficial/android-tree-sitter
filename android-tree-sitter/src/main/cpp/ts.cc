@@ -17,7 +17,6 @@
 
 #include <array>
 
-#include "utils/jni_macros.h"
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_log.h"
 #include "ts_meta.h"
@@ -47,23 +46,13 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
 }
 
 
-JNIEXPORT jint JNICALL ats_language_version(JNIEnv *env, jclass self) {
+static jint ats_language_version(JNIEnv *env, jclass self) {
   return (jint) TREE_SITTER_LANGUAGE_VERSION;
 }
 
-JNIEXPORT jint JNICALL
-ats_min_compatible_language_version(JNIEnv *env, jclass self) {
+static jint ats_min_compatible_language_version(JNIEnv *env, jclass self) {
   return (jint) TREE_SITTER_MIN_COMPATIBLE_LANGUAGE_VERSION;
 }
-
-static JNINativeMethod gMethods[] = {
-    MAKE_JNI_METHOD(TS_TREESITTER_NATIVE_GETLANGUAGEVERSION_NAME,
-                    TS_TREESITTER_NATIVE_GETLANGUAGEVERSION_SIG,
-                    ats_language_version),
-    MAKE_JNI_METHOD(TS_TREESITTER_NATIVE_GETMINIMUMCOMPATIBLELANGUAGEVERSION_NAME,
-                    TS_TREESITTER_NATIVE_GETMINIMUMCOMPATIBLELANGUAGEVERSION_SIG,
-                    ats_min_compatible_language_version)
-};
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -71,6 +60,12 @@ Java_com_itsaky_androidide_treesitter_TreeSitter_00024Native_registerNatives(
     JNIEnv *env,
     jclass clazz) {
 
-  auto result = env->RegisterNatives(clazz, gMethods, TS_TREESITTER_NATIVE__METHOD_COUNT);
+  SET_JNI_METHOD(TreeSitter_Native_getLanguageVersion, ats_language_version);
+  SET_JNI_METHOD(TreeSitter_Native_getMinimumCompatibleLanguageVersion,
+                 ats_min_compatible_language_version);
+
+  auto result = env->RegisterNatives(clazz,
+                                     TreeSitter_Native__METHODS,
+                                     TS_TREESITTER_NATIVE__METHOD_COUNT);
   LOGD("TreeSitter", "RegisterNatives: %d", result);
 }

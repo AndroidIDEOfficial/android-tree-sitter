@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -163,6 +164,7 @@ public class JNIWriter {
 
     // Write method signatures header
     fileTop(sigWriter);
+    includes(sigWriter);
     guardBegin(sigWriter, cname, "METHOD_SIGNATURES");
     writeMethodDefs(sigWriter, cname, type, sigs);
     guardEnd(sigWriter);
@@ -170,7 +172,9 @@ public class JNIWriter {
     return new Pair<>(_headerWriter.toString(), _sigWriter.toString());
   }
 
-  private void writeMethodDefs(PrintWriter out, String cname, TypeElement type, HashMap<String, String> sigs) {
+  private void writeMethodDefs(PrintWriter out, String cname, TypeElement type,
+                               HashMap<String, String> sigs
+  ) {
     final var typeName = new StringBuilder();
     Element curr = type;
     while (curr != null && curr.getKind().isClass()) {
@@ -180,39 +184,107 @@ public class JNIWriter {
 
     final var nameAndSigList = new ArrayList<Pair<String, String>>();
 
+    var idx = 0;
     for (final var entry : sigs.entrySet()) {
       final var methodName = entry.getKey();
       final var methodSig = entry.getValue();
-      final var namePrefix = "TS_" + typeName.toString().toUpperCase(Locale.ROOT) + methodName.toUpperCase(Locale.ROOT);
-      final var defName = namePrefix + "_NAME";
-      final var defSig = namePrefix + "_SIG";
+      final var qualifiedMethodName = typeName + methodName;
 
       out.println();
       methodDoc(out, cname, methodName, methodSig);
 
       out.print("#define ");
-      out.print(defName);
-      out.print(" \"");
+      out.print(typeName);
       out.print(methodName);
-      out.println("\"");
+      out.print("__ARR_IDX ");
+      out.println(idx++);
 
-      out.print("#define ");
-      out.print(defSig);
-      out.print(" \"");
-      out.print(methodSig);
-      out.println("\"");
+      // In Android, the JNINativeMethod structure has 'const' properties
+      // While in JDK, it is not
+      // So we disable the warning when compiling for non-Android machines
+      jvmDisableWarning(out, "write-strings", o -> {
+        o.print("static JNINativeMethod ");
+        o.print(typeName);
+        o.print(methodName);
+        o.println("= {");
+        o.print("    .name = \"");
+        o.print(methodName);
+        o.println("\",");
+        o.print("    .signature = \"");
+        o.print(methodSig);
+        o.println("\",");
+        o.println("    .fnPtr = nullptr");
+        o.println("};");
+      });
 
       if (!"registerNatives".equals(methodName)) {
-        nameAndSigList.add(Pair.of(defName, defSig));
+        nameAndSigList.add(Pair.of(qualifiedMethodName, methodSig));
       }
     }
     out.println();
+
+    out.print("static JNINativeMethod ");
+    out.print(typeName);
+    out.print("_METHODS[] = {");
+
+    for (Pair<String, String> pair : nameAndSigList) {
+      out.print(pair.first);
+      out.println(",");
+    }
+
+    out.println("};");
 
     out.print("#define TS_");
     out.print(typeName.toString().toUpperCase(Locale.ROOT));
     out.print("_METHOD_COUNT ");
     out.println(nameAndSigList.size());
 
+    out.println();
+    out.println("#ifndef SET_JNI_METHOD");
+    out.print("#define SET_JNI_METHOD(_mth, _func) ");
+    out.print(typeName);
+    out.print("_METHODS");
+    out.println("[_mth##__ARR_IDX].fnPtr = reinterpret_cast<void *>(&_func)");
+    out.print("#endif");
+
+    out.println();
+  }
+
+  private void jvmDisableWarning(PrintWriter out, String name, Consumer<PrintWriter> outConsumer) {
+    out.println();
+    out.println("#ifndef __ANDROID__");
+    out.println();
+    out.println("#ifdef __GNUC__");
+    out.println("#pragma GCC diagnostic push");
+    out.print("#pragma GCC diagnostic ignored \"-W");
+    out.print(name);
+    out.println("\"");
+    out.println("#endif // __GNUC__");
+    out.println();
+    out.println("#ifdef __clang__");
+    out.println("#pragma clang diagnostic push");
+    out.print("#pragma clang diagnostic ignored \"-W");
+    out.print(name);
+    out.println("\"");
+    out.println("#endif // __clang__");
+    out.println();
+    out.println("#endif // __ANDROID__");
+    out.println();
+
+    outConsumer.accept(out);
+
+    out.println();
+    out.println("#ifndef __ANDROID__");
+    out.println();
+    out.println("#ifdef __GNUC__");
+    out.println("#pragma GCC diagnostic pop");
+    out.println("#endif // __GNUC__");
+    out.println();
+    out.println("#ifdef __clang__");
+    out.println("#pragma clang diagnostic pop");
+    out.println("#endif // __clang__");
+    out.println();
+    out.println("#endif // __ANDROID__");
     out.println();
   }
 
@@ -285,7 +357,8 @@ public class JNIWriter {
     }
   }
 
-  void writeMethods(PrintWriter out, TypeElement sym, String cname, Map<String, String> methodSigs) {
+  void writeMethods(PrintWriter out, TypeElement sym, String cname, Map<String, String> methodSigs
+  ) {
     List<? extends Element> classmethods = sym.getEnclosedElements();
 
     for (Element e : classmethods) {
@@ -317,8 +390,11 @@ public class JNIWriter {
       out.println("JNIEXPORT " + jniType(types.erasure(md.getReturnType())) + " JNICALL " +
         encodeMethod(md, sym, isOverloaded));
 
-      final var criticalNative = md.getAnnotationMirrors().stream().filter(am -> ((TypeElement) am.getAnnotationType()
-        .asElement()).getQualifiedName().contentEquals("dalvik.annotation.optimization.CriticalNative")).findFirst();
+      final var criticalNative = md.getAnnotationMirrors()
+        .stream()
+        .filter(am -> ((TypeElement) am.getAnnotationType().asElement()).getQualifiedName()
+          .contentEquals("dalvik.annotation.optimization.CriticalNative"))
+        .findFirst();
 
       if (criticalNative.isPresent()) {
         // omit JNIEnv and jclass from @CriticalNative methods
@@ -340,11 +416,8 @@ public class JNIWriter {
     }
   }
 
-  private static void methodDoc(
-    PrintWriter out,
-    String cname,
-    CharSequence methodName,
-    CharSequence methodSig
+  private static void methodDoc(PrintWriter out, String cname, CharSequence methodName,
+                                CharSequence methodSig
   ) {
     out.println("/*");
     out.println(" * Class:     " + cname);
@@ -451,8 +524,12 @@ public class JNIWriter {
 
   protected void guardBegin(PrintWriter out, String cname, String type) {
     out.println();
-    out.println("#ifndef " + ("_Included_" + cname + "_" + type).toUpperCase(Locale.ROOT));
-    out.println("#define " + ("_Included_" + cname + "_" + type).toUpperCase(Locale.ROOT));
+    String guardName = ("_Included_" + cname + "_" + type).toUpperCase(Locale.ROOT);
+    out.print("#ifndef ");
+    out.println(guardName);
+
+    out.print("#define ");
+    out.println(guardName);
   }
 
   protected void guardEnd(PrintWriter out) {
@@ -546,28 +623,31 @@ public class JNIWriter {
   }
 
   private static class TypeSignature {
+
     static class SignatureException extends Exception {
+
       private static final long serialVersionUID = 1L;
+
       SignatureException(String reason) {
         super(reason);
       }
     }
 
     Elements elems;
-    Types    types;
+    Types types;
 
     /* Signature Characters */
-    private static final String SIG_VOID                   = "V";
-    private static final String SIG_BOOLEAN                = "Z";
-    private static final String SIG_BYTE                   = "B";
-    private static final String SIG_CHAR                   = "C";
-    private static final String SIG_SHORT                  = "S";
-    private static final String SIG_INT                    = "I";
-    private static final String SIG_LONG                   = "J";
-    private static final String SIG_FLOAT                  = "F";
-    private static final String SIG_DOUBLE                 = "D";
-    private static final String SIG_ARRAY                  = "[";
-    private static final String SIG_CLASS                  = "L";
+    private static final String SIG_VOID = "V";
+    private static final String SIG_BOOLEAN = "Z";
+    private static final String SIG_BYTE = "B";
+    private static final String SIG_CHAR = "C";
+    private static final String SIG_SHORT = "S";
+    private static final String SIG_INT = "I";
+    private static final String SIG_LONG = "J";
+    private static final String SIG_FLOAT = "F";
+    private static final String SIG_DOUBLE = "D";
+    private static final String SIG_ARRAY = "[";
+    private static final String SIG_CLASS = "L";
 
     public TypeSignature(Types types) {
       this.types = types;
@@ -628,17 +708,27 @@ public class JNIWriter {
         classname = classname.replace('.', '/');
         s.append("L").append(classname).append(";");
       }
+
       private String getJvmPrimitiveSignature(PrimitiveType t) {
         switch (t.getKind()) {
-          case VOID:      return SIG_VOID;
-          case BOOLEAN:   return SIG_BOOLEAN;
-          case BYTE:      return SIG_BYTE;
-          case CHAR:      return SIG_CHAR;
-          case SHORT:     return SIG_SHORT;
-          case INT:       return SIG_INT;
-          case LONG:      return SIG_LONG;
-          case FLOAT:     return SIG_FLOAT;
-          case DOUBLE:    return SIG_DOUBLE;
+          case VOID:
+            return SIG_VOID;
+          case BOOLEAN:
+            return SIG_BOOLEAN;
+          case BYTE:
+            return SIG_BYTE;
+          case CHAR:
+            return SIG_CHAR;
+          case SHORT:
+            return SIG_SHORT;
+          case INT:
+            return SIG_INT;
+          case LONG:
+            return SIG_LONG;
+          case FLOAT:
+            return SIG_FLOAT;
+          case DOUBLE:
+            return SIG_DOUBLE;
           default:
             throw new IllegalArgumentException("unknown type: should not happen");
         }

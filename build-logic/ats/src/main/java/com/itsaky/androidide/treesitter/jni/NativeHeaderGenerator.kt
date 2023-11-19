@@ -44,7 +44,7 @@ object NativeHeaderGenerator {
 
   fun generate(srcFiles: Set<File>, classPaths: MutableSet<File>, file: File,
                outputDirectory: File
-  ): Result {
+  ) {
     val compiler = ToolProvider.getSystemJavaCompiler()
     val fileManager =
       compiler.getStandardFileManager({}, Locale.ROOT, StandardCharsets.UTF_8)
@@ -68,8 +68,6 @@ object NativeHeaderGenerator {
     val trees = task.parse()
     task.analyze()
 
-    val writer = JNIWriter(task.types, task.elements)
-
     trees.forEach { cu ->
       val visitor = object : TreePathScanner<Unit, Unit>() {
         override fun visitClass(node: ClassTree, p: Unit) {
@@ -79,15 +77,18 @@ object NativeHeaderGenerator {
 
           val element = Trees.instance(task).getElement(currentPath)
           if (element is TypeElement) {
-            handleElement(writer, element, file, outputDirectory)
+            handleElement(
+              JNIWriter(task.types, task.elements),
+              element,
+              file,
+              outputDirectory
+            )
           }
         }
       }
 
       visitor.scan(cu, Unit)
     }
-
-    return Result.EMPTY
   }
 
   private fun handleElement(writer: JNIWriter, type: TypeElement, file: File,
@@ -117,26 +118,9 @@ object NativeHeaderGenerator {
     outputDirectory.mkdirs()
 
     val methodHeaders = File(outputDirectory, "ts_$fileName.h")
-    if (methodHeaders.exists()) {
-      methodHeaders.delete()
-    }
-
-    val methodSignatures = File(outputDirectory, "ts_" + fileName + "_sigs.h")
-    if (methodSignatures.exists()) {
-      methodSignatures.delete()
-    }
+    val methodSignatures = File(outputDirectory, "ts_${fileName}_sigs.h")
 
     methodHeaders.writeText(result.first)
     methodSignatures.writeText(result.second)
-  }
-
-
-  data class Result(val methodHeaders: String, val methodSignatures: String
-  ) {
-
-    companion object {
-
-      val EMPTY = Result("", "")
-    }
   }
 }
