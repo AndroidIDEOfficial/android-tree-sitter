@@ -489,7 +489,7 @@ public class JNIWriter {
     /* JNI */
     result.append(encode(clazz.getQualifiedName(), EncoderType.JNI));
     result.append('_');
-    result.append(encode(msym.getSimpleName(), EncoderType.JNI));
+    result.append(encode(msym.getSimpleName(), EncoderType.JNI, false));
 
     if (isOverloaded) {
       TypeSignature typeSig = new TypeSignature(types);
@@ -586,8 +586,12 @@ public class JNIWriter {
     CLASS, FIELDSTUB, FIELD, JNI, SIGNATURE
   }
 
+  static String encode(CharSequence name, EncoderType type) {
+    return encode(name, type, false);
+  }
+
   @SuppressWarnings("fallthrough")
-  static String encode(CharSequence name, EncoderType mtype) {
+  static String encode(CharSequence name, EncoderType mtype, boolean undScrToUndScr1) {
     StringBuilder result = new StringBuilder(100);
     int length = name.length();
 
@@ -608,7 +612,12 @@ public class JNIWriter {
         case JNI -> {
           switch (ch) {
             case '/', '.' -> result.append("_");
-            case '_' -> result.append("_1");
+            case '_' -> {
+              result.append("_");
+              if (undScrToUndScr1) {
+                result.append(1);
+              }
+            }
             case ';' -> result.append("_2");
             case '[' -> result.append("_3");
             default -> result.append(encodeChar(ch));
