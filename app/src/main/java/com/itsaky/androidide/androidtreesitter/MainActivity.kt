@@ -44,7 +44,6 @@ import com.itsaky.androidide.treesitter.xml.TSLanguageXml
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -138,10 +137,12 @@ class MainActivity : AppCompatActivity() {
       var lineCount = 0L
       assets.open("View.java.txt").use { asset ->
         val str = UTF16StringFactory.newString()
-        asset.bufferedReader().forEachLine { line ->
-          str.append(line)
-          str.append("\n")
-          ++lineCount
+        asset.bufferedReader().use { reader ->
+          reader.forEachLine { line ->
+            str.append(line)
+            str.append("\n")
+            ++lineCount
+          }
         }
 
         str.synchronizedString()
@@ -156,7 +157,7 @@ class MainActivity : AppCompatActivity() {
           pd.setMessage("""
             Language: ${language.name}
             Iterations: $iterations
-            File size: ${String.format("%.2f", size.toDouble() / 1024) } KB
+            File size: ${String.format("%.2f", size.toDouble() / 1024)} KB
             File line count: $lineCount
           """.trimIndent())
 
@@ -173,6 +174,7 @@ class MainActivity : AppCompatActivity() {
                 parser.language = language
                 val start = System.currentTimeMillis()
                 parser.parseString(input)
+                  .use { /* auto-close the returned tree */ }
                 val duration = System.currentTimeMillis() - start
                 parser.close()
                 duration
@@ -185,18 +187,15 @@ class MainActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
           pd.dismiss()
-          showPerfTestResult(language.name, iterations, size, lineCount, totalDuration)
+          showPerfTestResult(language.name, iterations, size, lineCount,
+            totalDuration)
         }
       }
     }
   }
 
-  private fun showPerfTestResult(
-    name: String,
-    iterations: Int,
-    size: Int,
-    lineCount: Long,
-    totalDuration: Long
+  private fun showPerfTestResult(name: String, iterations: Int, size: Int,
+                                 lineCount: Long, totalDuration: Long
   ) {
     val dialog = MaterialAlertDialogBuilder(this)
     dialog.setPositiveButton(android.R.string.ok, null)
@@ -204,7 +203,7 @@ class MainActivity : AppCompatActivity() {
     dialog.setMessage("""
       Language : $name
       Iterations : $iterations
-      File size : ${String.format("%.2f", size.toDouble() / 1024) } KB
+      File size : ${String.format("%.2f", size.toDouble() / 1024)} KB
       File line count: $lineCount
       Total duration: ${totalDuration}ms
       Average duration : ${totalDuration / iterations}ms
