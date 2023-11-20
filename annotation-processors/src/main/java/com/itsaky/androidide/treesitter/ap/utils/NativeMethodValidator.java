@@ -23,6 +23,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.tools.Diagnostic.Kind;
 
 /**
@@ -34,13 +35,13 @@ public class NativeMethodValidator {
     throw new UnsupportedOperationException();
   }
 
-  public static Triple<Boolean, Boolean, Boolean> validateNativeMethod(ExecutableElement md, Messager messager) {
+  public static Triple<Boolean, Boolean, Boolean> validateNativeMethod(TypeElement type, ExecutableElement md, Messager messager) {
     final var fastNative = getAnnotationByName(md, "dalvik.annotation.optimization.FastNative");
     final var criticalNative = getAnnotationByName(md, "dalvik.annotation.optimization.CriticalNative");
 
     if (fastNative.isPresent() && criticalNative.isPresent()) {
       messager.printMessage(Kind.ERROR,
-        "Method '" + md.getSimpleName() + "' can be either @FastNative or @CriticalNative, but not both.");
+        "Method '" + md.getSimpleName() + "' can be either @FastNative or @CriticalNative, but not both. In class " + type);
       return Triple.of(false, true, true);
     }
 
@@ -48,20 +49,20 @@ public class NativeMethodValidator {
       final var failed = Triple.of(false, false, true);
       // @CriticalNative methods must be static and must not have any ReferenceType parameters or return type
       if (!md.getModifiers().contains(Modifier.STATIC)) {
-        messager.printMessage(Kind.ERROR, "@CriticalNative methods must be static");
+        messager.printMessage(Kind.ERROR, "@CriticalNative methods must be static. Method " + md.getSimpleName() + " in class " + type);
         return failed;
       }
 
-      if (!md.getReturnType().getKind().isPrimitive()) {
+      if (!md.getReturnType().getKind().isPrimitive() && md.getReturnType().getKind() != TypeKind.VOID) {
         messager.printMessage(Kind.ERROR,
-          "@CriticalNative methods must have a primitive return type");
+          "@CriticalNative methods must have a primitive return type. Method " + md.getSimpleName() + " in class " + type);
         return failed;
       }
 
       for (final var p : md.getParameters()) {
         if (!p.asType().getKind().isPrimitive()) {
           messager.printMessage(Kind.ERROR,
-            "@CriticalNative methods must have primitive parameter types");
+            "@CriticalNative methods must have primitive parameter types. Method " + md.getSimpleName() + " in class " + type);
           return failed;
         }
       }

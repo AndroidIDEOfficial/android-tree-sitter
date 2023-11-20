@@ -79,7 +79,7 @@ public class NativeMethodValidatorAnnotationProcessor extends AbstractProcessor 
         }
 
         final var md = ((ExecutableElement) e);
-        NativeMethodValidator.validateNativeMethod(md, messager);
+        NativeMethodValidator.validateNativeMethod(type, md, messager);
       }
     }
     return false;
