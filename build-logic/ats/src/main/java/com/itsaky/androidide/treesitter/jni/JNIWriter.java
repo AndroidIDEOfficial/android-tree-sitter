@@ -700,11 +700,7 @@ public class JNIWriter {
       @Override
       public Type visitArray(ArrayType t, StringBuilder stringBuilder) {
         stringBuilder.append("[");
-        final var cmp = t.getComponentType();
-        if (cmp.getKind() == TypeKind.ERROR) {
-        }
-        System.err.println("arrayType: " + t + ", cmp=" + cmp + ", cmp.typ=" + cmp.getKind() + ", cmp.cls=" + cmp.getClass());
-        return cmp.accept(this, stringBuilder);
+        return t.getComponentType().accept(this, stringBuilder);
       }
 
       @Override
