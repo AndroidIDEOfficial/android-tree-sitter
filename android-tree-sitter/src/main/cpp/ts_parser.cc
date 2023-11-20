@@ -249,16 +249,20 @@ static jlong TSParser_parse(JNIEnv *env,
     return 0;
   }
 
+  auto src_cstring = source->to_cstring();
+
   // start parsing
   // if the user cancels the parse while this method is being executed
   // then this will return nullptr
   auto tree = ts_parser_parse_string_encoding(ts_parser,
                                               old_tree,
-                                              source->to_cstring(),
+                                              src_cstring,
                                               source->byte_length(),
                                               TSInputEncodingUTF16);
 
   ts_parser_internal->end_round(env);
+  delete[] src_cstring;
+
 
   return (jlong) tree;
 }
