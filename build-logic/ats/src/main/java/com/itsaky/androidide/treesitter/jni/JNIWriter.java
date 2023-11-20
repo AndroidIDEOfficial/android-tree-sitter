@@ -511,7 +511,8 @@ public class JNIWriter {
         case LONG -> "jlongArray";
         case FLOAT -> "jfloatArray";
         case DOUBLE -> "jdoubleArray";
-        default -> "jobjectArray";
+        case ARRAY, DECLARED -> "jobjectArray";
+        default -> throw new Error(((ArrayType) t).getComponentType().toString());
       };
       case VOID -> "void";
       case BOOLEAN -> "jboolean";
@@ -527,6 +528,10 @@ public class JNIWriter {
 
     if (type != null) {
       return type;
+    }
+
+    if (t.getKind() != TypeKind.DECLARED) {
+      throw new IllegalArgumentException("jni unknown type: " + t);
     }
 
     if (types.isAssignable(t, stringType)) {
