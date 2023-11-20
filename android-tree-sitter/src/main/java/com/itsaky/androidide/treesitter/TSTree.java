@@ -19,6 +19,7 @@ package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.FastNative;
 import java.util.Objects;
 
 public class TSTree extends TSNativeObject {
@@ -100,18 +101,25 @@ public class TSTree extends TSNativeObject {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native void edit(long tree, TSInputEdit inputEdit);
 
+    @FastNative
     static native void delete(long tree);
 
+    @FastNative
     static native long copy(long tree);
 
+    @FastNative
     static native TSNode rootNode(long tree);
 
+    @FastNative
     static native TSRange[] changedRanges(long tree, long oldTree);
 
+    @FastNative
     static native long getLanguage(long tree);
   }
 }

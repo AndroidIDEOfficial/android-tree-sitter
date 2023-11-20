@@ -19,6 +19,7 @@ package com.itsaky.androidide.treesitter.string;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.FastNative;
 
 /**
  * Provides APIs to create instances of {@link UTF16String}.
@@ -80,10 +81,13 @@ public class UTF16StringFactory {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native long newString(String source);
 
+    @FastNative
     static native long newStringBytes(byte[] bytes, int off, int len);
   }
 }

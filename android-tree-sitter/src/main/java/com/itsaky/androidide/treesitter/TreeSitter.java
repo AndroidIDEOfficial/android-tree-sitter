@@ -18,7 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
-import dalvik.annotation.optimization.CriticalNative;
+import dalvik.annotation.optimization.FastNative;
 
 /**
  * @author Akash Yadav
@@ -69,14 +69,16 @@ public class TreeSitter {
   @GenerateNativeHeaders(fileName = "meta")
   private static final class Native {
 
-    @CriticalNative
+    @FastNative
     static native int getLanguageVersion();
 
     /**
      * The earliest ABI version that is supported by the current version of the library.
      */
+    @FastNative
     static native int getMinimumCompatibleLanguageVersion();
 
+    @FastNative
     private static native void registerNatives();
   }
 }

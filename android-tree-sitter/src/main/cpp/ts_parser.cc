@@ -38,12 +38,14 @@ class TSParserInternal {
     cancellation_flag_mutex = new std::mutex();
     cancellation_flag = new std::atomic<size_t *>(nullptr);
     parser = ts_parser_new();
+    LOGD("ts_parser.cc", "Created new parser: %p", parser);
   }
 
   ~TSParserInternal() {
     delete cancellation_flag_mutex;
     delete cancellation_flag;
 
+    LOGD("ts_parser.cc", "Deleting parser: %p", parser);
     ts_parser_delete(parser);
 
     cancellation_flag_mutex = nullptr;
@@ -165,7 +167,10 @@ TSParser_reset(JNIEnv *env,
                jclass self,
                jlong parser) {
   req_nnp(env, parser);
-  ts_parser_reset(((TSParserInternal *) parser)->getParser(env));
+  TSParser *pParser = ((TSParserInternal *) (parser))->getParser(env);
+  LOGD("ts_parser.cc", "Reset parser: %p, language: %p", pParser,
+       ts_parser_language(pParser));
+  ts_parser_reset(pParser);
 }
 
 static void

@@ -19,6 +19,7 @@ package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.FastNative;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -235,7 +236,8 @@ public class TSNode extends TSNativeObject {
     final var canAccess = canAccess();
     final var isNull = canAccess && isNull();
     final var type = canAccess ? getType() : "<unknown>";
-    return "TSNode{" + "id=" + id + ", canAccess=" + canAccess + ", type=" + (isNull ? "<null>" : type) + '}';
+    return "TSNode{" + "id=" + id + ", canAccess=" + canAccess + ", type=" +
+      (isNull ? "<null>" : type) + '}';
   }
 
   /**
@@ -627,90 +629,131 @@ public class TSNode extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "node")
   private static final class Native {
 
-    static  {
+    static {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native boolean canAccess(long id);
 
+    @FastNative
     static native TSNode getParent(TSNode self);
 
+    @FastNative
     static native TSNode getChildAt(TSNode self, int index);
 
+    @FastNative
     static native TSNode getNamedChildAt(TSNode self, int index);
 
+    @FastNative
     static native TSNode getChildByFieldName(TSNode self, byte[] bytes, int length);
 
+    @FastNative
     static native String getFieldNameForChild(TSNode self, int childIndex);
 
+    @FastNative
     static native TSNode getChildByFieldId(TSNode self, int fieldId);
 
+    @FastNative
     static native TSNode getNextSibling(TSNode self);
 
+    @FastNative
     static native TSNode getPreviousSibling(TSNode self);
 
+    @FastNative
     static native TSNode getNextNamedSibling(TSNode self);
 
+    @FastNative
     static native TSNode getPreviousNamedSibling(TSNode self);
 
+    @FastNative
     static native TSNode getFirstChildForByte(TSNode self, int byteOffset);
 
+    @FastNative
     static native TSNode getFirstNamedChildForByte(TSNode self, int byteOffset);
 
+    @FastNative
     static native TSNode getDescendantForByteRange(TSNode self, int start, int end);
 
+    @FastNative
     static native TSNode getDescendantForPointRange(TSNode self, TSPoint start, TSPoint end);
 
+    @FastNative
     static native TSNode getNamedDescendantForByteRange(TSNode self, int start, int end);
 
+    @FastNative
     static native TSNode getNamedDescendantForPointRange(TSNode self, TSPoint start, TSPoint end);
 
+    @FastNative
     static native boolean isEqualTo(TSNode self, TSNode another);
 
+    @FastNative
     static native int getChildCount(TSNode self);
 
+    @FastNative
     static native int getNamedChildCount(TSNode self);
 
+    @FastNative
     static native String getNodeString(TSNode self);
 
+    @FastNative
     static native int getStartByte(TSNode self);
 
+    @FastNative
     static native int getEndByte(TSNode self);
 
+    @FastNative
     static native TSPoint getStartPoint(TSNode self);
 
+    @FastNative
     static native TSPoint getEndPoint(TSNode self);
 
+    @FastNative
     static native String getType(TSNode self);
 
+    @FastNative
     static native int getSymbol(TSNode self);
 
+    @FastNative
     static native boolean isNull(TSNode self);
 
+    @FastNative
     static native boolean isNamed(TSNode self);
 
+    @FastNative
     static native boolean isExtra(TSNode self);
 
+    @FastNative
     static native boolean isMissing(TSNode self);
 
+    @FastNative
     static native boolean hasChanges(TSNode self);
 
+    @FastNative
     static native boolean hasErrors(TSNode self);
 
+    @FastNative
     static native boolean isError(TSNode self);
 
+    @FastNative
     static native short getParseState(TSNode self);
 
+    @FastNative
     static native void edit(TSNode self, TSInputEdit edit);
 
+    @FastNative
     static native short getNextParseState(TSNode self);
 
+    @FastNative
     public static native int getDescendantCount(TSNode self);
 
+    @FastNative
     public static native String getGrammarType(TSNode self);
 
+    @FastNative
     public static native long getLanguage(TSNode self);
   }
 }

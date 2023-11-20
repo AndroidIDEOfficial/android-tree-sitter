@@ -19,6 +19,8 @@ package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.CriticalNative;
+import dalvik.annotation.optimization.FastNative;
 
 /**
  * Lookahead iterators can be useful to generate suggestions and improve syntax error diagnostics.
@@ -139,22 +141,31 @@ public class TSLookaheadIterator extends TSNativeObject {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native long newIterator(long language, short stateId);
 
+    @FastNative
     static native void delete(long pointer);
 
+    @FastNative
     static native boolean next(long pointer);
 
+    @FastNative
     static native short currentSymbol(long pointer);
 
+    @FastNative
     static native String currentSymbolName(long pointer);
 
+    @FastNative
     static native boolean resetState(long pointer, short stateId);
 
+    @FastNative
     static native boolean reset(long pointer, long pointer1, short stateId);
 
+    @FastNative
     static native long language(long pointer);
   }
 }

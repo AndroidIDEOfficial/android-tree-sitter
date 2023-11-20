@@ -17,14 +17,16 @@
 package com.itsaky.androidide.androidtreesitter
 
 import android.R.layout
-import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding
 import com.itsaky.androidide.treesitter.TSLanguage
@@ -42,7 +44,12 @@ import com.itsaky.androidide.treesitter.xml.TSLanguageXml
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.PrintWriter
@@ -65,8 +72,11 @@ class MainActivity : AppCompatActivity() {
   private val activityScope =
     CoroutineScope(Dispatchers.Default + CoroutineName("MainActivity"))
 
-  private val parser = TSParser.create()
+  private var parser: TSParser? = TSParser.create()
   private var parseJob: Job? = null
+
+  private var parseCount = 0L
+  private var avgParse = 0L
 
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -77,12 +87,10 @@ class MainActivity : AppCompatActivity() {
     setSupportActionBar(binding.toolbar)
 
     // noinspection SetTextI18n
-    content.tsMeta.text = "Tree Sitter Language Version: " + TreeSitter.getLanguageVersion()
+    content.tsMeta.text =
+      "Tree Sitter Language Version: " + TreeSitter.getLanguageVersion()
 
-    languageMap["C"] = TSLanguage.loadLanguage(this, "c")
-    content.languageChooser.adapter =
-      ArrayAdapter(this, layout.simple_list_item_1,
-        languageMap.keys.toTypedArray())
+    loadLanguages()
 
     // new String(byte[], String) is not supported on Android)
     // so we use ByteBuffer to decode the string
@@ -98,12 +106,133 @@ class MainActivity : AppCompatActivity() {
     })
   }
 
+  override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    menuInflater.inflate(R.menu.main, menu)
+    return true
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    when (item.itemId) {
+      R.id.reload_external -> {
+        destroy()
+        loadLanguages()
+      }
+
+      R.id.test_performance -> {
+        doPerfTest(DEF_ITER)
+      }
+    }
+    return true
+  }
+
+  @Suppress("DEPRECATION")
+  private fun doPerfTest(iterations: Int) {
+    val language = languageMap[content.languageChooser.selectedItem as String]!!
+
+    val progress = ProgressDialog(this)
+    progress.setMessage("Please wait")
+    progress.show()
+
+    activityScope.launch(Dispatchers.IO) {
+
+      var lineCount = 0L
+      assets.open("View.java.txt").use { asset ->
+        val str = UTF16StringFactory.newString()
+        asset.bufferedReader().forEachLine { line ->
+          str.append(line)
+          str.append("\n")
+          ++lineCount
+        }
+
+        str.synchronizedString()
+      }.use { input ->
+
+        val size = input.byteLength()
+
+        val pd = withContext(Dispatchers.Main) {
+          val pd = ProgressDialog(this@MainActivity)
+          pd.setTitle(R.string.test_performance)
+          pd.setCancelable(false)
+          pd.setMessage("""
+            Language: ${language.name}
+            Iterations: $iterations
+            File size: ${String.format("%.2f", size.toDouble() / 1024) } KB
+            File line count: $lineCount
+          """.trimIndent())
+
+          progress.dismiss()
+          pd.show()
+
+          pd
+        }
+
+        val flow = flow {
+          repeat(iterations) {
+            emit(async {
+              TSParser.create().use { parser ->
+                parser.language = language
+                val start = System.currentTimeMillis()
+                parser.parseString(input)
+                val duration = System.currentTimeMillis() - start
+                parser.close()
+                duration
+              }
+            })
+          }
+        }
+
+        val totalDuration = flow.toList().awaitAll().sum()
+
+        withContext(Dispatchers.Main) {
+          pd.dismiss()
+          showPerfTestResult(language.name, iterations, size, lineCount, totalDuration)
+        }
+      }
+    }
+  }
+
+  private fun showPerfTestResult(
+    name: String,
+    iterations: Int,
+    size: Int,
+    lineCount: Long,
+    totalDuration: Long
+  ) {
+    val dialog = MaterialAlertDialogBuilder(this)
+    dialog.setPositiveButton(android.R.string.ok, null)
+    dialog.setTitle("Performance results")
+    dialog.setMessage("""
+      Language : $name
+      Iterations : $iterations
+      File size : ${String.format("%.2f", size.toDouble() / 1024) } KB
+      File line count: $lineCount
+      Total duration: ${totalDuration}ms
+      Average duration : ${totalDuration / iterations}ms
+    """.trimIndent())
+    dialog.setCancelable(false)
+    dialog.show()
+  }
+
+  private fun loadLanguages() {
+    languageMap["C"] = TSLanguage.loadLanguage(this, "c")
+
+    content.languageChooser.adapter =
+      ArrayAdapter(this, layout.simple_list_item_1,
+        languageMap.keys.toTypedArray())
+  }
+
   override fun onDestroy() {
     super.onDestroy()
+    destroy()
+  }
 
+  private fun destroy() {
     TSLanguageCache.closeExternal()
-    parser.requestCancellationAsync()
+    parser?.requestCancellationAsync()
     parseJob?.cancel(CancellationException("Activity is being destroyed"))
+
+    parser = null
+    parseJob = null
   }
 
   private fun afterInputChanged(editable: Editable) {
@@ -112,23 +241,47 @@ class MainActivity : AppCompatActivity() {
     val currentJob = this.parseJob
 
     this.parseJob = activityScope.launch {
-      if (parser.isParsing) {
-        parser.requestCancellationAndWait()
+      if (parser?.isParsing == true) {
+        parser?.requestCancellationAndWait()
       }
 
       currentJob?.cancel(
-        CancellationException("Another parse has been requested")
-      )
+        CancellationException("Another parse has been requested"))
+
+      val parser = this@MainActivity.parser ?: TSParser.create()
+        .also { this@MainActivity.parser }
+
+      val toParse = editable.toString()
 
       val start = System.currentTimeMillis()
-      parser.reset()
       parser.language = language!!
+      parser.reset()
+      val parseStart = System.currentTimeMillis()
 
-      parser.parseString(editable.toString()).use { tree ->
-        val duration = System.currentTimeMillis() - start
-        tree.rootNode.walk().use { cursor ->
-          val sb = StringBuilder()
-          sb.append("Parsed in ").append(duration).append("ms").append("\n")
+      parser.parseString(toParse).use { tree ->
+        val parseEnd = System.currentTimeMillis()
+
+        val sb = StringBuilder()
+        val setupDur = parseStart - start
+        val parseDur = parseEnd - parseStart
+
+        avgParse += parseDur
+        ++parseCount
+
+        sb.append("Setup in ").append(setupDur).append("ms").append("\n")
+        sb.append("Parsed in ").append(parseDur).append("ms").append("\n")
+        sb.append("Total: ")
+          .append(setupDur + parseDur)
+          .append("ms")
+          .append("\n")
+        sb.append("Parse count: ").append(parseCount).append("\n")
+        sb.append("Parse avg duration: ")
+          .append(avgParse / parseCount)
+          .append("\n")
+        sb.append("Is success: ").append(tree != null).append("\n")
+        Log.d("MainActivity", sb.toString())
+
+        tree?.rootNode?.walk()?.use { cursor ->
           val insert = sb.length
           appendTo(sb, cursor, 0)
           sb.insert(insert, String.format(Locale.US, "Walked in %d ms\n",
@@ -199,6 +352,8 @@ class MainActivity : AppCompatActivity() {
 
   companion object {
 
+    private const val DEF_ITER = 50
+
     private val languageMap = hashMapOf<String, TSLanguage>()
 
     init {
@@ -219,7 +374,8 @@ class MainActivity : AppCompatActivity() {
       languageMap["XML"] = TSLanguageXml.getInstance()
     }
 
-    private fun StringBuilder.repeatKt(text: String, indent: Int) : StringBuilder {
+    private fun StringBuilder.repeatKt(text: String, indent: Int
+    ): StringBuilder {
       for (i in 1..indent) append(text)
       return this
     }

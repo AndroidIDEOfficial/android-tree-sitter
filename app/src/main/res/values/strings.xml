@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">AndroidTreeSitter</string>
+  <string name="reload_external">Reload External</string>
+  <string name="test_performance">Test performance</string>
+  <string name="type_something">Type something...</string>
 </resources>

@@ -20,6 +20,8 @@ package com.itsaky.androidide.treesitter;
 import android.content.Context;
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.CriticalNative;
+import dalvik.annotation.optimization.FastNative;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
@@ -173,7 +175,7 @@ public class TSLanguage extends TSNativeObject {
       Native.dlclose(getLibHandle());
       setLibHandle(0);
 
-      // Language instance loading using loadLanguage(...) must not be reused
+      // Language instance loaded using loadLanguage(...) must not be reused
       TSLanguageCache.remove(this);
     }
 
@@ -257,30 +259,43 @@ public class TSLanguage extends TSNativeObject {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native int symCount(long ptr);
 
+    @FastNative
     static native int fldCount(long ptr);
 
+    @FastNative
     static native int symForName(long ptr, byte[] name, int length, boolean named);
 
+    @FastNative
     static native String symName(long lngPtr, int sym);
 
+    @FastNative
     static native String fldNameForId(long ptr, int id);
 
+    @FastNative
     static native int fldIdForName(long ptr, byte[] name, int length);
 
+    @FastNative
     static native int symType(long ptr, int sym);
 
+    @FastNative
     static native int langVer(long ptr);
 
+    @FastNative
     static native long[] loadLanguage(String sharedLib, String func);
 
+    @FastNative
     static native void dlclose(long libhandle);
 
+    @FastNative
     public static native int stateCount(long pointer);
 
+    @FastNative
     public static native short nextState(long pointer, short stateId, short symbol);
   }
 }

@@ -20,6 +20,7 @@ package com.itsaky.androidide.treesitter;
 import android.text.TextUtils;
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.FastNative;
 
 public class TSQuery extends TSNativeObject {
 
@@ -257,32 +258,46 @@ public class TSQuery extends TSNativeObject {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native long newQuery(TSQuery query, long pointer, String source);
 
+    @FastNative
     static native void delete(long query);
 
+    @FastNative
     static native int captureCount(long query);
 
+    @FastNative
     static native int patternCount(long query);
 
+    @FastNative
     static native int stringCount(long query);
 
+    @FastNative
     static native int startByteForPattern(long query, int pattern);
 
+    @FastNative
     static native TSQueryPredicateStep[] predicatesForPattern(long query, int pattern);
 
+    @FastNative
     static native boolean patternRooted(long query, int pattern);
 
+    @FastNative
     static native boolean patternNonLocal(long query, int pattern);
 
+    @FastNative
     static native boolean patternGuaranteedAtStep(long query, int byteOffset);
 
+    @FastNative
     static native String captureNameForId(long query, int id);
 
+    @FastNative
     static native String stringValueForId(long query, int id);
 
+    @FastNative
     static native int captureQuantifierForId(long query, int pattern, int capture);
   }
 }

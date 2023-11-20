@@ -25,6 +25,7 @@ import com.itsaky.androidide.treesitter.annotations.DontSynchronize;
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.annotations.Synchronized;
 import com.itsaky.androidide.treesitter.util.Consumer;
+import dalvik.annotation.optimization.FastNative;
 import java.util.Objects;
 
 /**
@@ -445,44 +446,64 @@ public class UTF16String extends TSNativeObject implements CharSequence {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native byte byteAt(long pointer, int index);
 
+    @FastNative
     static native void setByteAt(long pointer, int index, byte b);
 
+    @FastNative
     static native char chatAt(long pointer, int index);
 
+    @FastNative
     static native void setCharAt(long pointer, int index, char c);
 
+    @FastNative
     static native void append(long pointer, String str);
 
+    @FastNative
     static native void appendPart(long pointer, String str, int fromIndex, int len);
 
+    @FastNative
     static native void insert(long pointer, String str, int index);
 
+    @FastNative
     static native void deleteChars(long pointer, int start, int end);
 
+    @FastNative
     static native void deleteBytes(long pointer, int start, int end);
 
+    @FastNative
     static native void replaceChars(long pointer, int start, int end, String str);
 
+    @FastNative
     static native void replaceBytes(long pointer, int start, int end, String str);
 
+    @FastNative
     static native long substring_chars(long pointer, int start, int end);
 
+    @FastNative
     static native long substring_bytes(long pointer, int start, int end);
 
+    @FastNative
     static native String subjstring_chars(long pointer, int start, int end);
 
+    @FastNative
     static native String subjstring_bytes(long pointer, int start, int end);
 
+    @FastNative
     static native String toString(long pointer);
 
+    @FastNative
     static native int length(long pointer);
 
+    @FastNative
     static native int byteLength(long pointer);
 
+    @FastNative
     static native void erase(long pointer);
   }
 }

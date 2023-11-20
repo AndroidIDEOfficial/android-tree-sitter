@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  app:layout_behavior="@string/appbar_scrolling_view_behavior">
+  app:layout_behavior="@string/appbar_scrolling_view_behavior"
+  android:fillViewport="true">
 
-  <com.google.android.material.textview.MaterialTextView
-    android:id="@+id/ts_meta"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    android:layout_margin="8dp"
-    tools:text="Tree Sitter Language Version : 14"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-  <com.google.android.material.textfield.TextInputLayout
-    android:id="@+id/textInputLayout"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:hint="Type something..."
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/ts_meta">
+    <com.google.android.material.textview.MaterialTextView
+      android:id="@+id/ts_meta"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      android:layout_margin="8dp"
+      tools:text="Tree Sitter Language Version : 14"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content" />
 
-    <com.google.android.material.textfield.TextInputEditText
-      android:id="@+id/code"
-      android:layout_width="match_parent"
+    <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/textInputLayout"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:maxHeight="400dp" />
-  </com.google.android.material.textfield.TextInputLayout>
+      android:layout_margin="8dp"
+      android:hint="@string/type_something"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/ts_meta">
 
-  <Spinner
-    android:id="@+id/language_chooser"
-    android:layout_width="0dp"
-    android:layout_height="48dp"
-    android:layout_marginTop="16dp"
-    app:layout_constraintEnd_toEndOf="@id/textInputLayout"
-    app:layout_constraintStart_toStartOf="@id/textInputLayout"
-    app:layout_constraintTop_toBottomOf="@id/textInputLayout" />
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="400dp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-  <androidx.core.widget.NestedScrollView
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:fillViewport="true"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="@id/language_chooser"
-    app:layout_constraintStart_toStartOf="@id/language_chooser"
-    app:layout_constraintTop_toBottomOf="@id/language_chooser">
+    <Spinner
+      android:id="@+id/language_chooser"
+      android:layout_width="0dp"
+      android:layout_height="48dp"
+      android:layout_marginTop="16dp"
+      app:layout_constraintEnd_toEndOf="@id/textInputLayout"
+      app:layout_constraintStart_toStartOf="@id/textInputLayout"
+      app:layout_constraintTop_toBottomOf="@id/textInputLayout" />
 
     <HorizontalScrollView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="@id/language_chooser"
+      app:layout_constraintStart_toStartOf="@id/language_chooser"
+      app:layout_constraintTop_toBottomOf="@id/language_chooser"
       android:fillViewport="true">
 
       <TextView
@@ -66,6 +66,6 @@
 
     </HorizontalScrollView>
 
-  </androidx.core.widget.NestedScrollView>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

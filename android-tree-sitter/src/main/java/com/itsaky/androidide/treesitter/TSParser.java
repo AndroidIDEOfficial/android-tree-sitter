@@ -21,6 +21,8 @@ import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.CriticalNative;
+import dalvik.annotation.optimization.FastNative;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -375,28 +377,40 @@ public class TSParser extends TSNativeObject {
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native long newParser();
 
+    @FastNative
     static native void delete(long parser);
 
+    @FastNative
     static native void setLanguage(long parser, long language);
 
+    @FastNative
     static native long getLanguage(long parser);
 
+    @FastNative
     static native void reset(long parser);
 
+    @FastNative
     static native void setTimeout(long parser, long timeout);
 
+    @FastNative
     static native long getTimeout(long parser);
 
+    @FastNative
     static native boolean setIncludedRanges(long parser, TSRange[] ranges);
 
+    @FastNative
     static native TSRange[] getIncludedRanges(long parser);
 
+    @FastNative
     static native long parse(long parser, long treePointer, long strPointer);
 
+    @FastNative
     static native boolean requestCancellation(long parser);
   }
 }

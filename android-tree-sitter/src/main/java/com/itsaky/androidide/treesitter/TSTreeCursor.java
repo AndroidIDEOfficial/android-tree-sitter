@@ -19,6 +19,7 @@ package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.FastNative;
 import java.util.Objects;
 
 public class TSTreeCursor extends TSNativeObject {
@@ -234,44 +235,64 @@ public class TSTreeCursor extends TSNativeObject {
       registerNatives();
     }
 
+    @FastNative
     static native long newCursor(TSNode node);
 
+    @FastNative
     static native TSTreeCursorNode currentTreeCursorNode(long cursor);
 
+    @FastNative
     static native String currentFieldName(long cursor);
 
+    @FastNative
     static native TSNode currentNode(long cursor);
 
+    @FastNative
     static native void delete(long cursor);
 
+    @FastNative
     static native boolean gotoFirstChild(long cursor);
 
+    @FastNative
     static native boolean gotoNextSibling(long cursor);
 
+    @FastNative
     static native boolean gotoParent(long cursor);
 
+    @FastNative
     static native short currentFieldId(long pointer);
 
+    @FastNative
     static native long gotoFirstChildForByte(long pointer, int byteIndex);
 
+    @FastNative
     static native boolean gotoFirstChildForPoint(long pointer, TSPoint point);
 
+    @FastNative
     static native boolean gotoLastChild(long pointer);
 
+    @FastNative
     static native boolean gotoPreviousSibling(long pointer);
 
+    @FastNative
     static native void gotoDescendant(long pointer, int descendantIndex);
 
+    @FastNative
     static native int currentDescendantIndex(long pointer);
 
+    @FastNative
     static native int depth(long pointer);
 
+    @FastNative
     static native void reset(long pointer, TSNode node);
 
+    @FastNative
     static native void resetTo(long pointer, long another);
 
+    @FastNative
     static native long copy(long pointer);
 
+    @FastNative
     static native void registerNatives();
   }
 }

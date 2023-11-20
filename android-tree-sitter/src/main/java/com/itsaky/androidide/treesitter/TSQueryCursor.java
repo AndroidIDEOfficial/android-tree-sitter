@@ -19,6 +19,7 @@ package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import dalvik.annotation.optimization.FastNative;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -214,26 +215,37 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
       registerNatives();
     }
 
+    @FastNative
     static native void registerNatives();
 
+    @FastNative
     static native long newCursor();
 
+    @FastNative
     static native void delete(long cursor);
 
+    @FastNative
     static native void exec(long cursor, long query, TSNode node);
 
+    @FastNative
     static native boolean exceededMatchLimit(long cursor);
 
+    @FastNative
     static native void setMatchLimit(long cursor, int newLimit);
 
+    @FastNative
     static native int getMatchLimit(long cursor);
 
+    @FastNative
     static native void setByteRange(long cursor, int start, int end);
 
+    @FastNative
     static native void setPointRange(long cursor, TSPoint start, TSPoint end);
 
+    @FastNative
     static native TSQueryMatch nextMatch(long cursor);
 
+    @FastNative
     static native void removeMatch(long cursor, int id);
   }
 }
