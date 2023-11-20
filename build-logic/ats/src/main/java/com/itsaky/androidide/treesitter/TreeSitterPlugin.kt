@@ -86,9 +86,10 @@ class TreeSitterPlugin : Plugin<Project> {
             tasks.register("generateNativeHeaders$variantName",
               GenerateNativeHeadersTask::class.java) {
 
-              srcFiles =
-                baseExtention.sourceSets.getByName("main").java.getSourceFiles()
+              val javaSrc = baseExtention.sourceSets.getByName("main").java
+              srcFiles = javaSrc.getSourceFiles()
               classPath = variant.compileClasspath
+              srcDirs.set(javaSrc.srcDirs)
               outputDirectory.set(
                 project.layout.buildDirectory.dir("generated/native_headers"))
             }

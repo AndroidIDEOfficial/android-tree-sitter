@@ -26,9 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -37,13 +35,13 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ErrorType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic.Kind;
 import kotlin.Triple;
 
 /**
@@ -51,13 +49,27 @@ import kotlin.Triple;
  */
 public class JNIWriter {
 
+  private static final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+
+  /* Signature Characters */
+  private static final String SIG_VOID = "V";
+  private static final String SIG_BOOLEAN = "Z";
+  private static final String SIG_BYTE = "B";
+  private static final String SIG_CHAR = "C";
+  private static final String SIG_SHORT = "S";
+  private static final String SIG_INT = "I";
+  private static final String SIG_LONG = "J";
+  private static final String SIG_FLOAT = "F";
+  private static final String SIG_DOUBLE = "D";
+  private static final String SIG_ARRAY = "[";
+  private static final String SIG_CLASS = "L";
+
   private final StringWriter _headerWriter = new StringWriter();
   private final PrintWriter headerWriter = new PrintWriter(_headerWriter);
 
   private final StringWriter _sigWriter = new StringWriter();
   private final PrintWriter sigWriter = new PrintWriter(_sigWriter);
 
-  private static final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 
   private final Types types;
   private final TypeMirror stringType;
@@ -409,7 +421,9 @@ public class JNIWriter {
         }
 
         if (md.getReturnType().getKind() != TypeKind.VOID) {
-          err(REGISTER_NATIVES + " must return 'void', class=" + sym + ", typ=" + md.getReturnType() + ", typ.knd=" + md.getReturnType().getKind());
+          err(
+            REGISTER_NATIVES + " must return 'void', class=" + sym + ", typ=" + md.getReturnType() +
+              ", typ.knd=" + md.getReturnType().getKind());
         }
       }
 
@@ -487,58 +501,43 @@ public class JNIWriter {
 
   @SuppressWarnings("fallthrough")
   protected final String jniType(TypeMirror t) {
-    TypeKind tKind = t.getKind();
-    if (Objects.requireNonNull(tKind) == TypeKind.ARRAY) {
-      TypeMirror ct = ((ArrayType) t).getComponentType();
-      TypeKind kind = ct.getKind();
-      if (Objects.requireNonNull(kind) == TypeKind.BOOLEAN) {
-        return "jbooleanArray";
-      } else if (kind == TypeKind.BYTE) {
-        return "jbyteArray";
-      } else if (kind == TypeKind.CHAR) {
-        return "jcharArray";
-      } else if (kind == TypeKind.SHORT) {
-        return "jshortArray";
-      } else if (kind == TypeKind.INT) {
-        return "jintArray";
-      } else if (kind == TypeKind.LONG) {
-        return "jlongArray";
-      } else if (kind == TypeKind.FLOAT) {
-        return "jfloatArray";
-      } else if (kind == TypeKind.DOUBLE) {
-        return "jdoubleArray";
-      } else {
-        return "jobjectArray";
-      }
-    } else if (tKind == TypeKind.VOID) {
-      return "void";
-    } else if (tKind == TypeKind.BOOLEAN) {
-      return "jboolean";
-    } else if (tKind == TypeKind.BYTE) {
-      return "jbyte";
-    } else if (tKind == TypeKind.CHAR) {
-      return "jchar";
-    } else if (tKind == TypeKind.SHORT) {
-      return "jshort";
-    } else if (tKind == TypeKind.INT) {
-      return "jint";
-    } else if (tKind == TypeKind.LONG) {
-      return "jlong";
-    } else if (tKind == TypeKind.FLOAT) {
-      return "jfloat";
-    } else if (tKind == TypeKind.DOUBLE) {
-      return "jdouble";
-    } else if (tKind == TypeKind.DECLARED) {
-      if (types.isAssignable(t, stringType)) {
-        return "jstring";
-      } else if (types.isAssignable(t, throwableType)) {
-        return "jthrowable";
-      } else if (types.isAssignable(t, classType)) {
-        return "jclass";
-      }
+    var type = switch (t.getKind()) {
+      case ARRAY -> switch (((ArrayType) t).getComponentType().getKind()) {
+        case BOOLEAN -> "jbooleanArray";
+        case BYTE -> "jbyteArray";
+        case CHAR -> "jcharArray";
+        case SHORT -> "jshortArray";
+        case INT -> "jintArray";
+        case LONG -> "jlongArray";
+        case FLOAT -> "jfloatArray";
+        case DOUBLE -> "jdoubleArray";
+        default -> "jobjectArray";
+      };
+      case VOID -> "void";
+      case BOOLEAN -> "jboolean";
+      case BYTE -> "jbyte";
+      case CHAR -> "jchar";
+      case SHORT -> "jshort";
+      case INT -> "jint";
+      case LONG -> "jlong";
+      case FLOAT -> "jfloat";
+      case DOUBLE -> "jdouble";
+      default -> null;
+    };
+
+    if (type != null) {
+      return type;
     }
 
-    return "jobject";
+    if (types.isAssignable(t, stringType)) {
+      return "jstring";
+    } else if (types.isAssignable(t, throwableType)) {
+      return "jthrowable";
+    } else if (types.isAssignable(t, classType)) {
+      return "jclass";
+    } else {
+      return "jobject";
+    }
   }
 
   protected void fileTop(PrintWriter out) {
@@ -594,46 +593,25 @@ public class JNIWriter {
         continue;
       }
       switch (mtype) {
-        case CLASS:
+        case CLASS -> {
           switch (ch) {
-            case '.':
-            case '_':
-              result.append("_");
-              break;
-            case '$':
-              result.append("__");
-              break;
-            default:
-              result.append(encodeChar(ch));
+            case '.', '_' -> result.append("_");
+            case '$' -> result.append("__");
+            default -> result.append(encodeChar(ch));
           }
-          break;
-        case JNI:
+        }
+        case JNI -> {
           switch (ch) {
-            case '/':
-            case '.':
-              result.append("_");
-              break;
-            case '_':
-              result.append("_1");
-              break;
-            case ';':
-              result.append("_2");
-              break;
-            case '[':
-              result.append("_3");
-              break;
-            default:
-              result.append(encodeChar(ch));
+            case '/', '.' -> result.append("_");
+            case '_' -> result.append("_1");
+            case ';' -> result.append("_2");
+            case '[' -> result.append("_3");
+            default -> result.append(encodeChar(ch));
           }
-          break;
-        case SIGNATURE:
-          result.append(isprint(ch) ? ch : encodeChar(ch));
-          break;
-        case FIELDSTUB:
-          result.append(ch == '_' ? ch : encodeChar(ch));
-          break;
-        default:
-          result.append(encodeChar(ch));
+        }
+        case SIGNATURE -> result.append(isprint(ch) ? ch : encodeChar(ch));
+        case FIELDSTUB -> result.append(ch == '_' ? ch : encodeChar(ch));
+        default -> result.append(encodeChar(ch));
       }
     }
     return result.toString();
@@ -677,19 +655,6 @@ public class JNIWriter {
 
     Elements elems;
     Types types;
-
-    /* Signature Characters */
-    private static final String SIG_VOID = "V";
-    private static final String SIG_BOOLEAN = "Z";
-    private static final String SIG_BYTE = "B";
-    private static final String SIG_CHAR = "C";
-    private static final String SIG_SHORT = "S";
-    private static final String SIG_INT = "I";
-    private static final String SIG_LONG = "J";
-    private static final String SIG_FLOAT = "F";
-    private static final String SIG_DOUBLE = "D";
-    private static final String SIG_ARRAY = "[";
-    private static final String SIG_CLASS = "L";
 
     public TypeSignature(Types types) {
       this.types = types;
@@ -735,7 +700,11 @@ public class JNIWriter {
       @Override
       public Type visitArray(ArrayType t, StringBuilder stringBuilder) {
         stringBuilder.append("[");
-        return t.getComponentType().accept(this, stringBuilder);
+        final var cmp = t.getComponentType();
+        if (cmp.getKind() == TypeKind.ERROR) {
+        }
+        System.err.println("arrayType: " + t + ", cmp=" + cmp + ", cmp.typ=" + cmp.getKind() + ", cmp.cls=" + cmp.getClass());
+        return cmp.accept(this, stringBuilder);
       }
 
       @Override
@@ -752,38 +721,44 @@ public class JNIWriter {
       }
 
       private String getJvmPrimitiveSignature(PrimitiveType t) {
-        switch (t.getKind()) {
-          case VOID:
-            return SIG_VOID;
-          case BOOLEAN:
-            return SIG_BOOLEAN;
-          case BYTE:
-            return SIG_BYTE;
-          case CHAR:
-            return SIG_CHAR;
-          case SHORT:
-            return SIG_SHORT;
-          case INT:
-            return SIG_INT;
-          case LONG:
-            return SIG_LONG;
-          case FLOAT:
-            return SIG_FLOAT;
-          case DOUBLE:
-            return SIG_DOUBLE;
-          default:
-            throw new IllegalArgumentException("unknown type: should not happen");
+        var sig = primitiveSigOrNull(t);
+        if (sig != null) {
+          return sig;
         }
+
+        throw new IllegalArgumentException("unknown type: should not happen");
       }
     }
 
     StringBuilder getJvmSignature(TypeMirror type, boolean useFlatname) {
-      TypeMirror t = types.erasure(type);
       StringBuilder sig = new StringBuilder();
+      var s = primitiveSigOrNull(type);
+      if (s != null) {
+        sig.append(s);
+        return sig;
+      }
+
+      TypeMirror t = types.erasure(type);
       JvmTypeVisitor jv = new JvmTypeVisitor(types);
       jv.visit(t, sig);
+
       return sig;
     }
+  }
+
+  static String primitiveSigOrNull(TypeMirror type) {
+    return switch (type.getKind()) {
+      case VOID -> SIG_VOID;
+      case BOOLEAN -> SIG_BOOLEAN;
+      case BYTE -> SIG_BYTE;
+      case CHAR -> SIG_CHAR;
+      case SHORT -> SIG_SHORT;
+      case INT -> SIG_INT;
+      case LONG -> SIG_LONG;
+      case FLOAT -> SIG_FLOAT;
+      case DOUBLE -> SIG_DOUBLE;
+      default -> null;
+    };
   }
 
 

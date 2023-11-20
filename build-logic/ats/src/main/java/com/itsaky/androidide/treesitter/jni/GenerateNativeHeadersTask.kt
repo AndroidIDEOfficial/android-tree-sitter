@@ -17,13 +17,25 @@
 
 package com.itsaky.androidide.treesitter.jni
 
+import com.sun.source.util.JavacTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileTree
+import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import java.io.File
+import java.io.InputStream
+import java.io.PrintWriter
+import java.nio.charset.StandardCharsets
+import java.util.Locale
+import javax.tools.JavaFileObject.Kind.SOURCE
+import javax.tools.SimpleJavaFileObject
+import javax.tools.StandardLocation
+import javax.tools.ToolProvider
 
 /**
  * @author Akash Yadav
@@ -32,6 +44,9 @@ abstract class GenerateNativeHeadersTask : DefaultTask() {
 
   @get:InputFiles
   abstract var srcFiles: FileTree
+
+  @get:Input
+  abstract val srcDirs: SetProperty<File>
 
   @get:InputFiles
   abstract var classPath: FileCollection
@@ -43,9 +58,31 @@ abstract class GenerateNativeHeadersTask : DefaultTask() {
   fun generateHeaders() {
     val files = srcFiles.files
     val classPaths = classPath.files
-    files.forEach {
-      NativeHeaderGenerator.generate(files, classPaths, it,
-        outputDirectory.asFile.get())
+
+    val compiler = ToolProvider.getSystemJavaCompiler()
+    val fileManager =
+      compiler.getStandardFileManager({}, Locale.ROOT, StandardCharsets.UTF_8)
+    fileManager.setLocation(StandardLocation.CLASS_PATH, classPaths)
+    fileManager.setLocation(StandardLocation.SOURCE_PATH, srcDirs.get())
+
+    files.forEach { file ->
+
+      val input = object : SimpleJavaFileObject(file.toURI(), SOURCE) {
+        override fun openInputStream(): InputStream {
+          return file.inputStream()
+        }
+
+        override fun getCharContent(ignoreEncodingErrors: Boolean
+        ): CharSequence {
+          return file.readText()
+        }
+      }
+
+      val task =
+        compiler.getTask(PrintWriter(System.out), fileManager, {}, emptyList(),
+          emptyList(), listOf(input)) as JavacTask
+
+      NativeHeaderGenerator.generate(task, file, outputDirectory.asFile.get())
     }
   }
 }

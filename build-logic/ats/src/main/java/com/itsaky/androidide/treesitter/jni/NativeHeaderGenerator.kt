@@ -22,17 +22,8 @@ import com.sun.source.util.JavacTask
 import com.sun.source.util.TreePathScanner
 import com.sun.source.util.Trees
 import java.io.File
-import java.io.InputStream
-import java.io.PrintWriter
-import java.nio.charset.StandardCharsets
-import java.util.Locale
-import javax.annotation.processing.Messager
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
-import javax.tools.JavaFileObject.Kind.SOURCE
-import javax.tools.SimpleJavaFileObject
-import javax.tools.StandardLocation
-import javax.tools.ToolProvider
 
 /**
  * @author Akash Yadav
@@ -43,28 +34,8 @@ object NativeHeaderGenerator {
   private const val ANNOTATION_GNH_fqn =
     "com.itsaky.androidide.treesitter.annotations.$ANNOTATION_GNH"
 
-  fun generate(srcFiles: Set<File>, classPaths: MutableSet<File>, file: File,
-               outputDirectory: File
+  fun generate(task: JavacTask, file: File, outputDirectory: File
   ) {
-    val compiler = ToolProvider.getSystemJavaCompiler()
-    val fileManager =
-      compiler.getStandardFileManager({}, Locale.ROOT, StandardCharsets.UTF_8)
-    fileManager.setLocation(StandardLocation.CLASS_PATH, classPaths)
-    fileManager.setLocation(StandardLocation.SOURCE_PATH, srcFiles)
-
-    val input = object : SimpleJavaFileObject(file.toURI(), SOURCE) {
-      override fun openInputStream(): InputStream {
-        return file.inputStream()
-      }
-
-      override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
-        return file.readText()
-      }
-    }
-
-    val task =
-      compiler.getTask(PrintWriter(System.out), fileManager, {}, emptyList(),
-        emptyList(), listOf(input)) as JavacTask
 
     val trees = task.parse()
     task.analyze()
@@ -78,12 +49,8 @@ object NativeHeaderGenerator {
 
           val element = Trees.instance(task).getElement(currentPath)
           if (element is TypeElement) {
-            handleElement(
-              JNIWriter(task.types, task.elements),
-              element,
-              file,
-              outputDirectory
-            )
+            handleElement(JNIWriter(task.types, task.elements), element, file,
+              outputDirectory)
           }
         }
       }
