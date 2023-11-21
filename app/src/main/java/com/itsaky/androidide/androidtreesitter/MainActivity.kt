@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding
+import com.itsaky.androidide.androidtreesitter.databinding.LayoutTextInputBinding
 import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.treesitter.TSLanguageCache
 import com.itsaky.androidide.treesitter.TSParser
@@ -120,10 +121,24 @@ class MainActivity : AppCompatActivity() {
       }
 
       R.id.test_performance -> {
-        doPerfTest(DEF_ITER)
+        askIterCount { doPerfTest(it) }
       }
     }
     return true
+  }
+
+  private fun askIterCount(onResult: (Int) -> Unit) {
+    val binding = LayoutTextInputBinding.inflate(layoutInflater)
+    binding.input.setText(DEF_ITER.toString())
+    MaterialAlertDialogBuilder(this)
+      .setTitle("Iterations")
+      .setView(binding.root)
+      .setPositiveButton(android.R.string.ok) { diag, _ ->
+        diag.dismiss()
+        onResult(binding.input.text!!.toString().toInt())
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
   }
 
   @Suppress("DEPRECATION")

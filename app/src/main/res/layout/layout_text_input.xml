@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of android-tree-sitter.
+  ~
+  ~  android-tree-sitter library is free software; you can redistribute it and/or
+  ~  modify it under the terms of the GNU Lesser General Public
+  ~  License as published by the Free Software Foundation; either
+  ~  version 2.1 of the License, or (at your option) any later version.
+  ~
+  ~  android-tree-sitter library is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~  Lesser General Public License for more details.
+  ~
+  ~   You should have received a copy of the GNU General Public License
+  ~  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:padding="16dp">
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:hint="@string/input"
+    android:id="@+id/layout"
+    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/input"
+      android:inputType="number"
+      android:digits="1234567890"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+  </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
