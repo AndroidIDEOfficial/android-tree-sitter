@@ -424,8 +424,8 @@ public class JNIWriter {
     out.println("    void *ptr = (void *)(&_func); \\");
     out.println("    (_mths + _mth##__ARR_IDX)->fnPtr = ptr; \\");
     ifLoggingEnabled(out, true, true, () -> {
-      out.println("    LOGD(\"AndroidTreeSitter\", \"SET_JNI_METHOD: %s to %p\", _mth.name, ptr); \\");
-      out.println("    LOGD(\"AndroidTreeSitter\", \"SET_JNI_METHOD: fnPtr = %p\", _mths[_mth##__ARR_IDX].fnPtr); \\");
+      out.println("    LOGD(LOG_TAG, \"SET_JNI_METHOD: %s to %p\", _mth.name, ptr); \\");
+      out.println("    LOGD(LOG_TAG, \"SET_JNI_METHOD: fnPtr = %p\", _mths[_mth##__ARR_IDX].fnPtr); \\");
     });
     out.println("}");
     out.print("#endif");
@@ -462,7 +462,7 @@ public class JNIWriter {
       out.print(defTypMthCount);
       out.print("; ++i) { JNINativeMethod mth = *(");
       out.print(defTypMth);
-      out.println(" + i); LOGD(\"AndroidTreeSitter\", \"Register native method: '%s', '%s', '%p'\", mth.name, mth.signature, mth.fnPtr); } \\");
+      out.println(" + i); LOGD(LOG_TAG, \"Register native method: '%s', '%s', '%p'\", mth.name, mth.signature, mth.fnPtr); } \\");
     });
 
     out.print("    jclass ");
@@ -739,7 +739,15 @@ public class JNIWriter {
 
   protected static void includes(PrintWriter out) {
     out.println("#include <jni.h>");
-    out.println("#include \"utils/ts_header_conf.h\"");
+    out.println("#include \"ts__log.h\"");
+    out.println();
+    out.println("#ifndef __TS_LOG_DEBUG");
+    out.println("#ifdef NDEBUG");
+    out.println("#define __TS_LOG_DEBUG 0");
+    out.println("#else");
+    out.println("#define __TS_LOG_DEBUG 1");
+    out.println("#endif");
+    out.println("#endif");
   }
 
   /*

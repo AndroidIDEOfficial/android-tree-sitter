@@ -98,14 +98,39 @@ $LICENSE
 #include <jni.h>
 #include <tree_sitter/api.h>
 
+#include "ts__onload.h"
+#include "ts_${name}.h"
+
+#ifdef __ANDROID__
+static jint JNI_VERSION = JNI_VERSION_1_6;
+#else
+static jint JNI_VERSION = JNI_VERSION_10;
+#endif
+
 extern "C" TSLanguage *tree_sitter_${name}();
 
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_com_itsaky_androidide_treesitter_${name}_TSLanguage${capitalizedName()}_00024Native_getInstance(JNIEnv *env,
-                                                                                  jclass clazz) {
+static jlong TSLanguage${capitalizedName()}_getInstance(JNIEnv *env, jclass clazz) {
     return (jlong) tree_sitter_${name}();
 }
+
+void TSLanguage${capitalizedName()}_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSLanguage${capitalizedName()}_Native_getInstance, TSLanguage${capitalizedName()}_getInstance);
+}
+
+jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+
+  JNIEnv *env;
+  if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION) != JNI_OK) {
+    LOGE("AndroidTreeSitter", "Failed to get JNIEnv* from JavaVM: %p", vm);
+    return JNI_ERR;
+  }
+
+  TS_JNI_ONLOAD__DEFINE_METHODS_ARR
+  TS_JNI_ONLOAD__AUTO_REGISTER(env)
+
+  return JNI_VERSION;
+}
+
 """.trimIndent()
 
 private fun TsGrammar.cmakeListsSrc(rootDir: File,
@@ -140,6 +165,12 @@ add_library(${'$'}{CMAKE_PROJECT_NAME} SHARED
         ${grammarDir.absolutePath}/src/parser.c
         $sources
         tree-sitter-${name}.cpp)
+        
+if (${'$'}{CMAKE_SYSTEM_NAME} STREQUAL Android)
+    # Find the log library and link it to tree-sitter-$name
+    find_library(log log)
+    target_link_libraries(tree-sitter-$name ${'$'}{log})
+endif()
 """.trimIndent()
 }
 
@@ -147,6 +178,8 @@ private fun TsGrammar.langBindingSrc(): String = """
 $LICENSE
 
 package com.itsaky.androidide.treesitter.$name;
+
+import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
 
 import com.itsaky.androidide.treesitter.TSLanguage;
 import com.itsaky.androidide.treesitter.TSLanguageCache;
@@ -191,6 +224,7 @@ public final class TSLanguage${capitalizedName()} {
     return language;
   }
 
+  @GenerateNativeHeaders(fileName = "$name")
   public static class Native {
     public static native long getInstance();
   }
@@ -205,6 +239,11 @@ plugins {
   id("com.vanniktech.maven.publish.base")
   id("android-tree-sitter.ts")
   id("android-tree-sitter.ts-grammar")
+}
+
+dependencies {
+  implementation(projects.annotations)
+  annotationProcessor(projects.annotationProcessors)
 }
 """.trimIndent()
 

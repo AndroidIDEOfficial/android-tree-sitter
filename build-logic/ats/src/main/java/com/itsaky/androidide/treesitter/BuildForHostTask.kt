@@ -19,7 +19,12 @@ package com.itsaky.androidide.treesitter
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
@@ -30,36 +35,54 @@ import java.io.File
  */
 abstract class BuildForHostTask : DefaultTask() {
 
-  @Input
-  var libName: String = ""
+  @get:InputFiles
+  abstract val cppDir: DirectoryProperty
+
+  @get:OutputFile
+  abstract val outputFile: RegularFileProperty
 
   @TaskAction
   fun buildForHost() {
-    val cppDir = project.file("src/main/cpp").absolutePath
-    val workingDir = project.file("${cppDir}/host-build").apply {
+    val cppDir = cppDir.get().asFile
+    val workingDir = cppDir.resolve("host-build").apply {
       if (!exists()) {
         mkdirs()
       }
     }.absolutePath
 
-    val outDirPath =
+    val nativeHeaderDirPath =
       project.layout.buildDirectory.dir("generated/native_headers")
         .get().asFile.absolutePath
 
-    project.executeCommand(workingDir, "cmake", cppDir, "-DAUTOGEN_HEADERS=$outDirPath")
+    project.executeCommand(workingDir, "cmake", cppDir.absolutePath, "-DAUTOGEN_HEADERS=$nativeHeaderDirPath")
     project.executeCommand(workingDir, "make")
 
-    if (libName.isEmpty()) {
+    if (project.name.isEmpty()) {
       throw GradleException(
-        "'libName' must be specified for '${javaClass.simpleName}'")
+        "Project name must be specified for '${javaClass.simpleName}'")
     }
 
-    val soName = "lib${libName}.so"
-    val so = File(workingDir, soName)
-    val out = project.rootProject.file("build/host/${soName}")
-
+    val (so, out) = getOutputFile(project)
     out.parentFile.mkdirs()
-
     so.renameTo(out)
+  }
+
+  companion object {
+
+    internal fun getOutputFile(project: Project): Pair<File, File> {
+      return project.run {
+        val cppDir = project.file("src/main/cpp").absolutePath
+        val workingDir = project.file("${cppDir}/host-build").apply {
+          if (!exists()) {
+            mkdirs()
+          }
+        }.absolutePath
+
+        val soName = "lib${project.name}.so"
+        val so = File(workingDir, soName)
+        val out = project.rootProject.file("build/host/${soName}")
+        Pair(so, out)
+      }
+    }
   }
 }

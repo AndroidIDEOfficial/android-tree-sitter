@@ -16,7 +16,7 @@
  */
 
 #include "ts_exceptions.h"
-#include "ts_log.h"
+#include "ts__log.h"
 
 #define TS_EXCEPTIONS "TreeSitter_Exceptions"
 

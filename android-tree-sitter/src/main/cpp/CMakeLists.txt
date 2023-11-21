@@ -29,12 +29,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../../../cmake/common-config.cmake)
 # headers for those are located in the tree-sitter sources
 include_directories("${TS_DIR}/lib/src")
 
-# Auto-generated headers
-include_directories(${AUTOGEN_HEADERS})
-
-# Needed by auto-generated headers
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 # add android-tree-sitter library
 add_library(android-tree-sitter SHARED
 

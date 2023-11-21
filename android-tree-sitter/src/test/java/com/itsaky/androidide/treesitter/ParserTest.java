@@ -73,7 +73,7 @@ public class ParserTest extends TreeSitterTest {
   }
 
   @Test
-  public void testParse() throws UnsupportedEncodingException {
+  public void testParse()  {
     try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguagePython.getInstance());
       try (TSTree tree = parser.parseString("print(\"hi\")")) {

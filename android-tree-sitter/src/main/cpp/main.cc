@@ -18,7 +18,7 @@
 #include <jni.h>
 
 #include "utils/ts_obj_utils.h"
-#include "utils/ts_log.h"
+#include "ts__log.h"
 
 #include "ts__onload.h"
 

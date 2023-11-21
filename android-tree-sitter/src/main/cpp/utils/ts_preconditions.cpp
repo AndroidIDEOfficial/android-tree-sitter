@@ -17,7 +17,7 @@
 
 #include "ts_preconditions.h"
 #include "ts_exceptions.h"
-#include "ts_log.h"
+#include "ts__log.h"
 
 #include <string>
 

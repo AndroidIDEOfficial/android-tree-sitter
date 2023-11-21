@@ -18,7 +18,7 @@
 #include <array>
 #include <tree_sitter/api.h>
 
-#include "utils/ts_log.h"
+#include "ts__log.h"
 #include "ts_meta.h"
 
 static jint ats_language_version(JNIEnv *env, jclass self) {

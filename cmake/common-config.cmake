@@ -23,3 +23,6 @@ set(TS_INCLUDES ${TS_DIR}/lib/include ${TS_DIR}/lib/src)
 
 # tree-sitter header files
 include_directories(${TS_INCLUDES})
+
+# Auto-generated headers
+include_directories(${AUTOGEN_HEADERS})

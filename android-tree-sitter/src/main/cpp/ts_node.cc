@@ -17,7 +17,7 @@
 
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
-#include "utils/ts_log.h"
+#include "ts__log.h"
 
 #include "subtree.h"
 
