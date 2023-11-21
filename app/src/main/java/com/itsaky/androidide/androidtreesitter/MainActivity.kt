@@ -27,6 +27,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding
 import com.itsaky.androidide.treesitter.TSLanguage
@@ -207,16 +208,19 @@ class MainActivity : AppCompatActivity() {
   private fun showPerfTestResult(name: String, iterations: Int, size: Int,
                                  lineCount: Long, totalDuration: Long
   ) {
-    content.ast.text = """
-      Performance test results
-      
+    val dialog = MaterialAlertDialogBuilder(this)
+    dialog.setPositiveButton(android.R.string.ok, null)
+    dialog.setTitle("Performance results")
+    dialog.setMessage("""
       Language : $name
       Iterations : $iterations
       File size : ${String.format("%.2f", size.toDouble() / 1024)} KB
       File line count: $lineCount
       Total duration: ${totalDuration}ms
       Average duration : ${totalDuration / iterations}ms
-    """.trimIndent()
+    """.trimIndent())
+    dialog.setCancelable(false)
+    dialog.show()
   }
 
   private fun loadLanguages() {
