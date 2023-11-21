@@ -91,6 +91,10 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    * @param string The string to append.
    */
   public void append(String string) {
+    if (string.length() == 0) {
+      // don't bother to transition from Java to JNI
+      return;
+    }
     checkAccess();
     Native.append(getNativeObject(), string);
   }
@@ -117,6 +121,11 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    * @param string The string to insert.
    */
   public void insert(int index, String string) {
+    if (string.length() == 0) {
+      // don't bother to transition from Java to JNI
+      return;
+    }
+
     if (index == length()) {
       append(string);
       return;
