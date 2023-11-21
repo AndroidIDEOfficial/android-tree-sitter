@@ -425,7 +425,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
    * @param consumer The consumer to consume the bytes.
    */
   public void forEachByte(int from, int to, Consumer<Byte> consumer) {
-    final var length = length();
+    final var length = byteLength();
     Assertions.checkIndex(from, length);
     Assertions.checkUpperBound(to, length);
     for (int i = from; i < to; i++) {
