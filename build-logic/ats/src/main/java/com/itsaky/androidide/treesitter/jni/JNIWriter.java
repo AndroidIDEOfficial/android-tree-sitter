@@ -26,16 +26,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -64,18 +65,11 @@ public class JNIWriter {
   private static final String SIG_ARRAY = "[";
   private static final String SIG_CLASS = "L";
 
-  private final StringWriter _headerWriter = new StringWriter();
-  private final PrintWriter headerWriter = new PrintWriter(_headerWriter);
-
-  private final StringWriter _sigWriter = new StringWriter();
-  private final PrintWriter sigWriter = new PrintWriter(_sigWriter);
-
 
   private final Types types;
   private final TypeMirror stringType;
   private final TypeMirror throwableType;
   private final TypeMirror classType;
-  private final String REGISTER_NATIVES = "registerNatives";
 
   public JNIWriter(Types types, Elements elements) {
     this.types = types;
@@ -161,127 +155,337 @@ public class JNIWriter {
     return false;
   }
 
-  public Pair<String, String> generate(TypeElement type) {
+  public JNIWriterResult generate(TypeElement type) {
+    final var _writer = new StringWriter();
+    final var writer = new PrintWriter(_writer);
+
     final var cname = encode(type.getQualifiedName(), EncoderType.CLASS);
+    // Format: [ParentClass_]NestedClass_
+    final var typeName = new StringBuilder();
+
+    // Format: [com/my/package][/ParentOrCurrentClass][$CurrentClassIfNested]
+    // This is a bytecode-type reference name
+    // e.g. for "com.itsaky.androidide.treesitter.TreeSitter.Native
+    // this will be "com/itsaky/androidide/treesitter/TreeSitter$Native
+    final var typeRef = new StringBuilder();
+
+    buildTypeNames(type, typeName, typeRef);
 
     final var sigs = new HashMap<String, String>();
 
     // Write native headers file
-    fileTop(headerWriter);
-    includes(headerWriter);
-    guardBegin(headerWriter, cname, "METHODS");
-    cppGuardBegin(headerWriter);
+    fileTop(writer);
+    includes(writer);
+    guardBegin(writer, cname, "METHODS");
 
-    writeStatics(headerWriter, type);
-    writeMethods(headerWriter, type, cname, sigs);
+    cppGuardBegin(writer);
 
-    cppGuardEnd(headerWriter);
-    guardEnd(headerWriter);
+    writeStatics(writer, type);
+    writeMethods(writer, type, cname, sigs);
 
-    // Write method signatures header
-    fileTop(sigWriter);
-    includes(sigWriter);
-    guardBegin(sigWriter, cname, "METHOD_SIGNATURES");
-    writeMethodDefs(sigWriter, cname, type, sigs);
-    guardEnd(sigWriter);
+    cppGuardEnd(writer); // __cplusplus
 
-    return new Pair<>(_headerWriter.toString(), _sigWriter.toString());
+    guardBegin(writer, cname, "METHOD_SIGNATURES");
+    writeMethodMeta(writer, cname, type, typeName, typeRef, sigs);
+    guardEnd(writer); // METHOD_SIGNATURES
+
+    guardEnd(writer); // METHODS
+
+    return new JNIWriterResult(cname, typeName, typeRef, "", _writer.toString());
   }
 
-  private void writeMethodDefs(PrintWriter out, String cname, TypeElement type,
+  public static String generateJNIOnLoadHeader(List<JNIWriterResult> results) {
+    final var _writer = new StringWriter();
+    final var writer = new PrintWriter(_writer);
+
+    // Remove duplicates
+    results = new ArrayList<>(results.stream()
+      .collect(Collectors.toMap(JNIWriterResult::getHeaderFilename, Function.identity(),
+        (existing, replacement) -> existing))
+      .values());
+
+    fileTop(writer);
+    includes(writer);
+
+    // Add '#include "filename" for all generated files
+    writer.println();
+    writer.println(String.join(System.lineSeparator(),
+      results.stream().map(result -> "#include \"" + result.getHeaderFilename() + "\"").toList()));
+    writer.println();
+    writer.println();
+
+    guardBegin(writer, "_TS_JNI_ONLOAD", "");
+
+    writer.println("#define TS_JNI_ONLOAD__AUTO_REGISTER(env) \\");
+
+    for (final var result : results) {
+      final var typeName = result.getTypeName();
+      writer.print("    ");
+      writer.print(typeName_AutoRegisterNatives(typeName));
+      writer.println("(env); \\");
+    }
+
+    writer.println();
+
+    writer.println("#define TS_JNI_ONLOAD__DEFINE_METHODS_ARR \\");
+
+    for (final var result : results) {
+      final var typeName = result.getTypeName();
+      writer.print("    ");
+      writer.print(typeName_DefMethodsArray(typeName));
+      writer.println("; \\");
+    }
+
+    writer.println();
+
+    guardEnd(writer); // _TS_JNI_ONLOAD
+
+    return _writer.toString();
+  }
+
+  private void writeMethodMeta(PrintWriter out, String cname, TypeElement type,
+                               StringBuilder typeName, StringBuilder typeRef,
                                HashMap<String, String> sigs
   ) {
-    final var typeName = new StringBuilder();
-    Element curr = type;
-    while (curr != null && curr.getKind().isClass()) {
-      typeName.insert(0, "_").insert(0, curr.getSimpleName());
-      curr = curr.getEnclosingElement();
-    }
-
     final var defTypMth = typeName + "_METHODS";
     final var defTypMthCount = typeName + "_METHOD_COUNT";
+    final var typeName__SetJniMethods = typeName_SetJniMethods(typeName);
+    final var typeName__AutoRegisterNatives = typeName_AutoRegisterNatives(typeName);
+    final var typeName__DefMethodsArray = typeName_DefMethodsArray(typeName);
     final var nameAndSigList = new ArrayList<Triple<String, String, String>>();
 
-    var idx = 0;
-    for (final var entry : sigs.entrySet()) {
-      final var methodName = entry.getKey();
-      final var methodSig = entry.getValue();
+    // In Android, the JNINativeMethod structure has 'const' properties
+    // While in JDK, it is not
+    // So we disable the warning when compiling for non-Android
+    jvmDisableWarning(out, "write-strings", () -> {
+      var idx = 0;
+      for (final var entry : sigs.entrySet()) {
+        final var methodName = entry.getKey();
+        final var methodSig = entry.getValue();
 
-      if (REGISTER_NATIVES.equals(methodName)) {
-        continue;
+        final var qualifiedMethodName = typeName + methodName;
+
+        out.println();
+
+        // Write index of method in the JNINativeMethod[]
+        final var defArrIdx = qualifiedMethodName + "__ARR_IDX";
+        out.print("// Index of method ");
+        out.print(methodName);
+        out.print(" of class ");
+        out.print(cname);
+        out.print(" in ");
+        out.print(defTypMth);
+        out.println(" array");
+        out.print("#define ");
+        out.print(defArrIdx);
+        out.print(" ");
+        out.println(idx++);
+
+        // Write JNINativeMethod definition
+
+        writeJniNativeMethod(out, cname, methodName, methodSig, qualifiedMethodName);
+
+        // record info about this method
+        // used later for definition JNINativeMethod[] and method count
+        nameAndSigList.add(new Triple<>(qualifiedMethodName, methodName, methodSig));
       }
-
-      final var qualifiedMethodName = typeName + methodName;
-
       out.println();
-      methodDoc(out, cname, methodName, methodSig);
+    });
 
-      final var defArrIdx = qualifiedMethodName + "__ARR_IDX";
+    writeSetJniMethods(out, typeRef, typeName__SetJniMethods);
 
-      out.print("#define ");
-      out.print(defArrIdx);
-      out.print(" ");
-      out.println(idx++);
-
-      // In Android, the JNINativeMethod structure has 'const' properties
-      // While in JDK, it is not
-      // So we disable the warning when compiling for non-Android machines
-      jvmDisableWarning(out, "write-strings", o -> {
-        o.print("static JNINativeMethod ");
-        o.print(qualifiedMethodName);
-        o.println("= {");
-        o.print("    .name = \"");
-        o.print(methodName);
-        o.println("\",");
-        o.print("    .signature = \"");
-        o.print(methodSig);
-        o.println("\",");
-        o.println("    .fnPtr = nullptr");
-        o.println("};");
-      });
-
-      nameAndSigList.add(new Triple<>(qualifiedMethodName, methodName, methodSig));
-    }
+    // Write method count
     out.println();
-
-    out.print("static JNINativeMethod ");
-    out.print(defTypMth);
-    out.print("[] = {");
-
-    for (Triple<String, String, String> pair : nameAndSigList) {
-      out.print(pair.getFirst());
-      out.println(",");
-    }
-
-    out.println("};");
-
+    out.print("// Number of elements in ");
+    out.println(defTypMth);
     out.print("#define ");
     out.print(defTypMthCount);
     out.print(" ");
     out.println(nameAndSigList.size());
 
-    out.println();
-    out.println("#ifndef SET_JNI_METHOD");
-    out.print("#define SET_JNI_METHOD(_mth, _func) ");
-    out.print(defTypMth);
-    out.println("[_mth##__ARR_IDX].fnPtr = reinterpret_cast<void *>(&_func)");
-    out.print("#endif");
-    out.println();
+    writeJniNativeMethodArr(
+      out, defTypMth, typeName__DefMethodsArray, typeRef, nameAndSigList
+    );
 
-    out.println();
-    out.print("#define ");
-    out.print(typeName);
-    out.print("_RegisterNatives(_env, _class) (*_env).RegisterNatives(_class, ");
-    out.print(defTypMth);
-    out.print(", ");
-    out.print(defTypMthCount);
-    out.println(")");
-    out.println();
+    // Writer SET_JNI_METHOD macro
+    writeJniNativeMethodSetter(out, defTypMth);
+
+    // typeName_AutoRegisterNatives(env) macro
+    writeRegisterNativesHelpers(
+      out,
+      typeName,
+      typeRef,
+      defTypMth,
+      defTypMthCount,
+      typeName__SetJniMethods,
+      typeName__AutoRegisterNatives,
+      nameAndSigList
+    );
 
     out.println();
   }
 
-  private void jvmDisableWarning(PrintWriter out, String name, Consumer<PrintWriter> outConsumer) {
+  private static String typeName_SetJniMethods(CharSequence typeName) {
+    return typeName + "_SetJniMethods";
+  }
+
+  private static String typeName_AutoRegisterNatives(CharSequence typeName) {
+    return typeName + "_AutoRegisterNatives";
+  }
+
+  private static String typeName_DefMethodsArray(CharSequence typeName) {
+    return typeName + "_DefMethodsArray";
+  }
+
+  private static void writeSetJniMethods(PrintWriter out, StringBuilder typeRef,
+                                         String typeName__SetJniMethods
+  ) {
+    out.println();
+    out.println("// This function is called in order to set the actual");
+    out.println("// implementations of the native methods defined in class ");
+    out.print("// ");
+    out.println(typeRef);
+    out.print("void ");
+    out.print(typeName__SetJniMethods);
+    out.println("(JNINativeMethod *methods, int count);");
+  }
+
+  private static void buildTypeNames(TypeElement type, StringBuilder typeName, StringBuilder typeRef
+  ) {
+    Element curr = type;
+    while (curr != null && curr.getKind().isClass()) {
+      var parent = curr.getEnclosingElement();
+      typeName.insert(0, "_").insert(0, curr.getSimpleName());
+      typeRef.insert(0, curr.getSimpleName());
+
+      if (parent.getKind() == ElementKind.PACKAGE) {
+        typeRef.insert(0, "/");
+        typeRef.insert(0,
+          ((PackageElement) parent).getQualifiedName().toString().replace('.', '/'));
+      } else if (parent.getKind().isClass()) {
+        typeRef.insert(0, "$");
+      }
+
+      curr = parent;
+    }
+  }
+
+  private static void writeJniNativeMethod(
+    PrintWriter out,
+    String cname,
+    String methodName,
+    String methodSig,
+    String qualifiedMethodName
+  ) {
+    writeMethodDoc(out, cname, methodName, methodSig);
+    out.print("static JNINativeMethod ");
+    out.print(qualifiedMethodName);
+    out.println("= {");
+    out.print("    .name = \"");
+    out.print(methodName);
+    out.println("\",");
+    out.print("    .signature = \"");
+    out.print(methodSig);
+    out.println("\",");
+    out.println("    .fnPtr = nullptr");
+    out.println("};");
+  }
+
+  private static void writeJniNativeMethodArr(
+    PrintWriter out,
+    String defTypMth,
+    String typeName__DefMethodsArray,
+    StringBuilder typeRef,
+    ArrayList<Triple<String, String, String>> nameAndSigList
+  ) {
+    out.print("// All native methods in class ");
+    out.println(typeRef);
+
+    out.print("#define ");
+    out.print(typeName__DefMethodsArray);
+    out.println(" \\");
+    out.print("    JNINativeMethod ");
+    out.print(defTypMth);
+    out.println("[] = { \\");
+
+    for (Triple<String, String, String> pair : nameAndSigList) {
+      out.print("        ");
+      out.print(pair.getFirst());
+      out.println(", \\");
+    }
+
+    out.println("    };");
+  }
+
+  private static void writeJniNativeMethodSetter(PrintWriter out, String defTypMth) {
+    out.println();
+    out.println("#ifndef SET_JNI_METHOD");
+    out.println("#define SET_JNI_METHOD(_mths, _mth, _func) { \\");
+    out.println("    void *ptr = (void *)(&_func); \\");
+    out.println("    (_mths + _mth##__ARR_IDX)->fnPtr = ptr; \\");
+    ifLoggingEnabled(out, true, true, () -> {
+      out.println("    LOGD(\"AndroidTreeSitter\", \"SET_JNI_METHOD: %s to %p\", _mth.name, ptr); \\");
+      out.println("    LOGD(\"AndroidTreeSitter\", \"SET_JNI_METHOD: fnPtr = %p\", _mths[_mth##__ARR_IDX].fnPtr); \\");
+    });
+    out.println("}");
+    out.print("#endif");
+    out.println();
+  }
+
+  private static void writeRegisterNativesHelpers(PrintWriter out, StringBuilder typeName,
+                                                  StringBuilder typeRef, String defTypMth,
+                                                  String defTypMthCount,
+                                                  String typeName__SetJniMethods,
+                                                  String typeName__AutoRegisterNatives,
+                                                  ArrayList<Triple<String, String, String>> nameAndSigList
+  ) {
+    final var typeName_class = typeName + "_class";
+
+    out.println();
+    out.print("// Registers the native methods of class ");
+    out.print(typeRef);
+    out.println(" with the given JNIEnv");
+    out.print("#define ");
+    out.print(typeName__AutoRegisterNatives);
+    out.println("(_env) \\");
+
+    out.print("    ");
+    out.print(typeName__SetJniMethods);
+    out.print("(&");
+    out.print(defTypMth);
+    out.print("[0], ");
+    out.print(defTypMthCount);
+    out.println("); \\");
+
+    ifLoggingEnabled(out, true, true, () -> {
+      out.print("    for (int i = 0; i < ");
+      out.print(defTypMthCount);
+      out.print("; ++i) { JNINativeMethod mth = *(");
+      out.print(defTypMth);
+      out.println(" + i); LOGD(\"AndroidTreeSitter\", \"Register native method: '%s', '%s', '%p'\", mth.name, mth.signature, mth.fnPtr); } \\");
+    });
+
+    out.print("    jclass ");
+    out.print(typeName_class);
+    out.print(" = (*env).FindClass(\"");
+    out.print(typeRef);
+    out.println("\"); \\");
+    out.print("    (*_env).RegisterNatives(");
+    out.print(typeName_class);
+    out.print(", ");
+    out.print(defTypMth);
+    out.print(", ");
+    out.print(defTypMthCount);
+    out.println("); \\");
+
+//    out.print("free(");
+//    out.print(defTypMth);
+//    out.println(")");
+
+    out.println();
+  }
+
+  private static void jvmDisableWarning(PrintWriter out, String name, Runnable doWrite) {
     out.println();
     out.println("#ifndef __ANDROID__");
     out.println();
@@ -302,7 +506,7 @@ public class JNIWriter {
     out.println("#endif // __ANDROID__");
     out.println();
 
-    outConsumer.accept(out);
+    doWrite.run();
 
     out.println();
     out.println("#ifndef __ANDROID__");
@@ -317,6 +521,14 @@ public class JNIWriter {
     out.println();
     out.println("#endif // __ANDROID__");
     out.println();
+  }
+
+  private static void ifLoggingEnabled(PrintWriter out, boolean macroEscape, boolean macroEscapeOnClose, Runnable runnable) {
+    out.print("if (__TS_LOG_DEBUG == 1) {");
+    out.println(macroEscape ? " \\" : "");
+    runnable.run();
+    out.print("}");
+    out.println(macroEscape && macroEscapeOnClose ? " \\" : "");
   }
 
   protected void writeStatics(PrintWriter out, TypeElement sym) {
@@ -392,7 +604,6 @@ public class JNIWriter {
   ) {
     List<? extends Element> classmethods = sym.getEnclosedElements();
 
-    ExecutableElement regNtv = null;
     for (Element e : classmethods) {
       if (e.getKind() != ElementKind.METHOD) {
         continue;
@@ -409,24 +620,6 @@ public class JNIWriter {
       TypeSignature newtypesig = new TypeSignature(types);
       CharSequence methodName = md.getSimpleName();
 
-      if (regNtv == null && REGISTER_NATIVES.contentEquals(methodName)) {
-        regNtv = md;
-        // validate registerNatives method
-        if (!md.getModifiers().contains(Modifier.STATIC)) {
-          err(REGISTER_NATIVES + " must be static, class=" + sym);
-        }
-
-        if (!md.getParameters().isEmpty()) {
-          err(REGISTER_NATIVES + " must not have any parameters, class=" + sym);
-        }
-
-        if (md.getReturnType().getKind() != TypeKind.VOID) {
-          err(
-            REGISTER_NATIVES + " must return 'void', class=" + sym + ", typ=" + md.getReturnType() +
-              ", typ.knd=" + md.getReturnType().getKind());
-        }
-      }
-
       boolean isOverloaded = false;
       for (Element md2 : classmethods) {
         if ((md2 != md) && (methodName.equals(md2.getSimpleName())) && isNative(md2)) {
@@ -437,7 +630,7 @@ public class JNIWriter {
       final var methodSig = newtypesig.getSignature(md);
       methodSigs.put(methodName.toString(), methodSig.toString());
 
-      methodDoc(out, cname, methodName, methodSig);
+      writeMethodDoc(out, cname, methodName, methodSig);
       out.println("JNIEXPORT " + jniType(types.erasure(md.getReturnType())) + " JNICALL " +
         encodeMethod(md, sym, isOverloaded));
 
@@ -465,15 +658,10 @@ public class JNIWriter {
       out.println(");");
       out.println();
     }
-
-    if (regNtv == null) {
-      err("Class " + sym + " does not define '" + REGISTER_NATIVES +
-        "' method. Please define method 'static native void " + REGISTER_NATIVES + "();'");
-    }
   }
 
-  private static void methodDoc(PrintWriter out, String cname, CharSequence methodName,
-                                CharSequence methodSig
+  private static void writeMethodDoc(PrintWriter out, String cname, CharSequence methodName,
+                                     CharSequence methodSig
   ) {
     out.println("/*");
     out.println(" * Class:     " + cname);
@@ -545,30 +733,31 @@ public class JNIWriter {
     }
   }
 
-  protected void fileTop(PrintWriter out) {
+  protected static void fileTop(PrintWriter out) {
     out.println("/* DO NOT EDIT THIS FILE - it is machine generated */");
   }
 
-  protected void includes(PrintWriter out) {
+  protected static void includes(PrintWriter out) {
     out.println("#include <jni.h>");
+    out.println("#include \"utils/ts_header_conf.h\"");
   }
 
   /*
    * Deal with the C pre-processor.
    */
-  protected void cppGuardBegin(PrintWriter out) {
+  protected static void cppGuardBegin(PrintWriter out) {
     out.println("#ifdef __cplusplus");
     out.println("extern \"C\" {");
     out.println("#endif");
   }
 
-  protected void cppGuardEnd(PrintWriter out) {
+  protected static void cppGuardEnd(PrintWriter out) {
     out.println("#ifdef __cplusplus");
     out.println("}");
     out.println("#endif");
   }
 
-  protected void guardBegin(PrintWriter out, String cname, String type) {
+  protected static void guardBegin(PrintWriter out, String cname, String type) {
     out.println();
     String guardName = ("_Included_" + cname + "_" + type).toUpperCase(Locale.ROOT);
     out.print("#ifndef ");
@@ -578,7 +767,7 @@ public class JNIWriter {
     out.println(guardName);
   }
 
-  protected void guardEnd(PrintWriter out) {
+  protected static void guardEnd(PrintWriter out) {
     out.println("#endif");
   }
 

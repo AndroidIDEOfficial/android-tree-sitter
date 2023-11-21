@@ -18,7 +18,7 @@
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
 
-#include "ts_tree_sigs.h"
+#include "ts_tree.h"
 
 static void
 TSTree_edit(JNIEnv *env, jclass self, jlong tree, jobject inputEdit) {
@@ -69,15 +69,11 @@ static jlong TSTree_getLanguage(JNIEnv *env, jclass self, jlong tree) {
   return (jlong) ts_tree_language((TSTree *) tree);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTree_00024Native_registerNatives(JNIEnv *env,
-                                                                         jclass clazz) {
-  SET_JNI_METHOD(TSTree_Native_edit, TSTree_edit);
-  SET_JNI_METHOD(TSTree_Native_delete, TSTree_delete);
-  SET_JNI_METHOD(TSTree_Native_copy, TSTree_copy);
-  SET_JNI_METHOD(TSTree_Native_rootNode, TSTree_rootNode);
-  SET_JNI_METHOD(TSTree_Native_changedRanges, TSTree_changedRanges);
-  SET_JNI_METHOD(TSTree_Native_getLanguage, TSTree_getLanguage);
-
-  TSTree_Native__RegisterNatives(env, clazz);
+void TSTree_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSTree_Native_edit, TSTree_edit);
+  SET_JNI_METHOD(methods, TSTree_Native_delete, TSTree_delete);
+  SET_JNI_METHOD(methods, TSTree_Native_copy, TSTree_copy);
+  SET_JNI_METHOD(methods, TSTree_Native_rootNode, TSTree_rootNode);
+  SET_JNI_METHOD(methods, TSTree_Native_changedRanges, TSTree_changedRanges);
+  SET_JNI_METHOD(methods, TSTree_Native_getLanguage, TSTree_getLanguage);
 }

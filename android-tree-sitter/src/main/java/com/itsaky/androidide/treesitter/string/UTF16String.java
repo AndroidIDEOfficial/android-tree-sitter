@@ -442,13 +442,6 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   @GenerateNativeHeaders(fileName = "utf16string")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native byte byteAt(long pointer, int index);
 

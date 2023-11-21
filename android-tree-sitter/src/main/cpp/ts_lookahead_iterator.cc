@@ -22,7 +22,7 @@
 #include "utils/jni_string.h"
 #include "utils/ts_preconditions.h"
 
-#include "ts_lookahead_iterator_sigs.h"
+#include "ts_lookahead_iterator.h"
 
 static jlong TSLookaheadIterator_newIterator(JNIEnv *env,
                                              jclass clazz,
@@ -87,25 +87,18 @@ TSLookaheadIterator_language(JNIEnv *env, jclass clazz, jlong pointer) {
   return (jlong) ts_lookahead_iterator_language((TSLookaheadIterator *) pointer);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSLookaheadIterator_00024Native_registerNatives(
-    JNIEnv *env,
-    jclass clazz) {
-
-  SET_JNI_METHOD(TSLookaheadIterator_Native_newIterator,
+void TSLookaheadIterator_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_newIterator,
                  TSLookaheadIterator_newIterator);
-  SET_JNI_METHOD(TSLookaheadIterator_Native_delete, TSLookaheadIterator_delete);
-  SET_JNI_METHOD(TSLookaheadIterator_Native_next, TSLookaheadIterator_next);
-  SET_JNI_METHOD(TSLookaheadIterator_Native_currentSymbol,
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_delete, TSLookaheadIterator_delete);
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_next, TSLookaheadIterator_next);
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_currentSymbol,
                  TSLookaheadIterator_currentSymbol);
-  SET_JNI_METHOD(TSLookaheadIterator_Native_currentSymbolName,
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_currentSymbolName,
                  TSLookaheadIterator_currentSymbolName);
-  SET_JNI_METHOD(TSLookaheadIterator_Native_resetState,
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_resetState,
                  TSLookaheadIterator_resetState);
-  SET_JNI_METHOD(TSLookaheadIterator_Native_reset, TSLookaheadIterator_reset);
-  SET_JNI_METHOD(TSLookaheadIterator_Native_language,
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_reset, TSLookaheadIterator_reset);
+  SET_JNI_METHOD(methods, TSLookaheadIterator_Native_language,
                  TSLookaheadIterator_language);
-
-  TSLookaheadIterator_Native__RegisterNatives(env, clazz);
 }

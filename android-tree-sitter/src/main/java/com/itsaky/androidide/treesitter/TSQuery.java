@@ -254,13 +254,6 @@ public class TSQuery extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "query")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native long newQuery(TSQuery query, long pointer, String source);
 

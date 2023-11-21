@@ -373,13 +373,6 @@ public class TSParser extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "parser")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native long newParser();
 

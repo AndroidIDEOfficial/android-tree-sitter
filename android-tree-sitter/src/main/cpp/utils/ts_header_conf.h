@@ -15,23 +15,16 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <array>
-#include <tree_sitter/api.h>
+// This file is included by auto-generated header files
+// See JNIWriter.java for more details
 
-#include "utils/ts_log.h"
-#include "ts_meta.h"
+// Auto include logger macros
+#include "ts_log.h"
 
-static jint ats_language_version(JNIEnv *env, jclass self) {
-  return (jint) TREE_SITTER_LANGUAGE_VERSION;
-}
+#ifndef ATS_TS_HEADER_CONF_H
+#define ATS_TS_HEADER_CONF_H
 
-static jint ats_min_compatible_language_version(JNIEnv *env, jclass self) {
-  return (jint) TREE_SITTER_MIN_COMPATIBLE_LANGUAGE_VERSION;
-}
+// Whether debug logging is enabled (for auto-generated macros)
+#define __TS_LOG_DEBUG 1
 
-void TreeSitter_Native__SetJniMethods(JNINativeMethod *methods, int count) {
-
-  SET_JNI_METHOD(methods, TreeSitter_Native_getLanguageVersion, ats_language_version);
-  SET_JNI_METHOD(methods, TreeSitter_Native_getMinimumCompatibleLanguageVersion,
-                 ats_min_compatible_language_version);
-}
+#endif //ATS_TS_HEADER_CONF_H

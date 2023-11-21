@@ -211,13 +211,6 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
   @GenerateNativeHeaders(fileName = "query_cursor")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native long newCursor();
 

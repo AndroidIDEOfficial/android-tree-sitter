@@ -25,7 +25,7 @@
 #include "utils/ts_preconditions.h"
 #include "utils/ts_log.h"
 
-#include "ts_parser_sigs.h"
+#include "ts_parser.h"
 
 /**
  * `TSParserInternal` stores the actual tree sitter parser instance along
@@ -38,14 +38,11 @@ class TSParserInternal {
     cancellation_flag_mutex = new std::mutex();
     cancellation_flag = new std::atomic<size_t *>(nullptr);
     parser = ts_parser_new();
-    LOGD("ts_parser.cc", "Created new parser: %p", parser);
   }
 
   ~TSParserInternal() {
     delete cancellation_flag_mutex;
     delete cancellation_flag;
-
-    LOGD("ts_parser.cc", "Deleting parser: %p", parser);
     ts_parser_delete(parser);
 
     cancellation_flag_mutex = nullptr;
@@ -290,24 +287,17 @@ TSParser_requestCancellation(
   return true;
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSParser_00024Native_registerNatives(
-    JNIEnv *env,
-    jclass clazz) {
-
-  SET_JNI_METHOD(TSParser_Native_newParser, TSParser_newParser);
-  SET_JNI_METHOD(TSParser_Native_delete, TSParser_delete);
-  SET_JNI_METHOD(TSParser_Native_setLanguage, TSParser_setLanguage);
-  SET_JNI_METHOD(TSParser_Native_getLanguage, TSParser_getLanguage);
-  SET_JNI_METHOD(TSParser_Native_reset, TSParser_reset);
-  SET_JNI_METHOD(TSParser_Native_setTimeout, TSParser_setTimeout);
-  SET_JNI_METHOD(TSParser_Native_getTimeout, TSParser_getTimeout);
-  SET_JNI_METHOD(TSParser_Native_setIncludedRanges, TSParser_setIncludedRanges);
-  SET_JNI_METHOD(TSParser_Native_getIncludedRanges, TSParser_getIncludedRanges);
-  SET_JNI_METHOD(TSParser_Native_parse, TSParser_parse);
-  SET_JNI_METHOD(TSParser_Native_requestCancellation,
+void TSParser_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSParser_Native_newParser, TSParser_newParser);
+  SET_JNI_METHOD(methods, TSParser_Native_delete, TSParser_delete);
+  SET_JNI_METHOD(methods, TSParser_Native_setLanguage, TSParser_setLanguage);
+  SET_JNI_METHOD(methods, TSParser_Native_getLanguage, TSParser_getLanguage);
+  SET_JNI_METHOD(methods, TSParser_Native_reset, TSParser_reset);
+  SET_JNI_METHOD(methods, TSParser_Native_setTimeout, TSParser_setTimeout);
+  SET_JNI_METHOD(methods, TSParser_Native_getTimeout, TSParser_getTimeout);
+  SET_JNI_METHOD(methods, TSParser_Native_setIncludedRanges, TSParser_setIncludedRanges);
+  SET_JNI_METHOD(methods, TSParser_Native_getIncludedRanges, TSParser_getIncludedRanges);
+  SET_JNI_METHOD(methods, TSParser_Native_parse, TSParser_parse);
+  SET_JNI_METHOD(methods, TSParser_Native_requestCancellation,
                  TSParser_requestCancellation);
-
-  TSParser_Native__RegisterNatives(env, clazz);
 }

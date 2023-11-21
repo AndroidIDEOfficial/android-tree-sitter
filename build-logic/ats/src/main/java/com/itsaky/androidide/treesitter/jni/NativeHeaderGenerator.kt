@@ -34,8 +34,13 @@ object NativeHeaderGenerator {
   private const val ANNOTATION_GNH_fqn =
     "com.itsaky.androidide.treesitter.annotations.$ANNOTATION_GNH"
 
-  fun generate(task: JavacTask, file: File, outputDirectory: File
-  ) {
+  fun generate(
+    task: JavacTask,
+    file: File,
+    outputDirectory: File
+  ) : List<JNIWriterResult> {
+
+    val results = mutableListOf<JNIWriterResult>()
 
     val trees = task.parse()
     task.analyze()
@@ -49,21 +54,32 @@ object NativeHeaderGenerator {
 
           val element = Trees.instance(task).getElement(currentPath)
           if (element is TypeElement) {
-            handleElement(JNIWriter(task.types, task.elements), element, file,
-              outputDirectory)
+            handleElement(
+              JNIWriter(task.types, task.elements),
+              element,
+              file,
+              outputDirectory,
+              results
+            )
           }
         }
       }
 
       visitor.scan(cu, Unit)
     }
+
+    return results
   }
 
-  private fun handleElement(writer: JNIWriter, type: TypeElement, file: File,
-                            outputDirectory: File
+  private fun handleElement(
+    writer: JNIWriter,
+    type: TypeElement,
+    file: File,
+    outputDirectory: File,
+    results: MutableList<JNIWriterResult>
   ) {
     type.enclosedElements.filterIsInstance<TypeElement>().forEach {
-      handleElement(writer, it, file, outputDirectory)
+      handleElement(writer, it, file, outputDirectory, results)
     }
 
     val annotation = type.annotationMirrors.filter {
@@ -85,10 +101,11 @@ object NativeHeaderGenerator {
 
     outputDirectory.mkdirs()
 
-    val methodHeaders = File(outputDirectory, "ts_$fileName.h")
-    val methodSignatures = File(outputDirectory, "ts_${fileName}_sigs.h")
+    val headerFilename = "ts_$fileName.h"
+    val header = File(outputDirectory, headerFilename)
+    header.writeText(result.headerContents)
 
-    methodHeaders.writeText(result.first)
-    methodSignatures.writeText(result.second)
+    result.headerFilename = headerFilename
+    results.add(result)
   }
 }

@@ -77,13 +77,6 @@ public class UTF16StringFactory {
   @GenerateNativeHeaders(fileName = "utf16string_factory")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native long newString(String source);
 

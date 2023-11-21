@@ -17,6 +17,7 @@
 package com.itsaky.androidide.androidtreesitter
 
 import android.R.layout
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.text.Editable
@@ -26,7 +27,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.androidtreesitter.databinding.ActivityMainBinding
 import com.itsaky.androidide.androidtreesitter.databinding.ContentMainBinding
 import com.itsaky.androidide.treesitter.TSLanguage
@@ -55,6 +55,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.Locale
 import java.util.concurrent.CancellationException
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * @author Akash Yadav
@@ -126,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
   @Suppress("DEPRECATION")
   private fun doPerfTest(iterations: Int) {
-    val language = languageMap[content.languageChooser.selectedItem as String]!!
+    val language = TSLanguageJava.getInstance()
 
     val progress = ProgressDialog(this)
     progress.setMessage("Please wait")
@@ -160,6 +161,8 @@ class MainActivity : AppCompatActivity() {
             File size: ${String.format("%.2f", size.toDouble() / 1024)} KB
             File line count: $lineCount
           """.trimIndent())
+          pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+          pd.max = iterations
 
           progress.dismiss()
           pd.show()
@@ -167,6 +170,7 @@ class MainActivity : AppCompatActivity() {
           pd
         }
 
+        val iter = AtomicInteger(0)
         val flow = flow {
           repeat(iterations) {
             emit(async {
@@ -177,6 +181,11 @@ class MainActivity : AppCompatActivity() {
                   .use { /* auto-close the returned tree */ }
                 val duration = System.currentTimeMillis() - start
                 parser.close()
+
+                withContext(Dispatchers.Main) {
+                  pd.progress = iter.incrementAndGet()
+                }
+
                 duration
               }
             })
@@ -194,22 +203,20 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
+  @SuppressLint("SetTextI18n")
   private fun showPerfTestResult(name: String, iterations: Int, size: Int,
                                  lineCount: Long, totalDuration: Long
   ) {
-    val dialog = MaterialAlertDialogBuilder(this)
-    dialog.setPositiveButton(android.R.string.ok, null)
-    dialog.setTitle("Performance results")
-    dialog.setMessage("""
+    content.ast.text = """
+      Performance test results
+      
       Language : $name
       Iterations : $iterations
       File size : ${String.format("%.2f", size.toDouble() / 1024)} KB
       File line count: $lineCount
       Total duration: ${totalDuration}ms
       Average duration : ${totalDuration / iterations}ms
-    """.trimIndent())
-    dialog.setCancelable(false)
-    dialog.show()
+    """.trimIndent()
   }
 
   private fun loadLanguages() {
@@ -351,7 +358,7 @@ class MainActivity : AppCompatActivity() {
 
   companion object {
 
-    private const val DEF_ITER = 50
+    private const val DEF_ITER = 1000
 
     private val languageMap = hashMapOf<String, TSLanguage>()
 

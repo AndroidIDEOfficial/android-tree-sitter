@@ -231,10 +231,6 @@ public class TSTreeCursor extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "tree_cursor")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
     @FastNative
     static native long newCursor(TSNode node);
 
@@ -291,8 +287,5 @@ public class TSTreeCursor extends TSNativeObject {
 
     @FastNative
     static native long copy(long pointer);
-
-    @FastNative
-    static native void registerNatives();
   }
 }

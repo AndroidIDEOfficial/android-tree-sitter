@@ -19,7 +19,7 @@
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
 
-#include "ts_query_sigs.h"
+#include "ts_query.h"
 
 void fillQuery(JNIEnv *, jobject, uint32_t, TSQueryError);
 int query_quantifier_id(JNIEnv *env, TSQuantifier quantifier);
@@ -196,26 +196,22 @@ int query_quantifier_id(JNIEnv *env, TSQuantifier quantifier) {
   return -1;
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSQuery_00024Native_registerNatives(JNIEnv *env,
-                                                                          jclass clazz) {
-  SET_JNI_METHOD(TSQuery_Native_newQuery, TSQuery_newQuery);
-  SET_JNI_METHOD(TSQuery_Native_delete, TSQuery_delete);
-  SET_JNI_METHOD(TSQuery_Native_captureCount, TSQuery_captureCount);
-  SET_JNI_METHOD(TSQuery_Native_patternCount, TSQuery_patternCount);
-  SET_JNI_METHOD(TSQuery_Native_stringCount, TSQuery_stringCount);
-  SET_JNI_METHOD(TSQuery_Native_startByteForPattern,
+void TSQuery_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSQuery_Native_newQuery, TSQuery_newQuery);
+  SET_JNI_METHOD(methods, TSQuery_Native_delete, TSQuery_delete);
+  SET_JNI_METHOD(methods, TSQuery_Native_captureCount, TSQuery_captureCount);
+  SET_JNI_METHOD(methods, TSQuery_Native_patternCount, TSQuery_patternCount);
+  SET_JNI_METHOD(methods, TSQuery_Native_stringCount, TSQuery_stringCount);
+  SET_JNI_METHOD(methods, TSQuery_Native_startByteForPattern,
                  TSQuery_startByteForPattern);
-  SET_JNI_METHOD(TSQuery_Native_predicatesForPattern,
+  SET_JNI_METHOD(methods, TSQuery_Native_predicatesForPattern,
                  TSQuery_predicatesForPattern);
-  SET_JNI_METHOD(TSQuery_Native_patternRooted, TSQuery_patternRooted);
-  SET_JNI_METHOD(TSQuery_Native_patternNonLocal, TSQuery_patternNonLocal);
-  SET_JNI_METHOD(TSQuery_Native_patternGuaranteedAtStep,
+  SET_JNI_METHOD(methods, TSQuery_Native_patternRooted, TSQuery_patternRooted);
+  SET_JNI_METHOD(methods, TSQuery_Native_patternNonLocal, TSQuery_patternNonLocal);
+  SET_JNI_METHOD(methods, TSQuery_Native_patternGuaranteedAtStep,
                  TSQuery_patternGuaranteedAtStep);
-  SET_JNI_METHOD(TSQuery_Native_captureNameForId, TSQuery_captureNameForId);
-  SET_JNI_METHOD(TSQuery_Native_stringValueForId, TSQuery_stringValueForId);
-  SET_JNI_METHOD(TSQuery_Native_captureQuantifierForId,
+  SET_JNI_METHOD(methods, TSQuery_Native_captureNameForId, TSQuery_captureNameForId);
+  SET_JNI_METHOD(methods, TSQuery_Native_stringValueForId, TSQuery_stringValueForId);
+  SET_JNI_METHOD(methods, TSQuery_Native_captureQuantifierForId,
                  TSQuery_captureQuantifierForId);
-
-  TSQuery_Native__RegisterNatives(env, clazz);
 }

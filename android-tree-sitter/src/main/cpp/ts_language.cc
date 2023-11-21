@@ -22,7 +22,7 @@
 #include "utils/ts_log.h"
 #include "utils/ts_preconditions.h"
 
-#include "ts_language_sigs.h"
+#include "ts_language.h"
 
 typedef const TSLanguage *(*TsLangFunc)();
 
@@ -168,24 +168,17 @@ static jshort TSLanguage_nextState(JNIEnv *env,
                                          symbol);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSLanguage_00024Native_registerNatives(
-    JNIEnv *env,
-    jclass clazz) {
-
-  SET_JNI_METHOD(TSLanguage_Native_symCount, TSLanguage_symCount);
-  SET_JNI_METHOD(TSLanguage_Native_fldCount, TSLanguage_fldCount);
-  SET_JNI_METHOD(TSLanguage_Native_symForName, TSLanguage_symForName);
-  SET_JNI_METHOD(TSLanguage_Native_symName, TSLanguage_symName);
-  SET_JNI_METHOD(TSLanguage_Native_fldNameForId, TSLanguage_fldNameForId);
-  SET_JNI_METHOD(TSLanguage_Native_fldIdForName, TSLanguage_fldIdForName);
-  SET_JNI_METHOD(TSLanguage_Native_symType, TSLanguage_symType);
-  SET_JNI_METHOD(TSLanguage_Native_langVer, TSLanguage_langVer);
-  SET_JNI_METHOD(TSLanguage_Native_loadLanguage, TSLanguage_loadLanguage);
-  SET_JNI_METHOD(TSLanguage_Native_dlclose, TSLanguage_dlclose);
-  SET_JNI_METHOD(TSLanguage_Native_stateCount, TSLanguage_stateCount);
-  SET_JNI_METHOD(TSLanguage_Native_nextState, TSLanguage_nextState);
-
-  TSLanguage_Native__RegisterNatives(env, clazz);
+void TSLanguage_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSLanguage_Native_symCount, TSLanguage_symCount);
+  SET_JNI_METHOD(methods, TSLanguage_Native_fldCount, TSLanguage_fldCount);
+  SET_JNI_METHOD(methods, TSLanguage_Native_symForName, TSLanguage_symForName);
+  SET_JNI_METHOD(methods, TSLanguage_Native_symName, TSLanguage_symName);
+  SET_JNI_METHOD(methods, TSLanguage_Native_fldNameForId, TSLanguage_fldNameForId);
+  SET_JNI_METHOD(methods, TSLanguage_Native_fldIdForName, TSLanguage_fldIdForName);
+  SET_JNI_METHOD(methods, TSLanguage_Native_symType, TSLanguage_symType);
+  SET_JNI_METHOD(methods, TSLanguage_Native_langVer, TSLanguage_langVer);
+  SET_JNI_METHOD(methods, TSLanguage_Native_loadLanguage, TSLanguage_loadLanguage);
+  SET_JNI_METHOD(methods, TSLanguage_Native_dlclose, TSLanguage_dlclose);
+  SET_JNI_METHOD(methods, TSLanguage_Native_stateCount, TSLanguage_stateCount);
+  SET_JNI_METHOD(methods, TSLanguage_Native_nextState, TSLanguage_nextState);
 }

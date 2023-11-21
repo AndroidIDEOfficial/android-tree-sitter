@@ -629,13 +629,6 @@ public class TSNode extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "node")
   private static final class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native boolean canAccess(long id);
 

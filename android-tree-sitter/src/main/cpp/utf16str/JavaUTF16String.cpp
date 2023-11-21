@@ -23,7 +23,7 @@
 #include "UTF16String.h"
 #include "../cache/StrCache.h"
 
-#include "ts_utf16string_sigs.h"
+#include "ts_utf16string.h"
 
 static void
 UTF16String_append(JNIEnv *env, jclass clazz, jlong pointer, jstring str) {
@@ -155,34 +155,28 @@ static jstring UTF16String_toString(JNIEnv *env, jclass clazz, jlong pointer) {
   return as_str(env, pointer)->to_jstring(env);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16String_00024Native_registerNatives(
-    JNIEnv *env,
-    jclass clazz) {
-
-  SET_JNI_METHOD(UTF16String_Native_byteAt, UTF16String_byteAt);
-  SET_JNI_METHOD(UTF16String_Native_setByteAt, UTF16String_setByteAt);
-  SET_JNI_METHOD(UTF16String_Native_chatAt, UTF16String_chatAt);
-  SET_JNI_METHOD(UTF16String_Native_setCharAt, UTF16String_setCharAt);
-  SET_JNI_METHOD(UTF16String_Native_append, UTF16String_append);
-  SET_JNI_METHOD(UTF16String_Native_appendPart, UTF16String_appendPart);
-  SET_JNI_METHOD(UTF16String_Native_insert, UTF16String_insert);
-  SET_JNI_METHOD(UTF16String_Native_deleteChars, UTF16String_deleteChars);
-  SET_JNI_METHOD(UTF16String_Native_deleteBytes, UTF16String_deleteBytes);
-  SET_JNI_METHOD(UTF16String_Native_replaceChars, UTF16String_replaceChars);
-  SET_JNI_METHOD(UTF16String_Native_replaceBytes, UTF16String_replaceBytes);
-  SET_JNI_METHOD(UTF16String_Native_substring_chars,
+void UTF16String_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, UTF16String_Native_byteAt, UTF16String_byteAt);
+  SET_JNI_METHOD(methods, UTF16String_Native_setByteAt, UTF16String_setByteAt);
+  SET_JNI_METHOD(methods, UTF16String_Native_chatAt, UTF16String_chatAt);
+  SET_JNI_METHOD(methods, UTF16String_Native_setCharAt, UTF16String_setCharAt);
+  SET_JNI_METHOD(methods, UTF16String_Native_append, UTF16String_append);
+  SET_JNI_METHOD(methods, UTF16String_Native_appendPart, UTF16String_appendPart);
+  SET_JNI_METHOD(methods, UTF16String_Native_insert, UTF16String_insert);
+  SET_JNI_METHOD(methods, UTF16String_Native_deleteChars, UTF16String_deleteChars);
+  SET_JNI_METHOD(methods, UTF16String_Native_deleteBytes, UTF16String_deleteBytes);
+  SET_JNI_METHOD(methods, UTF16String_Native_replaceChars, UTF16String_replaceChars);
+  SET_JNI_METHOD(methods, UTF16String_Native_replaceBytes, UTF16String_replaceBytes);
+  SET_JNI_METHOD(methods, UTF16String_Native_substring_chars,
                  UTF16String_substring_chars);
-  SET_JNI_METHOD(UTF16String_Native_substring_bytes,
+  SET_JNI_METHOD(methods, UTF16String_Native_substring_bytes,
                  UTF16String_substring_bytes);
-  SET_JNI_METHOD(UTF16String_Native_subjstring_chars,
+  SET_JNI_METHOD(methods, UTF16String_Native_subjstring_chars,
                  UTF16String_subjstring_chars);
-  SET_JNI_METHOD(UTF16String_Native_subjstring_bytes,
+  SET_JNI_METHOD(methods, UTF16String_Native_subjstring_bytes,
                  UTF16String_subjstring_bytes);
-  SET_JNI_METHOD(UTF16String_Native_toString, UTF16String_toString);
-  SET_JNI_METHOD(UTF16String_Native_length, UTF16String_length);
-  SET_JNI_METHOD(UTF16String_Native_byteLength, UTF16String_byteLength);
-  SET_JNI_METHOD(UTF16String_Native_erase, UTF16String_erase);
-
-  UTF16String_Native__RegisterNatives(env, clazz);
+  SET_JNI_METHOD(methods, UTF16String_Native_toString, UTF16String_toString);
+  SET_JNI_METHOD(methods, UTF16String_Native_length, UTF16String_length);
+  SET_JNI_METHOD(methods, UTF16String_Native_byteLength, UTF16String_byteLength);
+  SET_JNI_METHOD(methods, UTF16String_Native_erase, UTF16String_erase);
 }

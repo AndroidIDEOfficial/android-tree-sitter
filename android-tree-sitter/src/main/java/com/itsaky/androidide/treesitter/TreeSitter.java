@@ -33,7 +33,6 @@ public class TreeSitter {
    */
   public static void loadLibrary() {
     System.loadLibrary("android-tree-sitter");
-    Native.registerNatives();
   }
 
 
@@ -62,10 +61,6 @@ public class TreeSitter {
     return sMinCompatLangVer;
   }
 
-  public static void registerNatives() {
-    Native.registerNatives();
-  }
-
   @GenerateNativeHeaders(fileName = "meta")
   private static final class Native {
 
@@ -77,8 +72,5 @@ public class TreeSitter {
      */
     @FastNative
     static native int getMinimumCompatibleLanguageVersion();
-
-    @FastNative
-    private static native void registerNatives();
   }
 }

@@ -21,7 +21,7 @@
 #include "UTF16String.h"
 #include "../cache/StrCache.h"
 
-#include "ts_utf16string_factory_sigs.h"
+#include "ts_utf16string_factory.h"
 
 static jlong
 UTF16StringFactory_newString(
@@ -48,16 +48,9 @@ UTF16StringFactory_newStringBytes(
   return result;
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_string_UTF16StringFactory_00024Native_registerNatives(
-    JNIEnv *env,
-    jclass clazz) {
-
-  SET_JNI_METHOD(UTF16StringFactory_Native_newString,
+void UTF16StringFactory_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, UTF16StringFactory_Native_newString,
                  UTF16StringFactory_newString);
-  SET_JNI_METHOD(UTF16StringFactory_Native_newStringBytes,
+  SET_JNI_METHOD(methods, UTF16StringFactory_Native_newStringBytes,
                  UTF16StringFactory_newStringBytes);
-
-  UTF16StringFactory_Native__RegisterNatives(env, clazz);
 }

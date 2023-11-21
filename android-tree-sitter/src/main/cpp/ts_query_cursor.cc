@@ -20,7 +20,7 @@
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
 
-#include "ts_query_cursor_sigs.h"
+#include "ts_query_cursor.h"
 
 static jlong TSQueryCursor_newCursor(JNIEnv *env, jclass self) {
   return (jlong) ts_query_cursor_new();
@@ -98,25 +98,19 @@ TSQueryCursor_removeMatch(JNIEnv *env, jclass self, jlong cursor, jint id) {
   ts_query_cursor_remove_match((TSQueryCursor *) cursor, id);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSQueryCursor_00024Native_registerNatives(
-    JNIEnv *env,
-    jclass clazz) {
-
-  SET_JNI_METHOD(TSQueryCursor_Native_newCursor, TSQueryCursor_newCursor);
-  SET_JNI_METHOD(TSQueryCursor_Native_delete, TSQueryCursor_delete);
-  SET_JNI_METHOD(TSQueryCursor_Native_exec, TSQueryCursor_exec);
-  SET_JNI_METHOD(TSQueryCursor_Native_exceededMatchLimit,
+void TSQueryCursor_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_newCursor, TSQueryCursor_newCursor);
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_delete, TSQueryCursor_delete);
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_exec, TSQueryCursor_exec);
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_exceededMatchLimit,
                  TSQueryCursor_exceededMatchLimit);
-  SET_JNI_METHOD(TSQueryCursor_Native_setMatchLimit,
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_setMatchLimit,
                  TSQueryCursor_setMatchLimit);
-  SET_JNI_METHOD(TSQueryCursor_Native_getMatchLimit,
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_getMatchLimit,
                  TSQueryCursor_getMatchLimit);
-  SET_JNI_METHOD(TSQueryCursor_Native_setByteRange, TSQueryCursor_setByteRange);
-  SET_JNI_METHOD(TSQueryCursor_Native_setPointRange,
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_setByteRange, TSQueryCursor_setByteRange);
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_setPointRange,
                  TSQueryCursor_setPointRange);
-  SET_JNI_METHOD(TSQueryCursor_Native_nextMatch, TSQueryCursor_nextMatch);
-  SET_JNI_METHOD(TSQueryCursor_Native_removeMatch, TSQueryCursor_removeMatch);
-
-  TSQueryCursor_Native__RegisterNatives(env, clazz);
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_nextMatch, TSQueryCursor_nextMatch);
+  SET_JNI_METHOD(methods, TSQueryCursor_Native_removeMatch, TSQueryCursor_removeMatch);
 }

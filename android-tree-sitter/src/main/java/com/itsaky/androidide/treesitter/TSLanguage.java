@@ -255,13 +255,6 @@ public class TSLanguage extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "language")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native int symCount(long ptr);
 

@@ -21,7 +21,7 @@
 
 #include "subtree.h"
 
-#include "ts_node_sigs.h"
+#include "ts_node.h"
 
 static jboolean TSNode_canAccess(JNIEnv *env, jclass clazz, jlong id) {
   const auto *subtree = (const Subtree *) id;
@@ -295,57 +295,53 @@ static jlong TSNode_getLanguage(JNIEnv *env, jclass clazz, jobject self) {
   return (jlong) ts_node_language(node);
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSNode_00024Native_registerNatives(JNIEnv *env,
-                                                                         jclass clazz) {
-  SET_JNI_METHOD(TSNode_Native_canAccess, TSNode_canAccess);
-  SET_JNI_METHOD(TSNode_Native_getParent, TSNode_getParent);
-  SET_JNI_METHOD(TSNode_Native_getChildAt, TSNode_getChildAt);
-  SET_JNI_METHOD(TSNode_Native_getNamedChildAt, TSNode_getNamedChildAt);
-  SET_JNI_METHOD(TSNode_Native_getChildByFieldName, TSNode_getChildByFieldName);
-  SET_JNI_METHOD(TSNode_Native_getFieldNameForChild,
+void TSNode_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSNode_Native_canAccess, TSNode_canAccess);
+  SET_JNI_METHOD(methods, TSNode_Native_getParent, TSNode_getParent);
+  SET_JNI_METHOD(methods, TSNode_Native_getChildAt, TSNode_getChildAt);
+  SET_JNI_METHOD(methods, TSNode_Native_getNamedChildAt, TSNode_getNamedChildAt);
+  SET_JNI_METHOD(methods, TSNode_Native_getChildByFieldName, TSNode_getChildByFieldName);
+  SET_JNI_METHOD(methods, TSNode_Native_getFieldNameForChild,
                  TSNode_getFieldNameForChild);
-  SET_JNI_METHOD(TSNode_Native_getChildByFieldId, TSNode_getChildByFieldId);
-  SET_JNI_METHOD(TSNode_Native_getNextSibling, TSNode_getNextSibling);
-  SET_JNI_METHOD(TSNode_Native_getPreviousSibling, TSNode_getPreviousSibling);
-  SET_JNI_METHOD(TSNode_Native_getNextNamedSibling, TSNode_getNextNamedSibling);
-  SET_JNI_METHOD(TSNode_Native_getPreviousNamedSibling,
+  SET_JNI_METHOD(methods, TSNode_Native_getChildByFieldId, TSNode_getChildByFieldId);
+  SET_JNI_METHOD(methods, TSNode_Native_getNextSibling, TSNode_getNextSibling);
+  SET_JNI_METHOD(methods, TSNode_Native_getPreviousSibling, TSNode_getPreviousSibling);
+  SET_JNI_METHOD(methods, TSNode_Native_getNextNamedSibling, TSNode_getNextNamedSibling);
+  SET_JNI_METHOD(methods, TSNode_Native_getPreviousNamedSibling,
                  TSNode_getPreviousNamedSibling);
-  SET_JNI_METHOD(TSNode_Native_getFirstChildForByte,
+  SET_JNI_METHOD(methods, TSNode_Native_getFirstChildForByte,
                  TSNode_getFirstChildForByte);
-  SET_JNI_METHOD(TSNode_Native_getFirstNamedChildForByte,
+  SET_JNI_METHOD(methods, TSNode_Native_getFirstNamedChildForByte,
                  TSNode_getFirstNamedChildForByte);
-  SET_JNI_METHOD(TSNode_Native_getDescendantForByteRange,
+  SET_JNI_METHOD(methods, TSNode_Native_getDescendantForByteRange,
                  TSNode_getDescendantForByteRange);
-  SET_JNI_METHOD(TSNode_Native_getDescendantForPointRange,
+  SET_JNI_METHOD(methods, TSNode_Native_getDescendantForPointRange,
                  TSNode_getDescendantForPointRange);
-  SET_JNI_METHOD(TSNode_Native_getNamedDescendantForByteRange,
+  SET_JNI_METHOD(methods, TSNode_Native_getNamedDescendantForByteRange,
                  TSNode_getNamedDescendantForByteRange);
-  SET_JNI_METHOD(TSNode_Native_getNamedDescendantForPointRange,
+  SET_JNI_METHOD(methods, TSNode_Native_getNamedDescendantForPointRange,
                  TSNode_getNamedDescendantForPointRange);
-  SET_JNI_METHOD(TSNode_Native_isEqualTo, TSNode_isEqualTo);
-  SET_JNI_METHOD(TSNode_Native_getChildCount, TSNode_getChildCount);
-  SET_JNI_METHOD(TSNode_Native_getNamedChildCount, TSNode_getNamedChildCount);
-  SET_JNI_METHOD(TSNode_Native_getNodeString, TSNode_getNodeString);
-  SET_JNI_METHOD(TSNode_Native_getStartByte, TSNode_getStartByte);
-  SET_JNI_METHOD(TSNode_Native_getEndByte, TSNode_getEndByte);
-  SET_JNI_METHOD(TSNode_Native_getStartPoint, TSNode_getStartPoint);
-  SET_JNI_METHOD(TSNode_Native_getEndPoint, TSNode_getEndPoint);
-  SET_JNI_METHOD(TSNode_Native_getType, TSNode_getType);
-  SET_JNI_METHOD(TSNode_Native_getSymbol, TSNode_getSymbol);
-  SET_JNI_METHOD(TSNode_Native_isNull, TSNode_isNull);
-  SET_JNI_METHOD(TSNode_Native_isNamed, TSNode_isNamed);
-  SET_JNI_METHOD(TSNode_Native_isExtra, TSNode_isExtra);
-  SET_JNI_METHOD(TSNode_Native_isMissing, TSNode_isMissing);
-  SET_JNI_METHOD(TSNode_Native_hasChanges, TSNode_hasChanges);
-  SET_JNI_METHOD(TSNode_Native_hasErrors, TSNode_hasErrors);
-  SET_JNI_METHOD(TSNode_Native_isError, TSNode_isError);
-  SET_JNI_METHOD(TSNode_Native_getParseState, TSNode_getParseState);
-  SET_JNI_METHOD(TSNode_Native_edit, TSNode_edit);
-  SET_JNI_METHOD(TSNode_Native_getNextParseState, TSNode_getNextParseState);
-  SET_JNI_METHOD(TSNode_Native_getDescendantCount, TSNode_getDescendantCount);
-  SET_JNI_METHOD(TSNode_Native_getGrammarType, TSNode_getGrammarType);
-  SET_JNI_METHOD(TSNode_Native_getLanguage, TSNode_getLanguage);
-
-  TSNode_Native__RegisterNatives(env, clazz);
+  SET_JNI_METHOD(methods, TSNode_Native_isEqualTo, TSNode_isEqualTo);
+  SET_JNI_METHOD(methods, TSNode_Native_getChildCount, TSNode_getChildCount);
+  SET_JNI_METHOD(methods, TSNode_Native_getNamedChildCount, TSNode_getNamedChildCount);
+  SET_JNI_METHOD(methods, TSNode_Native_getNodeString, TSNode_getNodeString);
+  SET_JNI_METHOD(methods, TSNode_Native_getStartByte, TSNode_getStartByte);
+  SET_JNI_METHOD(methods, TSNode_Native_getEndByte, TSNode_getEndByte);
+  SET_JNI_METHOD(methods, TSNode_Native_getStartPoint, TSNode_getStartPoint);
+  SET_JNI_METHOD(methods, TSNode_Native_getEndPoint, TSNode_getEndPoint);
+  SET_JNI_METHOD(methods, TSNode_Native_getType, TSNode_getType);
+  SET_JNI_METHOD(methods, TSNode_Native_getSymbol, TSNode_getSymbol);
+  SET_JNI_METHOD(methods, TSNode_Native_isNull, TSNode_isNull);
+  SET_JNI_METHOD(methods, TSNode_Native_isNamed, TSNode_isNamed);
+  SET_JNI_METHOD(methods, TSNode_Native_isExtra, TSNode_isExtra);
+  SET_JNI_METHOD(methods, TSNode_Native_isMissing, TSNode_isMissing);
+  SET_JNI_METHOD(methods, TSNode_Native_hasChanges, TSNode_hasChanges);
+  SET_JNI_METHOD(methods, TSNode_Native_hasErrors, TSNode_hasErrors);
+  SET_JNI_METHOD(methods, TSNode_Native_isError, TSNode_isError);
+  SET_JNI_METHOD(methods, TSNode_Native_getParseState, TSNode_getParseState);
+  SET_JNI_METHOD(methods, TSNode_Native_edit, TSNode_edit);
+  SET_JNI_METHOD(methods, TSNode_Native_getNextParseState, TSNode_getNextParseState);
+  SET_JNI_METHOD(methods, TSNode_Native_getDescendantCount, TSNode_getDescendantCount);
+  SET_JNI_METHOD(methods, TSNode_Native_getGrammarType, TSNode_getGrammarType);
+  SET_JNI_METHOD(methods, TSNode_Native_getLanguage, TSNode_getLanguage);
 }

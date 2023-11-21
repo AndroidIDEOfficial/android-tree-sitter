@@ -65,7 +65,7 @@ abstract class GenerateNativeHeadersTask : DefaultTask() {
     fileManager.setLocation(StandardLocation.CLASS_PATH, classPaths)
     fileManager.setLocation(StandardLocation.SOURCE_PATH, srcDirs.get())
 
-    files.forEach { file ->
+    val results = files.flatMap { file ->
 
       val input = object : SimpleJavaFileObject(file.toURI(), SOURCE) {
         override fun openInputStream(): InputStream {
@@ -83,6 +83,13 @@ abstract class GenerateNativeHeadersTask : DefaultTask() {
           emptyList(), listOf(input)) as JavacTask
 
       NativeHeaderGenerator.generate(task, file, outputDirectory.asFile.get())
+    }
+
+    @Suppress("LocalVariableName")
+    run {
+      val ts__onload_h = outputDirectory.file("ts__onload.h").get().asFile
+      val ts_onload_h_contents = JNIWriter.generateJNIOnLoadHeader(results)
+      ts__onload_h.writeText(ts_onload_h_contents)
     }
   }
 }

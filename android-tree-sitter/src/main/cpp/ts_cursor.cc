@@ -18,7 +18,7 @@
 #include "utils/ts_obj_utils.h"
 #include "utils/ts_preconditions.h"
 
-#include "ts_tree_cursor_sigs.h"
+#include "ts_tree_cursor.h"
 
 static jlong TreeCursor_newCursor(JNIEnv *env, jclass self, jobject node) {
   auto
@@ -154,31 +154,24 @@ static jlong TreeCursor_copy(JNIEnv *env, jclass clazz, jlong pointer) {
   return (jlong) copied;
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_itsaky_androidide_treesitter_TSTreeCursor_00024Native_registerNatives(
-    JNIEnv *env,
-    jclass clazz) {
-
-  SET_JNI_METHOD(TSTreeCursor_Native_copy, TreeCursor_copy);
-  SET_JNI_METHOD(TSTreeCursor_Native_currentDescendantIndex, TreeCursor_currentDescendantIndex);
-  SET_JNI_METHOD(TSTreeCursor_Native_currentFieldId, TreeCursor_currentFieldId);
-  SET_JNI_METHOD(TSTreeCursor_Native_currentFieldName, TreeCursor_currentFieldName);
-  SET_JNI_METHOD(TSTreeCursor_Native_currentNode, TreeCursor_currentNode);
-  SET_JNI_METHOD(TSTreeCursor_Native_currentTreeCursorNode, TreeCursor_currentTreeCursorNode);
-  SET_JNI_METHOD(TSTreeCursor_Native_delete, TreeCursor_delete);
-  SET_JNI_METHOD(TSTreeCursor_Native_depth, TreeCursor_depth);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoDescendant, TreeCursor_gotoDescendant);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoFirstChild, TreeCursor_gotoFirstChild);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoFirstChildForByte, TreeCursor_gotoFirstChildForByte);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoFirstChildForPoint, TreeCursor_gotoFirstChildForPoint);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoLastChild, TreeCursor_gotoLastChild);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoNextSibling, TreeCursor_gotoNextSibling);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoParent, TreeCursor_gotoParent);
-  SET_JNI_METHOD(TSTreeCursor_Native_gotoPreviousSibling, TreeCursor_gotoPreviousSibling);
-  SET_JNI_METHOD(TSTreeCursor_Native_newCursor, TreeCursor_newCursor);
-  SET_JNI_METHOD(TSTreeCursor_Native_reset, TreeCursor_reset);
-  SET_JNI_METHOD(TSTreeCursor_Native_resetTo, TreeCursor_resetTo);
-
-  TSTreeCursor_Native__RegisterNatives(env, clazz);
+void TSTreeCursor_Native__SetJniMethods(JNINativeMethod *methods, int count) {
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_copy, TreeCursor_copy);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_currentDescendantIndex, TreeCursor_currentDescendantIndex);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_currentFieldId, TreeCursor_currentFieldId);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_currentFieldName, TreeCursor_currentFieldName);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_currentNode, TreeCursor_currentNode);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_currentTreeCursorNode, TreeCursor_currentTreeCursorNode);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_delete, TreeCursor_delete);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_depth, TreeCursor_depth);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoDescendant, TreeCursor_gotoDescendant);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoFirstChild, TreeCursor_gotoFirstChild);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoFirstChildForByte, TreeCursor_gotoFirstChildForByte);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoFirstChildForPoint, TreeCursor_gotoFirstChildForPoint);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoLastChild, TreeCursor_gotoLastChild);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoNextSibling, TreeCursor_gotoNextSibling);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoParent, TreeCursor_gotoParent);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_gotoPreviousSibling, TreeCursor_gotoPreviousSibling);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_newCursor, TreeCursor_newCursor);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_reset, TreeCursor_reset);
+  SET_JNI_METHOD(methods, TSTreeCursor_Native_resetTo, TreeCursor_resetTo);
 }

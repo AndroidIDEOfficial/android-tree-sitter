@@ -97,13 +97,6 @@ public class TSTree extends TSNativeObject {
   @GenerateNativeHeaders(fileName = "tree")
   private static class Native {
 
-    static {
-      registerNatives();
-    }
-
-    @FastNative
-    static native void registerNatives();
-
     @FastNative
     static native void edit(long tree, TSInputEdit inputEdit);
 

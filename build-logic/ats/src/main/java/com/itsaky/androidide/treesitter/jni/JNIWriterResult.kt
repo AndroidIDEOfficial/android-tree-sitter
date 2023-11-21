@@ -15,23 +15,12 @@
  *  along with android-tree-sitter.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <array>
-#include <tree_sitter/api.h>
+package com.itsaky.androidide.treesitter.jni
 
-#include "utils/ts_log.h"
-#include "ts_meta.h"
-
-static jint ats_language_version(JNIEnv *env, jclass self) {
-  return (jint) TREE_SITTER_LANGUAGE_VERSION;
-}
-
-static jint ats_min_compatible_language_version(JNIEnv *env, jclass self) {
-  return (jint) TREE_SITTER_MIN_COMPATIBLE_LANGUAGE_VERSION;
-}
-
-void TreeSitter_Native__SetJniMethods(JNINativeMethod *methods, int count) {
-
-  SET_JNI_METHOD(methods, TreeSitter_Native_getLanguageVersion, ats_language_version);
-  SET_JNI_METHOD(methods, TreeSitter_Native_getMinimumCompatibleLanguageVersion,
-                 ats_min_compatible_language_version);
-}
+data class JNIWriterResult @JvmOverloads constructor(
+  val cname: CharSequence,
+  val typeName: CharSequence,
+  val typeRef: CharSequence,
+  var headerFilename: String = "",
+  val headerContents: String
+)

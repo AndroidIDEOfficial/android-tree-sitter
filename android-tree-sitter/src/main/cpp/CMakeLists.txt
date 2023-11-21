@@ -20,10 +20,10 @@ cmake_minimum_required(VERSION 3.22.1)
 # Project name
 project("android-tree-sitter")
 
-set(PROJECT_DIR ../../../..)
+set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../..)
 
 # Include common configuration
-include(../../../../cmake/common-config.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../../../cmake/common-config.cmake)
 
 # android-tree-sitter uses some internal APIs
 # headers for those are located in the tree-sitter sources
@@ -32,6 +32,9 @@ include_directories("${TS_DIR}/lib/src")
 # Auto-generated headers
 include_directories(${AUTOGEN_HEADERS})
 
+# Needed by auto-generated headers
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 # add android-tree-sitter library
 add_library(android-tree-sitter SHARED
 
@@ -39,6 +42,7 @@ add_library(android-tree-sitter SHARED
         "${TS_DIR}/lib/src/lib.c"
 
         # android-tree-sitter sources
+        main.cc
         ts.cc
         ts_cursor.cc
         ts_language.cc
