@@ -28,6 +28,7 @@ import com.itsaky.androidide.treesitter.jni.GenerateNativeHeadersTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
+import org.gradle.api.tasks.testing.Test
 import java.util.Locale
 
 /**
@@ -109,6 +110,10 @@ class TreeSitterPlugin : Plugin<Project> {
 
           tasks.named("clean") {
             dependsOn(cleanHostBuild)
+          }
+
+          tasks.withType(Test::class.java) {
+            dependsOn(buildForHost)
           }
         }
       }
