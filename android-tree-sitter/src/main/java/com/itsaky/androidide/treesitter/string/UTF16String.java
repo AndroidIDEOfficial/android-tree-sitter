@@ -19,6 +19,7 @@ package com.itsaky.androidide.treesitter.string;
 
 import static com.itsaky.androidide.treesitter.string.Assertions.checkIndex;
 import static com.itsaky.androidide.treesitter.string.Assertions.checkStringRange;
+import static com.itsaky.androidide.treesitter.string.Assertions.checkUpperBound;
 
 import com.itsaky.androidide.treesitter.TSNativeObject;
 import com.itsaky.androidide.treesitter.annotations.DontSynchronize;
@@ -116,7 +117,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   /**
    * Inserts the given string at the given index.
    *
-   * @param index  The index to insert at. This should be Java {@code char}-based index * in the
+   * @param index  The index to insert at. This should be Java {@code char}-based index in the
    *               given string.
    * @param string The string to insert.
    */
@@ -146,7 +147,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   public void delete(int fromIndex, int toIndex) {
     int size = length();
     checkIndex(fromIndex, size);
-    checkIndex(toIndex, size + 1);
+    checkUpperBound(toIndex, size);
 
     checkAccess();
     Native.deleteChars(getNativeObject(), fromIndex, toIndex);
@@ -161,7 +162,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   public void deleteBytes(int fromIndex, int toIndex) {
     int size = byteLength();
     checkIndex(fromIndex, size);
-    checkIndex(toIndex, size + 1);
+    checkUpperBound(toIndex, size);
 
     checkAccess();
     Native.deleteBytes(getNativeObject(), fromIndex, toIndex);
@@ -183,7 +184,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
 
     int size = length();
     checkIndex(fromIndex, size);
-    checkIndex(toIndex, size + 1);
+    checkUpperBound(toIndex, size);
 
     checkAccess();
     Native.replaceChars(getNativeObject(), fromIndex, toIndex, str);
@@ -205,7 +206,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
 
     int size = byteLength();
     checkIndex(fromIndex, size);
-    checkIndex(toIndex, size + 1);
+    checkUpperBound(toIndex, size);
 
     checkAccess();
     Native.replaceBytes(getNativeObject(), fromIndex, toIndex, str);
@@ -232,7 +233,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   public UTF16String subseqChars(int start, int end) {
     int size = length();
     checkIndex(start, size);
-    checkIndex(end, size + 1);
+    checkUpperBound(end, size);
 
     checkAccess();
     return UTF16StringFactory.createString(Native.substring_chars(getNativeObject(), start, end));
@@ -260,7 +261,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   public UTF16String subseqBytes(int start, int end) {
     int size = byteLength();
     checkIndex(start, size);
-    checkIndex(end, size + 1);
+    checkUpperBound(end, size);
 
     checkAccess();
     return UTF16StringFactory.createString(Native.substring_bytes(getNativeObject(), start, end));
@@ -288,7 +289,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   public String substringChars(int start, int end) {
     int size = length();
     checkIndex(start, size);
-    checkIndex(end, size + 1);
+    checkUpperBound(end, size);
 
     checkAccess();
     return Native.subjstring_chars(getNativeObject(), start, end);
@@ -316,7 +317,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   public String substringBytes(int start, int end) {
     int size = byteLength();
     checkIndex(start, size);
-    checkIndex(end, size + 1);
+    checkUpperBound(end, size);
 
     checkAccess();
     return Native.subjstring_bytes(getNativeObject(), start, end);
@@ -346,7 +347,7 @@ public class UTF16String extends TSNativeObject implements CharSequence {
   public CharSequence subSequence(int start, int end) {
     final var count = length();
     checkIndex(start, count);
-    checkIndex(start, count + 1);
+    checkUpperBound(start, count);
     return subseqChars(start, end);
   }
 
