@@ -220,7 +220,7 @@ public class JNIWriter {
 
     for (final var result : results) {
       final var typeName = result.getTypeName();
-      writer.print("    ");
+      indent(writer, 4);
       writer.print(typeName_AutoRegisterNatives(typeName));
       writer.println("(env); \\");
     }
@@ -231,7 +231,7 @@ public class JNIWriter {
 
     for (final var result : results) {
       final var typeName = result.getTypeName();
-      writer.print("    ");
+      indent(writer, 4);
       writer.print(typeName_DefMethodsArray(typeName));
       writer.println("; \\");
     }
@@ -381,13 +381,16 @@ public class JNIWriter {
     out.print("static JNINativeMethod ");
     out.print(qualifiedMethodName);
     out.println("= {");
-    out.print("    .name = \"");
+    indent(out, 4);
+    out.print(".name = \"");
     out.print(methodName);
     out.println("\",");
-    out.print("    .signature = \"");
+    indent(out, 4);
+    out.print(".signature = \"");
     out.print(methodSig);
     out.println("\",");
-    out.println("    .fnPtr = nullptr");
+    indent(out, 4);
+    out.println(".fnPtr = nullptr");
     out.println("};");
   }
 
@@ -404,28 +407,38 @@ public class JNIWriter {
     out.print("#define ");
     out.print(typeName__DefMethodsArray);
     out.println(" \\");
-    out.print("    JNINativeMethod ");
+    indent(out, 4);
+    out.print("JNINativeMethod ");
     out.print(defTypMth);
     out.println("[] = { \\");
 
     for (Triple<String, String, String> pair : nameAndSigList) {
-      out.print("        ");
+      indent(out, 8);
       out.print(pair.getFirst());
       out.println(", \\");
     }
 
-    out.println("    };");
+    indent(out, 4);
+    out.println("};");
   }
 
   private static void writeJniNativeMethodSetter(PrintWriter out, String defTypMth) {
     out.println();
     out.println("#ifndef SET_JNI_METHOD");
     out.println("#define SET_JNI_METHOD(_mths, _mth, _func) { \\");
-    out.println("    void *ptr = (void *)(&_func); \\");
-    out.println("    (_mths + _mth##__ARR_IDX)->fnPtr = ptr; \\");
-    ifLoggingEnabled(out, true, true, () -> {
-      out.println("    LOGD(LOG_TAG, \"SET_JNI_METHOD: %s to %p\", _mth.name, ptr); \\");
-      out.println("    LOGD(LOG_TAG, \"SET_JNI_METHOD: fnPtr = %p\", _mths[_mth##__ARR_IDX].fnPtr); \\");
+
+    indent(out, 4);
+    out.println("void *ptr = (void *)(&_func); \\");
+
+    indent(out, 4);
+    out.println("(_mths + _mth##__ARR_IDX)->fnPtr = ptr; \\");
+
+    ifLoggingEnabled(out, 4, true,  true, () -> {
+      indent(out, 8);
+      out.println("LOGD(LOG_TAG, \"SET_JNI_METHOD: %s to %p\", _mth.name, ptr); \\");
+
+      indent(out, 8);
+      out.println("LOGD(LOG_TAG, \"SET_JNI_METHOD: fnPtr = %p\", _mths[_mth##__ARR_IDX].fnPtr); \\");
     });
     out.println("}");
     out.print("#endif");
@@ -440,6 +453,7 @@ public class JNIWriter {
                                                   ArrayList<Triple<String, String, String>> nameAndSigList
   ) {
     final var typeName_class = typeName + "_class";
+    final var typeName_rc = typeName + "_rc";
 
     out.println();
     out.print("// Registers the native methods of class ");
@@ -449,7 +463,12 @@ public class JNIWriter {
     out.print(typeName__AutoRegisterNatives);
     out.println("(_env) \\");
 
-    out.print("    ");
+    indent(out, 4);
+    out.print("int ");
+    out.print(typeName_rc);
+    out.println("; \\");
+
+    indent(out, 4);
     out.print(typeName__SetJniMethods);
     out.print("(&");
     out.print(defTypMth);
@@ -457,20 +476,48 @@ public class JNIWriter {
     out.print(defTypMthCount);
     out.println("); \\");
 
-    ifLoggingEnabled(out, true, true, () -> {
-      out.print("    for (int i = 0; i < ");
+    ifLoggingEnabled(out, 4, true, true, () -> {
+      indent(out, 4);
+      out.print("for (int i = 0; i < ");
+
       out.print(defTypMthCount);
-      out.print("; ++i) { JNINativeMethod mth = *(");
+      out.println("; ++i) { \\");
+
+      indent(out, 8);
+      out.print("JNINativeMethod mth = *(");
       out.print(defTypMth);
-      out.println(" + i); LOGD(LOG_TAG, \"Register native method: '%s', '%s', '%p'\", mth.name, mth.signature, mth.fnPtr); } \\");
+      out.println(" + i); \\");
+
+      indent(out, 8);
+      out.println("LOGD(LOG_TAG, \"Register native method: '%s', '%s', '%p'\", mth.name, mth.signature, mth.fnPtr); } \\");
     });
 
-    out.print("    jclass ");
+    indent(out, 4);
+    out.print("jclass ");
     out.print(typeName_class);
     out.print(" = (*env).FindClass(\"");
     out.print(typeRef);
     out.println("\"); \\");
-    out.print("    (*_env).RegisterNatives(");
+
+    indent(out, 4);
+    out.print("if (");
+    out.print(typeName_class);
+    out.println(" == NULL) { \\");
+
+    indent(out, 8);
+    out.print("LOGE(LOG_TAG, \"Failed to find class ");
+    out.print(typeRef);
+    out.println("\"); \\");
+
+    indent(out, 8);
+    out.println("return JNI_ERR; \\");
+
+    indent(out, 4);
+    out.println("} \\");
+
+    indent(out, 4);
+    out.print(typeName_rc);
+    out.print(" = (*_env).RegisterNatives(");
     out.print(typeName_class);
     out.print(", ");
     out.print(defTypMth);
@@ -478,9 +525,25 @@ public class JNIWriter {
     out.print(defTypMthCount);
     out.println("); \\");
 
-//    out.print("free(");
-//    out.print(defTypMth);
-//    out.println(")");
+    indent(out, 4);
+    out.print("if (");
+    out.print(typeName_rc);
+    out.println(" != JNI_OK) {\\");
+
+    indent(out, 8);
+    out.print("LOGE(LOG_TAG, \"Failed to register native methods for class '");
+    out.print(typeRef);
+    out.print("'. Result: %d\", ");
+    out.print(typeName_rc);
+    out.println("); \\");
+
+    indent(out, 8);
+    out.print("return ");
+    out.print(typeName_rc);
+    out.println("; \\");
+
+    indent(out, 4);
+    out.println("}\\");
 
     out.println();
   }
@@ -523,12 +586,29 @@ public class JNIWriter {
     out.println();
   }
 
-  private static void ifLoggingEnabled(PrintWriter out, boolean macroEscape, boolean macroEscapeOnClose, Runnable runnable) {
+  private static void ifLoggingEnabled(
+    PrintWriter out,
+    int indent,
+    boolean macroEscape,
+    boolean macroEscapeOnClose,
+    Runnable runnable
+  ) {
+    var ident = " ".repeat(indent);
+
+    out.print(ident);
     out.print("if (__TS_LOG_DEBUG == 1) {");
     out.println(macroEscape ? " \\" : "");
     runnable.run();
+
+    out.print(ident);
     out.print("}");
     out.println(macroEscape && macroEscapeOnClose ? " \\" : "");
+  }
+
+  private static void indent(PrintWriter out, int spaces) {
+    for (int i = 0; i < spaces; i++) {
+      out.print(" ");
+    }
   }
 
   protected void writeStatics(PrintWriter out, TypeElement sym) {
