@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "UTF16String.h"
-#include "../cache/StrCache.h"
+#include "../utils/ts_preconditions.h"
 
 #include "ts_utf16string.h"
 
@@ -44,7 +44,8 @@ static jint UTF16String_length(JNIEnv *env, jclass clazz, jlong pointer) {
 }
 
 static void UTF16String_erase(JNIEnv *env, jclass clazz, jlong pointer) {
-  StrCache::getInstance().erase(as_str(env, pointer));
+  req_nnp(env, pointer, "UTF16String*");
+  delete (UTF16String*) pointer;
 }
 
 static jint UTF16String_byteLength(JNIEnv *env, jclass clazz, jlong pointer) {

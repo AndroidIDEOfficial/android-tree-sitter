@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "UTF16String.h"
-#include "../cache/StrCache.h"
 
 #include "ts_utf16string_factory.h"
 
@@ -28,7 +27,9 @@ UTF16StringFactory_newString(
     JNIEnv *env,
     jclass clazz,
     jstring source) {
-  return (jlong) StrCache::getInstance().create(env, source);
+  auto *str = new UTF16String;
+  str->append(env, source);
+  return (jlong) str;
 }
 
 static jlong
@@ -43,9 +44,10 @@ UTF16StringFactory_newStringBytes(
   for (int i = off; i < off + len; ++i) {
     vec.emplace_back(*(ba + off));
   }
-  jlong result = (jlong) StrCache::getInstance().create(vec);
+
+  auto *ustr = new UTF16String(vec);
   env->ReleaseByteArrayElements(bytes, ba, JNI_ABORT);
-  return result;
+  return (jlong) ustr;
 }
 
 void UTF16StringFactory_Native__SetJniMethods(JNINativeMethod *methods, int count) {

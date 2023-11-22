@@ -22,7 +22,6 @@
 #include <iostream>
 
 #include "UTF16String.h"
-#include "../cache/StrCache.h"
 #include "../utils/jni_string.h"
 #include "../utils/ts_obj_utils.h"
 #include "../utils/ts_preconditions.h"
@@ -169,20 +168,22 @@ UTF16String *UTF16String::substring_bytes(jint start, jint end) {
     for (int i = start; i < end; ++i) {
         copy.emplace_back(_string[i]);
     }
-    return StrCache::getInstance().create(copy);
+
+    auto *result = new UTF16String(copy);
+    return result;
 }
 
 jstring UTF16String::subjstring_chars(JNIEnv *env, jint start, jint end) {
     UTF16String *substr = substring_chars(start, end);
     jstring jstr = substr->to_jstring(env);
-    StrCache::getInstance().erase(substr);
+    delete substr;
     return jstr;
 }
 
 jstring UTF16String::subjstring_bytes(JNIEnv *env, jint start, jint end) {
     UTF16String *substr = substring_bytes(start, end);
     jstring jstr = substr->to_jstring(env);
-    StrCache::getInstance().erase(substr);
+    delete substr;
     return jstr;
 }
 
