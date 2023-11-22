@@ -28,16 +28,13 @@ static jint JNI_VERSION = JNI_VERSION_1_6;
 static jint JNI_VERSION = JNI_VERSION_10;
 #endif
 
-jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-  LOGD("AndroidTreeSitter", "JNI_OnLoad called with vm: %p", vm);
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
   JNIEnv *env;
   if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION) != JNI_OK) {
-    LOGE("AndroidTreeSitter", "Failed to get JNIEnv* from JavaVM: %p", vm);
+    LOGE(LOG_TAG, "Failed to get JNIEnv* from JavaVM: %p", vm);
     return JNI_ERR;
   }
-
-  LOGD("AndroidTreeSitter", "Got JNIEnv: %p", env);
 
   TS_JNI_ONLOAD__DEFINE_METHODS_ARR
   TS_JNI_ONLOAD__AUTO_REGISTER(env)
@@ -47,8 +44,12 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   return JNI_VERSION;
 }
 
-void JNI_OnUnload(JavaVM *vm, void *reserved) {
+JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
   JNIEnv *env;
-  vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION);
+  if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION) != JNI_OK) {
+    LOGE(LOG_TAG, "Failed to get JNIEnv* from JavaVM: %p", vm);
+    return;
+  }
+
   onUnload(env);
 }

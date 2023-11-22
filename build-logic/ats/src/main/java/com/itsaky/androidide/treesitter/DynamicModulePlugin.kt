@@ -117,7 +117,7 @@ void TSLanguage${capitalizedName()}_Native__SetJniMethods(JNINativeMethod *metho
   SET_JNI_METHOD(methods, TSLanguage${capitalizedName()}_Native_getInstance, TSLanguage${capitalizedName()}_getInstance);
 }
 
-jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
   JNIEnv *env;
   if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION) != JNI_OK) {
