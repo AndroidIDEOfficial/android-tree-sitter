@@ -29,6 +29,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../../../cmake/common-config.cmake)
 # headers for those are located in the tree-sitter sources
 include_directories("${TS_DIR}/lib/src")
 
+# Set visibility to hidden by default
+SET(CMAKE_CXX_FLAGS "-fvisibility=hidden")
+
 # add android-tree-sitter library
 add_library(android-tree-sitter SHARED
 
