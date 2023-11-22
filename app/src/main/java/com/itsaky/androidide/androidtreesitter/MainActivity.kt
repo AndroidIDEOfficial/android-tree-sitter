@@ -41,6 +41,7 @@ import com.itsaky.androidide.treesitter.json.TSLanguageJson
 import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin
 import com.itsaky.androidide.treesitter.log.TSLanguageLog
 import com.itsaky.androidide.treesitter.python.TSLanguagePython
+import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory
 import com.itsaky.androidide.treesitter.xml.TSLanguageXml
 import kotlinx.coroutines.CoroutineName
@@ -120,29 +121,111 @@ class MainActivity : AppCompatActivity() {
         loadLanguages()
       }
 
-      R.id.test_performance -> {
-        askIterCount { doPerfTest(it) }
+      R.id.test_parser_performance -> {
+        askIterCount(DEF_ITERS) { doParserPerfTest(it) }
+      }
+
+      R.id.test_string_performance -> {
+        askIterCount(DEF_ITERS) {
+          doStringPerfTest(it)
+        }
       }
     }
     return true
   }
 
-  private fun askIterCount(onResult: (Int) -> Unit) {
-    val binding = LayoutTextInputBinding.inflate(layoutInflater)
-    binding.input.setText(DEF_ITER.toString())
-    MaterialAlertDialogBuilder(this)
-      .setTitle("Iterations")
-      .setView(binding.root)
-      .setPositiveButton(android.R.string.ok) { diag, _ ->
-        diag.dismiss()
-        onResult(binding.input.text!!.toString().toInt())
+  @Suppress("DEPRECATION")
+  private fun doStringPerfTest(iterations: Int) {
+    val pd = ProgressDialog(this@MainActivity)
+    pd.setTitle(R.string.test_string_performance)
+    pd.setCancelable(false)
+    pd.setMessage(
+      "Running UTF16String perf test. Use Android Studio Profiler to analyze performance.")
+    pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+    pd.max = iterations
+    pd.show()
+
+    activityScope.launch(Dispatchers.IO) {
+
+      val iter = AtomicInteger(0)
+      val viewJavaTxt = viewJavaTxt().use { it.toString() }
+      val flow = flow {
+        repeat(iterations) {
+          emit(async {
+            val start = System.currentTimeMillis()
+            UTF16StringFactory.newString("", true).use { string ->
+
+              // append
+              string.append(viewJavaTxt)
+
+              // insert
+              string.insert(0, "inserted")
+
+              // byteAt
+              string.byteAt(0)
+
+              // charAt
+              string[0]
+
+              // setByteAt
+              string.setByteAt(0, 0)
+
+              // setCharAt
+              string.setCharAt(0, ' ')
+
+              // delete
+              string.delete(0, 1)
+
+              // deleteBytes
+              string.deleteBytes(0, 2)
+
+              // replace
+              string.replaceChars(0, 1, "  ")
+
+              // replaceBytes
+              string.replaceBytes(0, 2, " ")
+
+              // subseqChars
+              string.subseqChars(0, 1).use { /* auto-close */ }
+
+              // subseqBytes
+              string.subseqBytes(0, 1).use { /* auto-close */ }
+
+              // substringChars
+              string.substringChars(0, 1)
+
+              // substringBytes
+              string.substringBytes(0, 1)
+
+              // length
+              string.length
+
+              // byteLength
+              string.byteLength()
+            }
+
+            val duration = System.currentTimeMillis() - start
+            withContext(Dispatchers.Main) {
+              pd.progress = iter.incrementAndGet()
+            }
+
+            return@async duration
+          })
+        }
       }
-      .setNegativeButton(android.R.string.cancel, null)
-      .show()
+
+      val totalDuration = flow.toList().awaitAll().sum()
+      withContext(Dispatchers.Main) {
+        pd.dismiss()
+        showPerfTestResult("""
+        Total duration: ${totalDuration / 1000} seconds
+      """.trimIndent())
+      }
+    }
   }
 
   @Suppress("DEPRECATION")
-  private fun doPerfTest(iterations: Int) {
+  private fun doParserPerfTest(iterations: Int) {
     val language = TSLanguageJava.getInstance()
 
     val progress = ProgressDialog(this)
@@ -152,24 +235,12 @@ class MainActivity : AppCompatActivity() {
     activityScope.launch(Dispatchers.IO) {
 
       var lineCount = 0L
-      assets.open("View.java.txt").use { asset ->
-        val str = UTF16StringFactory.newString()
-        asset.bufferedReader().use { reader ->
-          reader.forEachLine { line ->
-            str.append(line)
-            str.append("\n")
-            ++lineCount
-          }
-        }
-
-        str.synchronizedString()
-      }.use { input ->
-
+      viewJavaTxt { ++lineCount }.use { input ->
         val size = input.byteLength()
 
         val pd = withContext(Dispatchers.Main) {
           val pd = ProgressDialog(this@MainActivity)
-          pd.setTitle(R.string.test_performance)
+          pd.setTitle(R.string.test_parser_performance)
           pd.setCancelable(false)
           pd.setMessage("""
             Language: ${language.name}
@@ -212,30 +283,55 @@ class MainActivity : AppCompatActivity() {
 
         withContext(Dispatchers.Main) {
           pd.dismiss()
-          showPerfTestResult(language.name, iterations, size, lineCount,
-            totalDuration)
+          showPerfTestResult("""
+            Language : ${language.name}
+            Iterations : $iterations
+            File size : ${String.format("%.2f", size.toDouble() / 1024)} KB
+            File line count: $lineCount
+            Total duration: ${totalDuration}ms
+            Average duration : ${totalDuration / iterations}ms
+          """.trimIndent())
         }
       }
     }
   }
 
+  private inline fun viewJavaTxt(syncString: Boolean = true,
+                                 crossinline forEachLine: (String) -> Unit = {}
+  ): UTF16String = assets.open("View.java.txt").use { asset ->
+    val str = UTF16StringFactory.newString()
+    asset.bufferedReader().use { reader ->
+      reader.forEachLine { line ->
+        str.append(line)
+        str.append("\n")
+        forEachLine(line)
+      }
+    }
+
+    str.let { if (syncString) it.synchronizedString() else it }
+  }
+
   @SuppressLint("SetTextI18n")
-  private fun showPerfTestResult(name: String, iterations: Int, size: Int,
-                                 lineCount: Long, totalDuration: Long
-  ) {
+  private fun showPerfTestResult(message: String) {
     val dialog = MaterialAlertDialogBuilder(this)
     dialog.setPositiveButton(android.R.string.ok, null)
     dialog.setTitle("Performance results")
-    dialog.setMessage("""
-      Language : $name
-      Iterations : $iterations
-      File size : ${String.format("%.2f", size.toDouble() / 1024)} KB
-      File line count: $lineCount
-      Total duration: ${totalDuration}ms
-      Average duration : ${totalDuration / iterations}ms
-    """.trimIndent())
+    dialog.setMessage(message)
     dialog.setCancelable(false)
     dialog.show()
+  }
+
+  private fun askIterCount(defIters: Int, onResult: (Int) -> Unit) {
+    val binding = LayoutTextInputBinding.inflate(layoutInflater)
+    binding.input.setText(defIters.toString())
+    MaterialAlertDialogBuilder(this).setTitle("Iterations")
+      .setView(binding.root)
+      .setPositiveButton(android.R.string.ok) { diag, _ ->
+        diag.dismiss()
+        onResult(binding.input.text!!.toString().toInt())
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
   }
 
   private fun loadLanguages() {
@@ -377,7 +473,7 @@ class MainActivity : AppCompatActivity() {
 
   companion object {
 
-    private const val DEF_ITER = 1000
+    private const val DEF_ITERS = 1000
 
     private val languageMap = hashMapOf<String, TSLanguage>()
 
