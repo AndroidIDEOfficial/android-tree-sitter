@@ -81,6 +81,39 @@ class MainActivity : AppCompatActivity() {
   private var parseCount = 0L
   private var avgParse = 0L
 
+  companion object {
+
+    private const val TAG = "MainActivity"
+    private const val DEF_ITERS = 1000
+
+    private val languageMap = hashMapOf<String, TSLanguage>()
+
+    init {
+      TreeSitter.loadLibrary()
+
+      System.loadLibrary("tree-sitter-java")
+      System.loadLibrary("tree-sitter-json")
+      System.loadLibrary("tree-sitter-kotlin")
+      System.loadLibrary("tree-sitter-log")
+      System.loadLibrary("tree-sitter-python")
+      System.loadLibrary("tree-sitter-xml")
+
+      languageMap["Java"] = TSLanguageJava.getInstance()
+      languageMap["JSON"] = TSLanguageJson.getInstance()
+      languageMap["Kotlin"] = TSLanguageKotlin.getInstance()
+      languageMap["Log"] = TSLanguageLog.getInstance()
+      languageMap["Python"] = TSLanguagePython.getInstance()
+      languageMap["XML"] = TSLanguageXml.getInstance()
+    }
+
+    private fun StringBuilder.repeatKt(text: String, indent: Int
+    ): StringBuilder {
+      for (i in 1..indent) append(text)
+      return this
+    }
+  }
+
+
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val binding = ActivityMainBinding.inflate(layoutInflater)
@@ -202,6 +235,9 @@ class MainActivity : AppCompatActivity() {
 
               // byteLength
               string.byteLength()
+
+              string.forEachChar {  }
+              string.forEachByte {  }
             }
 
             val duration = System.currentTimeMillis() - start
@@ -221,7 +257,7 @@ class MainActivity : AppCompatActivity() {
         Total duration: ${totalDuration / 1000} seconds
       """.trimIndent())
       }
-    }
+    }.logOnErr("doStringPerfTest")
   }
 
   @Suppress("DEPRECATION")
@@ -293,7 +329,7 @@ class MainActivity : AppCompatActivity() {
           """.trimIndent())
         }
       }
-    }
+    }.logOnErr("doParserPerfTest")
   }
 
   private inline fun viewJavaTxt(syncString: Boolean = true,
@@ -452,6 +488,14 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
+  private fun Job.logOnErr(name: String) {
+    invokeOnCompletion { err ->
+      if (err != null) {
+        Log.e(TAG, "logOnErr: Failed to run job: $name", err)
+      }
+    }
+  }
+
   private fun trace(err: Throwable): String {
     val sw = StringWriter()
     err.printStackTrace(PrintWriter(sw))
@@ -468,37 +512,6 @@ class MainActivity : AppCompatActivity() {
     override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int,
                                i2: Int
     ) {
-    }
-  }
-
-  companion object {
-
-    private const val DEF_ITERS = 1000
-
-    private val languageMap = hashMapOf<String, TSLanguage>()
-
-    init {
-      TreeSitter.loadLibrary()
-
-      System.loadLibrary("tree-sitter-java")
-      System.loadLibrary("tree-sitter-json")
-      System.loadLibrary("tree-sitter-kotlin")
-      System.loadLibrary("tree-sitter-log")
-      System.loadLibrary("tree-sitter-python")
-      System.loadLibrary("tree-sitter-xml")
-
-      languageMap["Java"] = TSLanguageJava.getInstance()
-      languageMap["JSON"] = TSLanguageJson.getInstance()
-      languageMap["Kotlin"] = TSLanguageKotlin.getInstance()
-      languageMap["Log"] = TSLanguageLog.getInstance()
-      languageMap["Python"] = TSLanguagePython.getInstance()
-      languageMap["XML"] = TSLanguageXml.getInstance()
-    }
-
-    private fun StringBuilder.repeatKt(text: String, indent: Int
-    ): StringBuilder {
-      for (i in 1..indent) append(text)
-      return this
     }
   }
 }

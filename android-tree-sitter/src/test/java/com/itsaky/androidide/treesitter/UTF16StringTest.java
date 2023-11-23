@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.itsaky.androidide.treesitter.ResourceUtils.readResource;
 
 import com.itsaky.androidide.treesitter.string.UTF16String;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
@@ -181,5 +182,23 @@ public class UTF16StringTest extends TreeSitterTest {
     assertThat(str.length()).isEqualTo(12);
     assertThat(str.toString()).isEqualTo("Hello World!");
     str.close();
+  }
+
+  @Test
+  public void testCharIteration() {
+    try (final var str = UTF16StringFactory.newString(readResource("View.java.txt"))) {
+      assertThat(str).isNotNull();
+      str.forEachChar(c -> {});
+      str.forEachChar(100, 1000, c -> {});
+    }
+  }
+
+  @Test
+  public void testByteIteration() {
+    try (final var str = UTF16StringFactory.newString(readResource("View.java.txt"))) {
+      assertThat(str).isNotNull();
+      str.forEachByte(b -> {});
+      str.forEachByte(100, 1000, b -> {});
+    }
   }
 }

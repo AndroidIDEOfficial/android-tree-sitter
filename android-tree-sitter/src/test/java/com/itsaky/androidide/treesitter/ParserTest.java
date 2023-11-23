@@ -46,6 +46,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
+import static com.itsaky.androidide.treesitter.ResourceUtils.readResource;
 
 @RunWith(RobolectricTestRunner.class)
 public class ParserTest extends TreeSitterTest {
@@ -640,9 +641,5 @@ public class ParserTest extends TreeSitterTest {
     }
 
     return end - start;
-  }
-
-  private static String readResource(String... names) {
-    return readString(Paths.get("./src/test/resources", names));
   }
 }
