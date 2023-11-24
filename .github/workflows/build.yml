@@ -30,6 +30,13 @@ env:
 
   DEBUG_INFO_PATH: '**/build/generated/**/*.debug_info'
 
+  # APT
+  ATS_SUDO: sudo
+  ATS_APT_UPDATE: apt-get update
+  ATS_APT_UPGRADE: apt-get upgrade -y
+  ATS_APT_INSTALL: apt-get install
+  ATS_APT_DEPS: build-essential cargo nodejs cmake ninja-build
+
 jobs:
   build_release_apk:
     name: Build Release APK
@@ -57,7 +64,7 @@ jobs:
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
       - name: Install dependencies
-        run: sudo apt-get install build-essential cargo nodejs cmake ninja-build
+        run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
       - name: Restore cache
         uses: actions/cache@v3
         with:
@@ -104,7 +111,7 @@ jobs:
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
       - name: Install dependencies
-        run: sudo apt-get install build-essential cargo nodejs cmake ninja-build
+        run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
       - name: Restore cache
         uses: actions/cache@v3
         with:
@@ -149,7 +156,7 @@ jobs:
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
       - name: Install dependencies
-        run: sudo apt-get install build-essential cargo nodejs cmake ninja-build
+        run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
       - name: Restore cache
         uses: actions/cache@v3
         with:
@@ -204,7 +211,7 @@ jobs:
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
       - name: Install dependencies
-        run: sudo apt-get install build-essential cargo nodejs cmake ninja-build
+        run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
       - name: Restore cache
         uses: actions/cache@v3
         with:
