@@ -34,6 +34,7 @@ import com.itsaky.androidide.androidtreesitter.databinding.LayoutTextInputBindin
 import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.treesitter.TSLanguageCache
 import com.itsaky.androidide.treesitter.TSParser
+import com.itsaky.androidide.treesitter.TSQuery
 import com.itsaky.androidide.treesitter.TSTreeCursor
 import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.treesitter.java.TSLanguageJava
@@ -140,6 +141,15 @@ class MainActivity : AppCompatActivity() {
         afterInputChanged(editable)
       }
     })
+
+    activityScope.launch {
+      highlightsKtScm().use { string ->
+        val start = System.currentTimeMillis()
+        TSQuery.create(TSLanguageKotlin.getInstance(), string.toString())
+        Log.d(TAG,
+          "onCreate: TSQuery for Kotlin created in ${System.currentTimeMillis() - start}ms")
+      }
+    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -332,9 +342,21 @@ class MainActivity : AppCompatActivity() {
     }.logOnErr("doParserPerfTest")
   }
 
-  private inline fun viewJavaTxt(syncString: Boolean = true,
-                                 crossinline forEachLine: (String) -> Unit = {}
-  ): UTF16String = assets.open("View.java.txt").use { asset ->
+  private inline fun viewJavaTxt(
+    syncString: Boolean = true,
+    crossinline forEachLine: (String) -> Unit = {}
+  ) = readAssetToString("View.java.txt", syncString, forEachLine)
+
+  private inline fun highlightsKtScm(
+    syncString: Boolean = true,
+    crossinline forEachLine: (String) -> Unit = {}
+  ) = readAssetToString("highlights-kt.scm", syncString, forEachLine)
+
+  private inline fun readAssetToString(
+    fileName: String,
+    syncString: Boolean = true,
+    crossinline forEachLine: (String) -> Unit = {}
+  ): UTF16String = assets.open(fileName).use { asset ->
     val str = UTF16StringFactory.newString()
     asset.bufferedReader().use { reader ->
       reader.forEachLine { line ->
