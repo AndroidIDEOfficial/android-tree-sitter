@@ -42,6 +42,7 @@ static jlong TSQuery_newQuery(JNIEnv *env,
                                 error_offset,
                                 error_type);
   fillQuery(env, queryObject, *error_offset, *error_type);
+  env->ReleaseStringUTFChars(source, c_source);
   return (jlong) query;
 }
 
