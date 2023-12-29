@@ -18,7 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.itsaky.androidide.treesitter.TestUtils.readString;
+import static com.itsaky.androidide.treesitter.ResourceUtils.readResource;
 
 import android.text.TextUtils;
 import com.itsaky.androidide.treesitter.aidl.TSLanguageAidl;
@@ -29,7 +29,6 @@ import com.itsaky.androidide.treesitter.log.TSLanguageLog;
 import com.itsaky.androidide.treesitter.python.TSLanguagePython;
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
-import static com.itsaky.androidide.treesitter.ResourceUtils.readResource;
 
 @RunWith(RobolectricTestRunner.class)
 public class ParserTest extends TreeSitterTest {
@@ -74,7 +72,7 @@ public class ParserTest extends TreeSitterTest {
   }
 
   @Test
-  public void testParse()  {
+  public void testParse() {
     try (TSParser parser = TSParser.create()) {
       parser.setLanguage(TSLanguagePython.getInstance());
       try (TSTree tree = parser.parseString("print(\"hi\")")) {
@@ -181,7 +179,7 @@ public class ParserTest extends TreeSitterTest {
         assertThat(rootNode).isNotNull();
         assertThat(rootNode.getChildCount()).isGreaterThan(0);
         assertThat(rootNode.getNodeString()).isEqualTo(
-          "(source_file (class_declaration name: (type_identifier) body: (class_body (function_declaration name: (simple_identifier) parameters: (function_value_parameters) body: (function_body (statements (call_expression (simple_identifier) (call_suffix (value_arguments (value_argument (string_literal)))))))))))");
+          "(source_file (class_declaration (type_identifier) (class_body (function_declaration (simple_identifier) (function_value_parameters) (function_body (statements (call_expression (simple_identifier) (call_suffix (value_arguments (value_argument (string_literal)))))))))))");
       }
     }
   }
@@ -449,10 +447,7 @@ public class ParserTest extends TreeSitterTest {
 
   @Test
   public void testParserParseCallShouldNotFailIfWhenMultipleParsersAreParsing() {
-    try (final var parser1 = TSParser.create();
-      final var parser2 = TSParser.create();
-      final var mainParseContent = UTF16StringFactory.newString()
-    ) {
+    try (final var parser1 = TSParser.create(); final var parser2 = TSParser.create(); final var mainParseContent = UTF16StringFactory.newString()) {
       parser1.setLanguage(TSLanguageJava.getInstance());
       parser2.setLanguage(TSLanguageJava.getInstance());
 
@@ -579,7 +574,8 @@ public class ParserTest extends TreeSitterTest {
         // request parse cancellation and wait till the parse returns
         final var start = System.currentTimeMillis();
         parser.requestCancellationAndWait();
-        System.err.println("cancelAndWait() waited for " + (System.currentTimeMillis() - start) + "ms");
+        System.err.println(
+          "cancelAndWait() waited for " + (System.currentTimeMillis() - start) + "ms");
 
         // request another parse
         try (var tree = parser.parseString(fileContent)) {
