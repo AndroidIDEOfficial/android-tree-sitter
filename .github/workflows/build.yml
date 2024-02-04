@@ -79,12 +79,12 @@ jobs:
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: app/build/outputs/apk/release/app-release.apk
       - name: Upload debug symbols
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debug-symbols
           path: ${{ env.DEBUG_INFO_PATH }}
@@ -127,7 +127,7 @@ jobs:
           ANDROIDIDE_TEST: true
       - name: Upload Test Reports
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-unit-tests
           path: '**/build/reports/tests/'
@@ -181,7 +181,7 @@ jobs:
         id: publish_release
         run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace
       - name: Archive Nyx state file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: .nyx-state-${{ github.job }}.json
