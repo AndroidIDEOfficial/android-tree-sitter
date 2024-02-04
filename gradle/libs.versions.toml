@@ -3,7 +3,7 @@ agp = "8.1.1"
 incap = "1.0.0"
 kotlin = "1.9.10"
 kotlin-coroutines = "1.7.3"
-javaparser = "3.25.6"
+javaparser = "3.25.8"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1"}
