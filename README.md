@@ -1,6 +1,7 @@
 # android-tree-sitter
 <a href="https://github.com/itsaky/AndroidIDE"><img src="https://androidide.com/github/img/androidide.php?part&for-the-badge"/></a><br><br> 
-Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitter/).
+Android Java bindings for [tree-sitter](https://tree-sitter.github.io/tree-sitter/). Currently used in [AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)
+and [sora-editor](https://github.com/Rosemoe/sora-editor).
 
 ## Add to your project
 
