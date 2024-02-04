@@ -9,7 +9,7 @@ javaparser = "3.25.6"
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1"}
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4"}
 
-common-coreLibDesugaring = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.3" }
+common-coreLibDesugaring = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
 common-kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
 
 google-material = { module = "com.google.android.material:material", version = "1.9.0"}
