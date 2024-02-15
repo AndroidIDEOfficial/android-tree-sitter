@@ -64,9 +64,9 @@ abstract class GenerateDebugSymbolsTask : DefaultTask() {
 
     project.logger.info("Generating debug symbols file from: $file")
 
-    val outputFile = outputDirectory.dir(abi.name.lowercase()).apply {
+    val outputFile = outputDirectory.dir("" + abi.name.lowercase()).apply {
       val dir = get().asFile
-      project.logger.debug("Creating output directory: $dir")
+      project.logger.debug("Creating output directory: {}", dir)
       dir.mkdirs()
     }.let {
       File(it.get().asFile, "${file.name}.debug_info").apply {

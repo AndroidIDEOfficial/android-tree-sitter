@@ -25,6 +25,7 @@ import com.android.build.gradle.internal.ndk.NdkPlatform
 import com.android.build.gradle.internal.plugins.AppPlugin
 import com.android.build.gradle.internal.plugins.BasePluginAccessor
 import com.android.build.gradle.internal.plugins.LibraryPlugin
+import com.android.build.gradle.internal.tasks.MergeNativeLibsTask
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.build.gradle.tasks.ExternalNativeBuildTask
 import com.itsaky.androidide.treesitter.jni.GenerateNativeHeadersTask
@@ -81,7 +82,8 @@ class TreeSitterPlugin : Plugin<Project> {
           rootProject.subprojects.filter {
             it.name.startsWith("tree-sitter-")
           }.forEach { grammarProject ->
-            dependsOn(grammarProject.tasks.withType(BuildForHostTask::class.java))
+            dependsOn(
+              grammarProject.tasks.withType(BuildForHostTask::class.java))
           }
         }
       }
@@ -89,8 +91,7 @@ class TreeSitterPlugin : Plugin<Project> {
       val baseExtention = extensions.getByType(BaseExtension::class.java)
 
       baseExtention.defaultConfig.externalNativeBuild.cmake.arguments(
-        "-DAUTOGEN_HEADERS=${nativeHeadersDir.get().asFile.absolutePath}"
-      )
+        "-DAUTOGEN_HEADERS=${nativeHeadersDir.get().asFile.absolutePath}")
 
       val pluginType = if (plugins.hasPlugin(
           "com.android.application")
@@ -159,13 +160,13 @@ class TreeSitterPlugin : Plugin<Project> {
       tasks.register("generateDebugSymbols$variantName",
         GenerateDebugSymbolsTask::class.java) {
 
-        dependsOn(tasks.getByName("merge${variantName}NativeLibs"))
-
         this.inputDirectory.set(variant.artifacts.get(MERGED_NATIVE_LIBS))
+        this.outputDirectory.set(project.layout.buildDirectory.dir("debug-symbols"))
         this.ndkInfo.set(ndkPlatform.get().ndkInfo)
       }
 
-    variant.sources.assets?.addGeneratedSourceDirectory(
-      generateDebugSymbolsTask, GenerateDebugSymbolsTask::outputDirectory)
+    tasks.withType(MergeNativeLibsTask::class.java) {
+      finalizedBy(generateDebugSymbolsTask)
+    }
   }
 }

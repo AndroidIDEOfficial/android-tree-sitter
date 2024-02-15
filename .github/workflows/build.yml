@@ -28,7 +28,7 @@ env:
   BUILD_IS_RELEASE: ${{ github.ref == 'refs/heads/main'  }}
   PublishToMaven: ${{ github.ref == 'refs/heads/main' }}
 
-  DEBUG_INFO_PATH: '**/build/generated/**/*.debug_info'
+  DEBUG_INFO_PATH: '**/build/debug-symbols/**/*.debug_info'
 
   # APT
   ATS_SUDO: sudo
