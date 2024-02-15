@@ -2,7 +2,7 @@
 agp = "8.1.1"
 incap = "1.0.0"
 kotlin = "1.9.22"
-kotlin-coroutines = "1.7.3"
+kotlin-coroutines = "1.8.0"
 javaparser = "3.25.8"
 
 [libraries]
