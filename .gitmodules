@@ -25,3 +25,9 @@
 [submodule "grammars/properties"]
 	path = grammars/properties
 	url = https://github.com/AndroidIDEOfficial/tree-sitter-properties
+[submodule "grammars/c"]
+	path = grammars/c
+	url = https://github.com/tree-sitter/tree-sitter-c
+[submodule "grammars/cpp"]
+	path = grammars/cpp
+	url = https://github.com/tree-sitter/tree-sitter-cpp

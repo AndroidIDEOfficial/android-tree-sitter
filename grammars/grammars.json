@@ -1,5 +1,15 @@
 [
   {
+    "name": "c",
+    "src.extra": []
+  },
+  {
+    "name": "cpp",
+    "src.extra": [
+      "src/scanner.c"
+    ]
+  },
+  {
     "name": "aidl",
     "src.extra": []
   },
