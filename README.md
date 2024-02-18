@@ -73,6 +73,20 @@ Clone this repo with :
 git clone --recurse-submodules https://github.com/AndroidIDEOfficial/android-tree-sitter
 ```
 
+### Install grammar dependencies
+
+You might need to install the Node packages required by the grammars. To do so, you may do
+something like the following:
+
+```bash
+# from the root directory of this project
+for pck in $(find grammars -maxdepth 2 -name "package.json" -type f); do
+  cd $(dirname $pck)
+  npm install
+  cd -
+done 
+```
+
 ### Build
 
 A normal Gradle build (`./gradlew build`) can be executed in order to build everything for Android
