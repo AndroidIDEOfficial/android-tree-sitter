@@ -61,10 +61,15 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25
-      - name: Change Gradle wrapper permissions
-        run: chmod +x ./gradlew
       - name: Install dependencies
         run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
+      - name: Install Node packages
+        run: |
+          for pck in $(find grammars -maxdepth 2 -name "package.json"); do
+            cd $(dirname $pck)
+            npm install
+            cd -
+          done
       - name: Restore cache
         uses: actions/cache@v4
         with:
@@ -74,6 +79,8 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
       - name: Assemble Release
         run: ./gradlew assembleRelease generateDebugSymbolsRelease --parallel --stacktrace
         env:
@@ -108,10 +115,15 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25
-      - name: Change Gradle wrapper permissions
-        run: chmod +x ./gradlew
       - name: Install dependencies
         run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
+      - name: Install Node packages
+        run: |
+          for pck in $(find grammars -maxdepth 2 -name "package.json"); do
+            cd $(dirname $pck)
+            npm install
+            cd -
+          done
       - name: Restore cache
         uses: actions/cache@v4
         with:
@@ -121,6 +133,8 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
       - name: Run debug tests
         run: ./gradlew testDebug --continue --parallel --stacktrace
         env:
@@ -153,10 +167,15 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25
-      - name: Change Gradle wrapper permissions
-        run: chmod +x ./gradlew
       - name: Install dependencies
         run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
+      - name: Install Node packages
+        run: |
+          for pck in $(find grammars -maxdepth 2 -name "package.json"); do
+            cd $(dirname $pck)
+            npm install
+            cd -
+          done
       - name: Restore cache
         uses: actions/cache@v4
         with:
@@ -177,6 +196,8 @@ jobs:
         run: |
           zip -r debug-symbols.zip . -i $DEBUG_INFO_PATH
         working-directory: artifacts/
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
       - name: Publish release
         id: publish_release
         run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace
@@ -208,10 +229,15 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25
-      - name: Change Gradle wrapper permissions
-        run: chmod +x ./gradlew
       - name: Install dependencies
         run: $ATS_SUDO $ATS_APT_UPDATE && $ATS_SUDO $ATS_APT_UPGRADE && $ATS_SUDO $ATS_APT_INSTALL $ATS_APT_DEPS
+      - name: Install Node packages
+        run: |
+          for pck in $(find grammars -maxdepth 2 -name "package.json"); do
+            cd $(dirname $pck)
+            npm install
+            cd -
+          done
       - name: Restore cache
         uses: actions/cache@v4
         with:
@@ -221,5 +247,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
       - name: Publish snapshots
         run: ./gradlew publishAllPublicationsToMavenCentralRepository --stacktrace
