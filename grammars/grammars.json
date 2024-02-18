@@ -22,6 +22,10 @@
     "src.extra": []
   },
   {
+    "name": "properties",
+    "src.extra": []
+  },
+  {
     "name": "python",
     "src.extra": [
       "src/scanner.c"
