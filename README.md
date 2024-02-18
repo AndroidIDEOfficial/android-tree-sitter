@@ -75,16 +75,12 @@ git clone --recurse-submodules https://github.com/AndroidIDEOfficial/android-tre
 
 ### Install grammar dependencies
 
-You might need to install the Node packages required by the grammars. To do so, you may do
-something like the following:
+You might need to install the Node packages required by the grammars. For example, the `cpp` grammar
+requires you to install the packages:
 
 ```bash
 # from the root directory of this project
-for pck in $(find grammars -maxdepth 2 -name "package.json" -type f); do
-  cd $(dirname $pck)
-  npm install
-  cd -
-done 
+cd grammars/cpp && npm install && cd -
 ```
 
 ### Build
