@@ -43,6 +43,20 @@ static jobject TSTree_rootNode(JNIEnv *env, jclass self, jlong tree) {
   return _marshalNode(env, ts_tree_root_node((TSTree *) tree));
 }
 
+static jobject TSTree_rootNodeWithOffset(
+    JNIEnv *env,
+    jclass self,
+    jlong tree,
+    jint offset_bytes,
+    jobject offset_extent
+) {
+  req_nnp(env, tree);
+  return _marshalNode(env, ts_tree_root_node_with_offset(
+                               (TSTree *) tree,
+                               offset_bytes,
+                               _unmarshalPoint(env, offset_extent)));
+}
+
 static jobjectArray
 TSTree_changedRanges(JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
   req_nnp(env, tree, "thisTree");
@@ -74,6 +88,7 @@ void TSTree_Native__SetJniMethods(JNINativeMethod *methods, int count) {
   SET_JNI_METHOD(methods, TSTree_Native_delete, TSTree_delete);
   SET_JNI_METHOD(methods, TSTree_Native_copy, TSTree_copy);
   SET_JNI_METHOD(methods, TSTree_Native_rootNode, TSTree_rootNode);
+  SET_JNI_METHOD(methods, TSTree_Native_rootNodeWithOffset, TSTree_rootNodeWithOffset);
   SET_JNI_METHOD(methods, TSTree_Native_changedRanges, TSTree_changedRanges);
   SET_JNI_METHOD(methods, TSTree_Native_getLanguage, TSTree_getLanguage);
 }

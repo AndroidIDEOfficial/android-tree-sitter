@@ -47,6 +47,15 @@ public class TSTree extends TSNativeObject {
     return Native.rootNode(getNativeObject());
   }
 
+  /**
+   * Get the root node of the syntax tree, but with its position shifted forward by the given
+   * offset.
+   */
+  public TSNode getRootNodeWithOffset(int offsetBytes, TSPoint offsetExtent) {
+    checkAccess();
+    return Native.rootNodeWithOffset(getNativeObject(), offsetBytes, offsetExtent);
+  }
+
   public TSRange[] getChangedRanges(TSTree oldTree) {
     checkAccess();
     oldTree.checkAccess();
@@ -108,6 +117,9 @@ public class TSTree extends TSNativeObject {
 
     @FastNative
     static native TSNode rootNode(long tree);
+
+    @FastNative
+    static native TSNode rootNodeWithOffset(long tree, int offsetBytes, TSPoint offsetExtent);
 
     @FastNative
     static native TSRange[] changedRanges(long tree, long oldTree);
