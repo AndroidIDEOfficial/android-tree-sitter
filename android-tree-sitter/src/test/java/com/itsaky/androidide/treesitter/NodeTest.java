@@ -90,6 +90,8 @@ public class NodeTest extends TreeSitterTest {
         assertThat(start.column).isEqualTo(0);
         assertThat(function.isEqualTo(function)).isTrue();
         assertThat(function.getFieldNameForChild(1)).isEqualTo("name");
+        assertThat(tree.getLanguage().getSymbolName(function.getGrammarSymbol())).isEqualTo(
+          "function_definition");
 
         end = function.getEndPoint();
         assertThat(end.row).isEqualTo(2);

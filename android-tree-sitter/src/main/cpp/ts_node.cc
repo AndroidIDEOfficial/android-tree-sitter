@@ -227,8 +227,12 @@ static jstring TSNode_getType(JNIEnv *env, jclass clazz, jobject self) {
   return result;
 }
 
-static jint TSNode_getSymbol(JNIEnv *env, jclass clazz, jobject self) {
-  return (jint) ts_node_symbol(_unmarshalNode(env, self));
+static jshort TSNode_getSymbol(JNIEnv *env, jclass clazz, jobject self) {
+  return (jshort) ts_node_symbol(_unmarshalNode(env, self));
+}
+
+static jshort TSNode_getGrammarSymbol(JNIEnv *env, jclass clazz, jobject self) {
+  return (jshort) ts_node_grammar_symbol(_unmarshalNode(env, self));
 }
 
 static jboolean TSNode_isNull(JNIEnv *env, jclass clazz, jobject self) {
@@ -331,6 +335,7 @@ void TSNode_Native__SetJniMethods(JNINativeMethod *methods, int count) {
   SET_JNI_METHOD(methods, TSNode_Native_getEndPoint, TSNode_getEndPoint);
   SET_JNI_METHOD(methods, TSNode_Native_getType, TSNode_getType);
   SET_JNI_METHOD(methods, TSNode_Native_getSymbol, TSNode_getSymbol);
+  SET_JNI_METHOD(methods, TSNode_Native_getGrammarSymbol, TSNode_getGrammarSymbol);
   SET_JNI_METHOD(methods, TSNode_Native_isNull, TSNode_isNull);
   SET_JNI_METHOD(methods, TSNode_Native_isNamed, TSNode_isNamed);
   SET_JNI_METHOD(methods, TSNode_Native_isExtra, TSNode_isExtra);

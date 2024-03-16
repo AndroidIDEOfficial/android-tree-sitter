@@ -535,9 +535,19 @@ public class TSNode extends TSNativeObject {
    *
    * @return The node's type as a numerical id.
    */
-  public int getSymbol() {
+  public short getSymbol() {
     checkAccess();
     return Native.getSymbol(this);
+  }
+
+  /**
+   * Get the node's type as a numerical id as it appears in the grammar ignoring aliases. This
+   * should be used in {@link TSLanguage#getNextState(short, short)} instead of
+   * {@link #getSymbol()}.
+   */
+  public short getGrammarSymbol() {
+    checkAccess();
+    return Native.getGrammarSymbol(this);
   }
 
   /**
@@ -708,7 +718,10 @@ public class TSNode extends TSNativeObject {
     static native String getType(TSNode self);
 
     @FastNative
-    static native int getSymbol(TSNode self);
+    static native short getSymbol(TSNode self);
+
+    @FastNative
+    static native short getGrammarSymbol(TSNode self);
 
     @FastNative
     static native boolean isNull(TSNode self);
