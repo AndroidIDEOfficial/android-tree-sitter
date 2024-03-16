@@ -56,6 +56,15 @@ public class TSTree extends TSNativeObject {
     return Native.rootNodeWithOffset(getNativeObject(), offsetBytes, offsetExtent);
   }
 
+  /**
+   * Compare an old edited syntax tree to a new syntax tree representing the same document,
+   * returning an array of ranges whose syntactic structure has changed.
+   * <p>
+   * For this to work correctly, the old syntax tree must have been edited such that its ranges
+   * match up to the new tree. Generally, you'll want to call this function right after calling one
+   * of the <code>parse*</code> functions in {@link TSParser}. You need to pass the old tree that
+   * was passed to parse, as well as the new tree that was returned from that function.
+   */
   public TSRange[] getChangedRanges(TSTree oldTree) {
     checkAccess();
     oldTree.checkAccess();
@@ -64,6 +73,20 @@ public class TSTree extends TSNativeObject {
     if (ranges == null) {
       return new TSRange[0];
     }
+    return ranges;
+  }
+
+  /**
+   * Get the array of included ranges that was used to parse the syntax tree.
+   */
+  public TSRange[] getIncludedRanges() {
+    checkAccess();
+
+    TSRange[] ranges = Native.includedRanges(getNativeObject());
+    if (ranges == null) {
+      return new TSRange[0];
+    }
+
     return ranges;
   }
 
@@ -126,5 +149,8 @@ public class TSTree extends TSNativeObject {
 
     @FastNative
     static native long getLanguage(long tree);
+
+    @FastNative
+    static native TSRange[] includedRanges(long nativeObject);
   }
 }

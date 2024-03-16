@@ -79,15 +79,8 @@ public class TreeTest extends TreeSitterTest {
         assertThat(oldTree.getLanguage().getNativeObject()).isEqualTo(
           TSLanguageJava.getInstance().getNativeObject());
 
-        oldTree.edit(
-          TSInputEdit.create(
-            10,
-            16,
-            16,
-            TSPoint.create(0, 10),
-            TSPoint.create(0, 16),
-            TSPoint.create(0, 16)
-          ));
+        oldTree.edit(TSInputEdit.create(10, 16, 16, TSPoint.create(0, 10), TSPoint.create(0, 16),
+          TSPoint.create(0, 16)));
 
         try (final var newTree = parser.parseString(oldTree, "class Some { void main() {} }")) {
           assertThat(newTree.getRootNode().getNodeString()).isEqualTo(
@@ -97,6 +90,31 @@ public class TreeTest extends TreeSitterTest {
           assertThat(changedRanges).isNotEmpty();
           assertThat(changedRanges).hasLength(1);
         }
+      }
+    }
+  }
+
+  @Test
+  public void testTreeGetIncludedRanges() {
+    try (final var parser = TSParser.create()) {
+      parser.setLanguage(TSLanguageJava.getInstance());
+
+      final var inclRange = TSRange.create(22, 56, TSPoint.create(0, 22), TSPoint.create(0, 56));
+      parser.setIncludedRanges(new TSRange[]{inclRange});
+
+      var ranges = parser.getIncludedRanges();
+      assertThat(ranges).isNotNull();
+      assertThat(ranges).hasLength(1);
+      assertThat(ranges[0]).isEqualTo(inclRange);
+
+      try (final var tree = parser.parseString("class Main { void main() {} }")) {
+        assertThat(tree.getLanguage().getNativeObject()).isEqualTo(
+          TSLanguageJava.getInstance().getNativeObject());
+
+        ranges = tree.getIncludedRanges();
+        assertThat(ranges).isNotNull();
+        assertThat(ranges).hasLength(1);
+        assertThat(ranges[0]).isEqualTo(inclRange);
       }
     }
   }
