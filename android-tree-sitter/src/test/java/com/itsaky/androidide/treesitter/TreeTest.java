@@ -70,4 +70,34 @@ public class TreeTest extends TreeSitterTest {
       }
     }
   }
+
+  @Test
+  public void testTreeGetChangedRangesAfterEdit() {
+    try (final var parser = TSParser.create()) {
+      parser.setLanguage(TSLanguageJava.getInstance());
+      try (final var oldTree = parser.parseString("class Main { void main() {} }")) {
+        assertThat(oldTree.getLanguage().getNativeObject()).isEqualTo(
+          TSLanguageJava.getInstance().getNativeObject());
+
+        oldTree.edit(
+          TSInputEdit.create(
+            10,
+            16,
+            16,
+            TSPoint.create(0, 10),
+            TSPoint.create(0, 16),
+            TSPoint.create(0, 16)
+          ));
+
+        try (final var newTree = parser.parseString(oldTree, "class Some { void main() {} }")) {
+          assertThat(newTree.getRootNode().getNodeString()).isEqualTo(
+            oldTree.getRootNode().getNodeString());
+
+          final var changedRanges = newTree.getChangedRanges(oldTree);
+          assertThat(changedRanges).isNotEmpty();
+          assertThat(changedRanges).hasLength(1);
+        }
+      }
+    }
+  }
 }

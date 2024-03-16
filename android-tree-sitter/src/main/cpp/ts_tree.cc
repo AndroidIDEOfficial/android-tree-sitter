@@ -65,6 +65,9 @@ TSTree_changedRanges(JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
   TSRange *ranges =
       ts_tree_get_changed_ranges((TSTree *) oldTree, (TSTree *) tree, &count);
   if (count == 0) {
+    if (ranges != nullptr) {
+      free(ranges);
+    }
     return nullptr;
   }
 
@@ -75,6 +78,9 @@ TSTree_changedRanges(JNIEnv *env, jclass self, jlong tree, jlong oldTree) {
     TSRange *r = (ranges + i);
     env->SetObjectArrayElement(arr, (jint) i, _marshalRange(env, *r));
   }
+
+  free(ranges);
+
   return arr;
 }
 
