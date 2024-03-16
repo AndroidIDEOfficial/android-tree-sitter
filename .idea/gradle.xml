@@ -28,10 +28,13 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/ats" />
             <option value="$PROJECT_DIR$/grammar-modules/aidl" />
+            <option value="$PROJECT_DIR$/grammar-modules/c" />
+            <option value="$PROJECT_DIR$/grammar-modules/cpp" />
             <option value="$PROJECT_DIR$/grammar-modules/java" />
             <option value="$PROJECT_DIR$/grammar-modules/json" />
             <option value="$PROJECT_DIR$/grammar-modules/kotlin" />
             <option value="$PROJECT_DIR$/grammar-modules/log" />
+            <option value="$PROJECT_DIR$/grammar-modules/properties" />
             <option value="$PROJECT_DIR$/grammar-modules/python" />
             <option value="$PROJECT_DIR$/grammar-modules/xml" />
           </set>

@@ -222,14 +222,14 @@ public class ParserTest extends TreeSitterTest {
     try (final var parser = TSParser.create()) {
       parser.setLanguage(TSLanguageLog.getInstance());
 
-      final var source = "..aultApiVersionsRegistry I   Creating API versions table for platform dir: /data/data/com.itsaky.androidide/files/home/android-sdk/platforms/android-32";
+      final var source = "2024-03-16 19:15:30,267 DEBUG [ForkJoinPool.commonPool-worker-9] JdkUtils: Found java.home=/data/data/com.itsaky.androidide/files/usr/opt/openjdk-17.0";
 
       try (final var tree = parser.parseString(source)) {
         final var rootNode = tree.getRootNode();
         assertThat(rootNode).isNotNull();
         assertThat(rootNode.getChildCount()).isGreaterThan(0);
         assertThat(rootNode.getNodeString()).isEqualTo(
-          "(logs (ide_log_line (ide_tag) (priority) (message)))");
+          "(logs (ide_log_line (date) (time) (priority) (thread_name) (tag) (message)))");
       }
     }
   }
