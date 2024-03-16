@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Objects;
 
 /**
  * @author Akash Yadav
@@ -58,5 +59,29 @@ public class TSRange {
 
   public TSPoint getEndPoint() {
     return endPoint;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof TSRange)) {
+      return false;
+    }
+    TSRange tsRange = (TSRange) o;
+    return startByte == tsRange.startByte && endByte == tsRange.endByte &&
+      Objects.equals(startPoint, tsRange.startPoint) && Objects.equals(endPoint, tsRange.endPoint);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(startByte, endByte, startPoint, endPoint);
+  }
+
+  @Override
+  public String toString() {
+    return "TSRange{" + "startByte=" + startByte + ", endByte=" + endByte + ", startPoint=" +
+      startPoint + ", endPoint=" + endPoint + '}';
   }
 }

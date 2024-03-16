@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Objects;
 
 /**
  * TSPoint
@@ -49,5 +50,22 @@ public class TSPoint {
   @Override
   public String toString() {
     return "TSPoint(Row: " + this.row + ", Column: " + this.column + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof TSPoint)) {
+      return false;
+    }
+    TSPoint tsPoint = (TSPoint) o;
+    return row == tsPoint.row && column == tsPoint.column;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(row, column);
   }
 }

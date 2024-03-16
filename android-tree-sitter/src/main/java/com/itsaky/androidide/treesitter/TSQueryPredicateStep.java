@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Objects;
 
 /**
  * @author Akash Yadav
@@ -49,6 +50,29 @@ public class TSQueryPredicateStep {
 
   public int getValueId() {
     return valueId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof TSQueryPredicateStep)) {
+      return false;
+    }
+    TSQueryPredicateStep that = (TSQueryPredicateStep) o;
+    return type == that.type && valueId == that.valueId && cachedType == that.cachedType;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(cachedType, type, valueId);
+  }
+
+  @Override
+  public String toString() {
+    return "TSQueryPredicateStep{" + "cachedType=" + cachedType + ", type=" + type + ", valueId=" +
+      valueId + '}';
   }
 
   public enum Type {

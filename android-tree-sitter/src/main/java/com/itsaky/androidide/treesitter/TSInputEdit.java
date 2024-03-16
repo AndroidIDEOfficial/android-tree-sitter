@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
+import java.util.Objects;
 
 /**
  * InputEdit
@@ -76,5 +77,32 @@ public class TSInputEdit {
   ) {
     return TSObjectFactoryProvider.getFactory()
       .createInputEdit(startByte, oldEndByte, newEndByte, startPoint, oldEndPoint, newEndPoint);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof TSInputEdit)) {
+      return false;
+    }
+    TSInputEdit that = (TSInputEdit) o;
+    return startByte == that.startByte && oldEndByte == that.oldEndByte &&
+      newEndByte == that.newEndByte && Objects.equals(startPoint, that.startPoint) &&
+      Objects.equals(oldEndPoint, that.oldEndPoint) &&
+      Objects.equals(newEndPoint, that.newEndPoint);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(startByte, oldEndByte, newEndByte, startPoint, oldEndPoint, newEndPoint);
+  }
+
+  @Override
+  public String toString() {
+    return "TSInputEdit{" + "startByte=" + startByte + ", oldEndByte=" + oldEndByte +
+      ", newEndByte=" + newEndByte + ", startPoint=" + startPoint + ", oldEndPoint=" + oldEndPoint +
+      ", newEndPoint=" + newEndPoint + '}';
   }
 }
