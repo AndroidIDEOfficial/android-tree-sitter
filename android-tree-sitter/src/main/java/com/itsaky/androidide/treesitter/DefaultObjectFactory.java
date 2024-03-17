@@ -102,7 +102,7 @@ public class DefaultObjectFactory implements TSObjectFactory {
 
   @Override
   public TSQueryMatch createQueryMatch(int id, int patternIndex, TSQueryCapture[] captures) {
-    return new TSQueryMatch(id, patternIndex, captures);
+    return new TSQueryMatch(id, patternIndex, captures, null);
   }
 
   @Override

@@ -209,6 +209,7 @@ public class QueryTest extends TreeSitterTest {
             assertThat(capture).isNotNull();
             assertThat(capture.getIndex()).isAtLeast(0);
             assertThat(capture.getIndex()).isAtMost(query.getCaptureCount() - 1);
+            assertThat(match.getCapture(capture.getIndex())).isEqualTo(capture);
 
             final var captureIndex = capture.getIndex();
             final var name = query.getCaptureNameForId(captureIndex);

@@ -18,11 +18,17 @@
 package com.itsaky.androidide.treesitter;
 
 import com.itsaky.androidide.treesitter.annotations.GenerateNativeHeaders;
+import com.itsaky.androidide.treesitter.predicate.TSPredicateHandler;
+import com.itsaky.androidide.treesitter.predicate.TSPredicateHandler.PredicateStep;
+import com.itsaky.androidide.treesitter.predicate.TSPredicateHandler.Result;
 import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider;
 import dalvik.annotation.optimization.FastNative;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Akash Yadav
@@ -30,9 +36,10 @@ import java.util.Objects;
 public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMatch> {
 
   protected boolean isExecuted = false;
-  protected TSNode targetNode = null;
-
   private boolean allowChangedNodes = false;
+  protected TSNode targetNode = null;
+  protected TSQuery execQuery = null;
+  protected final Set<TSPredicateHandler> predicateHandlers = new HashSet<>();
 
   protected TSQueryCursor() {
     this(Native.newCursor());
@@ -75,6 +82,33 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
   }
 
   /**
+   * Add the given predicate handler. Predicate handlers are applied to every query match while
+   * iterating.
+   *
+   * @param handler The predicate handler to add.
+   */
+  public void addPredicateHandler(TSPredicateHandler handler) {
+    if (handler == null) {
+      return;
+    }
+
+    predicateHandlers.add(handler);
+  }
+
+  /**
+   * Remove the given predicate handler.
+   *
+   * @param handler The predicate handler to remove.
+   */
+  public void removePredicateHandler(TSPredicateHandler handler) {
+    if (handler == null) {
+      return;
+    }
+
+    predicateHandlers.remove(handler);
+  }
+
+  /**
    * Start running the given query on the given node.
    */
   public void exec(TSQuery query, TSNode node) {
@@ -91,9 +125,12 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
 
       throw new IllegalArgumentException(msg);
     }
+
     Native.exec(getNativeObject(), query.getNativeObject(), node);
+
     isExecuted = true;
     targetNode = node;
+    execQuery = query;
   }
 
   /**
@@ -180,7 +217,45 @@ public class TSQueryCursor extends TSNativeObject implements Iterable<TSQueryMat
   public TSQueryMatch nextMatch() {
     checkAccess();
     checkExecuted("nextMatch");
-    return Native.nextMatch(getNativeObject());
+    final var match = Native.nextMatch(getNativeObject());
+    if (match != null) {
+      applyPredicates(match);
+    }
+    return match;
+  }
+
+  private void applyPredicates(TSQueryMatch match) {
+    if (match == null || execQuery == null) {
+      return;
+    }
+
+    final var predicates = execQuery.getPredicatesForPattern(match.getPatternIndex());
+    final var steps = new ArrayList<PredicateStep>(predicates.length);
+
+    for (final var predicate : predicates) {
+      final PredicateStep step;
+      switch (predicate.getType()) {
+        case Capture:
+          step = new PredicateStep(predicate.getType(),
+            execQuery.getCaptureNameForId(predicate.getValueId()));
+          break;
+        case String:
+          step = new PredicateStep(predicate.getType(),
+            execQuery.getStringValueForId(predicate.getValueId()));
+          break;
+        default:
+          step = new PredicateStep(predicate.getType(), "");
+          break;
+      }
+
+      steps.add(step);
+    }
+
+    for (final var handler : predicateHandlers) {
+      if (handler.handle(execQuery, match, steps) == Result.OK) {
+        break;
+      }
+    }
   }
 
   public void removeMatch(int id) {
