@@ -54,6 +54,10 @@ public class SetDirectiveHandler implements TSPredicateHandler {
   @Override
   public Result handle(TSQuery query, TSQueryMatch match, List<PredicateStep> args
   ) {
+    if (args.size() < PARAMETERS_1.length || args.size() > PARAMETERS_2.length) {
+      return Result.UNHANDLED;
+    }
+
     if (!DIRECTIVE.equals(args.get(0).value)) {
       return Result.UNHANDLED;
     }
