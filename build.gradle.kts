@@ -29,7 +29,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 buildscript {
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.25")
   }
 }
 
