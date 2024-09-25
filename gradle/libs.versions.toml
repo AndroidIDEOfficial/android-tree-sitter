@@ -6,7 +6,7 @@ kotlin-coroutines = "1.7.3"
 javaparser = "3.25.8"
 
 [libraries]
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1"}
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0"}
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4"}
 
 common-coreLibDesugaring = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
