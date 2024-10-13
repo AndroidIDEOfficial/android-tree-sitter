@@ -38,4 +38,4 @@ javaparser-core = { module = "com.github.javaparser:javaparser-core", version.re
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.27.0" }
+maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.30.0" }
